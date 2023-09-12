@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django_phonenumbers",
+    "phonenumber_field",
+    'rest_framework',
+    'django_countries',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +128,44 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "accounts.User"
+
+# REST FRAMEWORK START
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'accounts.authentication.JWTAuthentication',
+    ],
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework.renderers.<corresponding_renderer>',
+    # ],
+}
+# REST FRAMEWORK END
+
+
+# pyjwt start
+JWT_CONF = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+}
+# pyjwt end
+
+
+# django countries package start
+# COUNTRIES_OVERRIDE = {
+#     'US': 'United States',  # Customize country names if needed
+# }
+# django countries package end
+
+# django cities packages start
+CITIES_LOCALES = ['en', 'und', 'LANGUAGES']
+# django cities packages end
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')

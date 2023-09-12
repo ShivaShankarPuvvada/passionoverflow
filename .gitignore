@@ -1,0 +1,101 @@
+# Byte-compiled Python files
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+env/
+*.env
+
+# Django settings
+*.secret_key
+*.settings
+
+# Database
+db.sqlite3
+
+# Static and media files (usually served by a web server)
+/static/
+/media/
+
+# Logs and error files
+*.log
+*.pot
+*.pyo
+*.swp
+*.tmp
+
+# Temporary files
+*.bak
+*.~*
+
+# IDE-specific files and directories (customize as needed)
+.idea/
+.vscode/
+*.pydevproject
+*.sublime-project
+*.sublime-workspace
+
+# Compiled Python files
+*.pyc
+
+# Local development settings
+local_settings.py
+
+# Configuration files
+*.cfg
+*.conf
+*.ini
+
+# Dependency directories
+node_modules/
+__pycache__/ # Exclude pycache directories created by Python 3.7 and later
+
+# Testing and debugging directories
+__pycache__/
+.debug/
+
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python bytecode cache (Python 3.2+)
+__pycache__/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# If using Docker, exclude Docker-related files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Ignore pipenv or poetry virtual environments
+Pipfile
+Pipfile.lock
+pyproject.toml
+
+# Secret keys and credentials (customize as needed)
+*.secrets
+*.credentials
+*.key
+*.pem
+
+# Environment variables file (if using .env)
+.env
+
+# Compiled JavaScript files
+*.js
+*.map
+
+# Compiled CSS files
+*.css
+
+# Node.js dependencies
+node_modules/
