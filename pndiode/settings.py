@@ -39,11 +39,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # installed packages
     "django_phonenumbers",
     "phonenumber_field",
     'rest_framework',
     'django_countries',
+    'simple_history',
+    
+    # created apps
     'accounts',
+    'tags',
+    'phases',
+    'stages',
+    'projects',
+    'segments',
+    
 ]
 
 MIDDLEWARE = [

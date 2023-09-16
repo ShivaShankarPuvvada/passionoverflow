@@ -16,7 +16,7 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=300, blank=True, null=True)
     username = models.CharField(max_length=30, blank=True, null=True, unique=True)
     email = models.EmailField(unique=True)
-    phone_number = PhoneNumberField(null=False, blank=False, unique=True)
+    phone_number = PhoneNumberField(null=True, blank=False, unique=True, default="+1234567890")
     gender = models.CharField(max_length=6, choices=GENDER_IN_CHOICES, null=True, blank=True)
     country = models.CharField(max_length=120, null=True, blank=True)
     
@@ -27,7 +27,9 @@ class User(AbstractUser):
     
 
 class CustomerCompanyDetails(models.Model):
+    company_root_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     company_name = models.CharField(max_length=300, blank=False, null=False, unique=True)
     company_sub_domain_name = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    
     def __str__(self):
-        return self.username 
+        return self.company_name 
