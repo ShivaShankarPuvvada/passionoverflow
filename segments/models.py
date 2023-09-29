@@ -16,7 +16,7 @@ class Segment(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.CharField(max_length=2)
-    project = models.ManyToManyField(project_models.Project, related_name='segment_project', blank=True)
+    project = models.ForeignKey(project_models.Project, related_name='segment_project', on_delete=models.SET_NULL, null=True, blank=True)
     assigned_by = models.ForeignKey(User, related_name='segment_assigned_by', on_delete=models.SET_NULL, null=True, blank=True)
     assigned_to = models.ManyToManyField(User, related_name='segment_assigned_to', blank=True)
     members = models.ManyToManyField(User, related_name='segment_members', blank=True)

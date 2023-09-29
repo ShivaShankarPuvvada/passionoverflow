@@ -27,7 +27,8 @@ class User(AbstractUser):
     
 
 class CustomerCompanyDetails(models.Model):
-    company_root_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    company_root_user = models.ForeignKey(User, related_name="company_root_user", on_delete=models.SET_NULL, null=True, blank=True)
+    company_user = models.ForeignKey(User, related_name="company_user", on_delete=models.SET_NULL, null=True, blank=True)
     company_name = models.CharField(max_length=300, blank=False, null=False, unique=True)
     company_sub_domain_name = models.CharField(max_length=100, blank=True, null=True, unique=True)
     
