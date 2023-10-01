@@ -76,13 +76,13 @@ class Ticket(models.Model):
     priority = models.CharField(max_length=1, choices=Priority.choices, default=Priority.MEDIUM)
     priority_scale = models.CharField(max_length=2, choices=PriorityScale.choices, default=PriorityScale.ONE)
     ticket_type = models.CharField(max_length=2, choices=TicketType.choices, default=TicketType.FEATURE)
-    deleted = models.CharField(max_length=1, choices=Deleted.choices, default=Deleted.YES) # we will keep the user deleted tickets as well.
+    deleted = models.CharField(max_length=1, choices=Deleted.choices, default=Deleted.NO) # we will keep the user deleted tickets as well.
     segment = models.ForeignKey(segment_models.Segment, related_name='ticket_segment', on_delete=models.SET_NULL, null=True, blank=True) # segment is a sub part of the project. this field represents that this ticket belongs to which segment.
     assigned_by = models.ManyToManyField(User, related_name='ticket_assigned_by', blank=True) # anybody can assign task to anybody if they have proper permissions.
     assigned_to = models.ManyToManyField(User, related_name='ticket_assigned_to', blank=True) # anybody can get ticket assigned. if they are not present in database, an invitation has to be sent to their company mail.
     members = models.ManyToManyField(User, related_name='ticket_members', blank=True) # represent all members belongs to this ticket. Note that we exclude the members of sub and super tickets.
     tags = models.ManyToManyField(tag_models.Tag, related_name='ticket_tags', blank=True) # tags might be skills, teams, project names etc.., Basically what the user want to categorize, for the search purpose.
-    stages = models.ForeignKey(stage_models.Stage, related_name='ticket_stages', on_delete=models.SET_NULL, null=True, blank=True) # at which stage the ticket is in. For ex: Newly Created, Assigned, Blocked or On Hold, In progress, Review, Approval, Completed, Closed, Reopened and Canceled.
+    stages = models.ForeignKey(stage_models.Stage, related_name='ticket_stages', on_delete=models.SET_NULL, null=True, blank=True) # at which stage the ticket is in. For ex: Newly Created, Assigned, Blocked or On Hold, In progress, Testing, Review, Approval, Completed, Closed, Reopened and Canceled.
     history = HistoricalRecords() # this field will store all the updations done to this model so far.
     company_ticket_counter = models.PositiveIntegerField(default=1) # this is the number of tickets used for a company. This is the actual ticket id. This is unique for each company per each ticket. Two companies can have the same ticket number.
     created_by = models.ForeignKey(User, related_name='ticket_created_by', on_delete=models.SET_NULL, null=True, blank=True)
@@ -108,3 +108,34 @@ class Ticket(models.Model):
     def __str__(self):
         return f"#{self.company_ticket_counter}"
     
+
+# updated_by is not required for this model because on who creates only able to update.
+class Post(models.Model):
+    class Deleted(models.TextChoices):
+        YES = '1', _("This post was deleted by user.")
+        NO = '2', _("This post was not deleted by user.")
+        
+    ticket = models.ForeignKey(Ticket, related_name='post_ticket', on_delete=models.CASCADE, null=True, blank=True)
+    content = models.TextField() # this is the actual field that will store the data. On React Js side, we have to use the CKEditor. We don't need to use the CKEditor in django. The text field is enough to save the CKEditor RichTextData from React JS.
+    history = HistoricalRecords() # this field will store all the updations done to this model so far.
+    deleted = models.CharField(max_length=1, choices=Deleted.choices, default=Deleted.NO) # we will keep the user deleted tickets as well.
+    created_by = models.ForeignKey(User, related_name='post_created_by', on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'Post by @{self.created_by.username} on Ticket #{self.ticket.id}'
+    
+
+class SavedPost(models.Model):
+    class Saved(models.TextChoices):
+        YES = '1', _("This post was saved by user.")
+        NO = '2', _("This post was not saved by user.")
+    post = models.ForeignKey(Post, related_name='saved_posts', on_delete=models.SET_NULL, null=True, blank=True)
+    saved_by = models.ForeignKey(User, related_name='post_saved_by', on_delete=models.SET_NULL, null=True, blank=True)
+    saved = models.CharField(max_length=1, choices=Saved.choices, default=Saved.NO) # we will keep the user saved and unsaved posts as well.
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'post - {self.post.id} saved by @{self.created_by.username}'
