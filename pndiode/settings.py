@@ -49,14 +49,14 @@ INSTALLED_APPS = [
     
     # created apps
     'accounts',
-    'sprints',
-    'milestones',
     'tags',
     'phases',
     'stages',
     'projects',
     'segments',
     'tickets',
+    'sprints',
+    'milestones',
     
 ]
 
