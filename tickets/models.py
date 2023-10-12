@@ -82,7 +82,7 @@ class Ticket(models.Model):
     assigned_to = models.ManyToManyField(User, related_name='ticket_assigned_to', blank=True) # anybody can get ticket assigned. if they are not present in database, an invitation has to be sent to their company mail.
     members = models.ManyToManyField(User, related_name='ticket_members', blank=True) # represent all members belongs to this ticket. Note that we exclude the members of sub and super tickets.
     tags = models.ManyToManyField(tag_models.Tag, related_name='ticket_tags', blank=True) # tags might be skills, teams, project names etc.., Basically what the user want to categorize, for the search purpose.
-    stages = models.ForeignKey(stage_models.Stage, related_name='ticket_stages', on_delete=models.SET_NULL, null=True, blank=True) # at which stage the ticket is in. For ex: Newly Created, Assigned, Blocked or On Hold, In progress, Testing, Review, Approval, Completed, Closed, Reopened and Canceled.
+    stages = models.ManyToManyField(stage_models.Stage, through='TicketStage') # at which stage the ticket is in. For ex: Newly Created, Assigned, Blocked or On Hold, In progress, Testing, Review, Approval, Completed, Closed, Reopened and Canceled.
     history = HistoricalRecords() # this field will store all the updations done to this model so far.
     company_ticket_counter = models.PositiveIntegerField(default=1) # this is the number of tickets used for a company. This is the actual ticket id. This is unique for each company per each ticket. Two companies can have the same ticket number.
     created_by = models.ForeignKey(User, related_name='ticket_created_by', on_delete=models.SET_NULL, null=True, blank=True)
@@ -108,6 +108,10 @@ class Ticket(models.Model):
     def __str__(self):
         return f"#{self.company_ticket_counter}"
     
+class TicketStage(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    stage = models.ForeignKey(stage_models.Stage, on_delete=models.CASCADE)
+
 
 # updated_by is not required for this model because on who creates only able to update.
 class Post(models.Model):
