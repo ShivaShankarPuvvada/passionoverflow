@@ -16,7 +16,7 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=300, blank=True, null=True)
     username = models.CharField(max_length=30, blank=True, null=True, unique=True)
     email = models.EmailField(unique=True)
-    phone_number = PhoneNumberField(null=True, blank=False, unique=True, default="+1234567890")
+    phone_number = models.CharField(max_length=30, blank=True, null=True, unique=True)
     gender = models.CharField(max_length=6, choices=GENDER_IN_CHOICES, null=True, blank=True)
     country = models.CharField(max_length=120, null=True, blank=True)
     
