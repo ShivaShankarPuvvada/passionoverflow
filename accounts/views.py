@@ -14,6 +14,8 @@ from django.db.models import Q
 
 from .serializers import ObtainTokenSerializer, UserResponseSerializer, RefreshTokenSerializer, UserCreationSerializer
 from .authentication import JWTAuthentication
+from rest_framework.renderers import TemplateHTMLRenderer
+
 
 User = get_user_model()
 
@@ -224,6 +226,8 @@ class ProfileView(APIView):
 
 
 class RegistrationView(APIView):
+    renderer_classes = [TemplateHTMLRenderer,]
+    template_name = "accounts/signup.html"
     permission_classes = (permissions.AllowAny,)
     
     def get(self, request):
@@ -277,11 +281,11 @@ class LoginView(APIView):
 
     def post(self, request):
         try:
-            username = request.data.get('username')
-            password = request.data.get('password')
+            data=request.data
+            must_keys=["username", "password"]
+            if bool(set(must_keys)-set(data.keys())):
+                return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
 
-            if not username or not password:
-                return Response({'error': "Please provide both your username and password to proceed. These fields are required for authentication."}, status=status.HTTP_400_BAD_REQUEST)
 
             obtain_token_instance = ObtainTokenView()
             response_from_obtain_token = obtain_token_instance.post(request)

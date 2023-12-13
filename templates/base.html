@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Favicon Start -->
+    <link rel="icon" href="{% static '/images/logos/favicon/favicon.ico' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static '/images/logos/favicon/favicon.ico' %}" type="image/x-icon">
+
+    <!-- Standard Favicon Sizes -->
+    <link rel="icon" href="{% static '/images/logos/favicon/favicon-16x16.png' %}" sizes="16x16" type="image/png">
+    <link rel="icon" href="{% static '/images/logos/favicon/favicon-32x32.png' %}" sizes="32x32" type="image/png">
+    <link rel="icon" href="{% static '/images/logos/favicon/favicon-48x48.ico' %}" sizes="48x48" type="image/png">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static '/images/logos/favicon/apple-touch-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static '/images/logos/favicon/apple-touch-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static '/images/logos/favicon/apple-touch-icon-180x180.png' %}">
+    <!-- Add more sizes as needed -->
+
+    <!-- Windows Tiles -->
+    <meta name="msapplication-TileImage" content="{% static '/images/logos/favicon/favicon-144x144.png' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+
+    <!-- Android Chrome Icon -->
+    <link rel="icon" sizes="192x192" href="{% static '/images/logos/favicon/android-chrome-192x192.png' %}">
+    <link rel="icon" sizes="512x512" href="{% static '/images/logos/favicon/android-chrome-512x512.png' %}">
+    <link rel="icon" sizes="423x527" href="{% static '/images/logos/favicon/favicon-423x527.png' %}">
+
+    <!-- Safari Pinned Tab -->
+    <link rel="mask-icon" href="{% static '/images/logos/favicon/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Favicon End -->
+
+    <!-- Bootstrap Start -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- Bootstrap End -->
+    
+    <link rel="stylesheet" href="{% static '/css/fonts.css' %}">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    {% block headers %}{% endblock %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block footers %}{% endblock %}
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
