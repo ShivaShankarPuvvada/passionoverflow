@@ -11,4 +11,5 @@ urlpatterns = [
     path("verify_company_details_before_registering/", views.CustomerCompanyVerificationView.as_view(), name="verify_company_details_before_registering"),
     path("verify_user_details_before_registering/", views.UserDetailsVerificationView.as_view(), name="verify_user_details_before_registering"),
     path("profile/", views.ProfileView.as_view(), name="profile"),
+    # path("give_contributor_access_to_collaborators/", views.GiveContributorAccessToCollaborators.as_view(), name="give_contributor_access_to_collaborators")
 ]
