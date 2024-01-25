@@ -3,6 +3,12 @@ from django.urls import path
 from .import views
 app_name = "accounts"
 
+"""
+We used custom JWT creation decoding encoding generating access_token and refresh_tokens
+Frontend will handle those tokens
+There are mainly two types of users. Contributors (has all the access) if added to the project, Collaborator has only tickets and posts wide access.
+"""
+
 urlpatterns = [
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
