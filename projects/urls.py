@@ -3,20 +3,36 @@ from . import views
 
 app_name = "projects"
 
-urlpatterns = [
-    # path('create_project/', views.CreateProjectView.as_view(), name="create_project"),
-    # path('project/', views.ProjectView.as_view(), name="project"),
-]
 
+"""
+list of all possible tasks for projects
 
-# create project
+# create project (by default project status = 1)
 # delete project
 # update project
-# get single project
-# get all projects
-# get only specific projects
-# add persons to the project
-# remove persons to the project
-# add phase to the project (have to create phase apis, crud operations for phases)
-# remove/detach phase to the project
-# show phase history for a particular project (added this phase, deleted this phase on this date, added this phase on a particular date, current phase)
+# get project
+# get all or specific projects
+# close projects (change status to 0)
+# open projects (change status to 1)
+# add employees to the project (this will be covered in CRUD operations)
+# remove employees to the project (this will be covered in CRUD operations)
+# remove admim members to the project (this will be covered in CRUD operations)
+# add/change phase to the project (this will be covered in CRUD operations)
+# add admin members to the project (this will be covered in CRUD operations)
+# project phase CRUD operations will be covered in Project model CRUD operations.
+# Project assignment CRUD operations will be covered in Project model CRUD operations.
+# show assignment history for a project (get all the rows for this project and display them in order)
+# show phase history for a project (added this phase, deleted this phase on this date, added this phase on a particular date, current phase)
+# show project model history if possible
+"""
+
+urlpatterns = [
+    # path('create_project/', views.CreateProjectView.as_view(), name="create_project"),
+    # path('project/<int:project_id>/', views.ProjectView.as_view(), name="project"),
+    # path('get_projects/<int:project_ids>/', views.GetProjectsView.as_view(), name="get_projects"),
+    # path('open_projects/<int:project_ids>/', views.OpenProjectsView.as_view(), name="open_projects"),
+    # path('close_projects/<int:project_ids>/', views.CloseProjectsView.as_view(), name="close_projects"),
+    # path('project_phase_history/<int:project_id>/', views.ProjectPhaseHistoryView.as_view(), name="project_phase_history"),
+    # path('project_assignment_history/<int:project_id>/', views.ProjectAssignmentHistoryView.as_view(), name="project_assignment_history"),
+    # path('project_history/<int:project_id>/', views.ProjectHistoryView.as_view(), name="project_history"),
+]

@@ -7,6 +7,12 @@ User = get_user_model()
 
 # Create your models here.
 class Phase(models.Model):
+    """
+    Phase can be anything. It may be alpha phase, beta phase, ui/ux phase, developement phase, production phase and etc.
+    Phase title is unique.
+    For now, for simplicity, we are keeping the phases for project wide. Single project associates with single phase.
+    If, in future, requires, we will add the phases to segment level and even ticket level.
+    """
     title = models.CharField(max_length=100, unique=True)
     status = models.CharField(max_length=2, default="1")
     company = models.ForeignKey(account_models.CustomerCompanyDetails, on_delete=models.PROTECT)
