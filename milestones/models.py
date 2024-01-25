@@ -27,6 +27,8 @@ class Milestone(models.Model):
     sprints = models.ManyToManyField(sprint_models.Sprint, blank=True)
     project = models.ForeignKey(project_models.Project, on_delete=models.CASCADE, related_name='project_milestones', null=True, blank=True) # project specific milestone
     segment = models.ForeignKey(segment_models.Segment, on_delete=models.CASCADE, related_name='segment_milestones', null=True, blank=True) # segment specific milestone
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
+    history = HistoricalRecords()
     created_by = models.ForeignKey(User, related_name='milestone_created_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='milestone_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)

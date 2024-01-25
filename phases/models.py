@@ -17,6 +17,7 @@ class Phase(models.Model):
     status = models.CharField(max_length=2, default="1")
     company = models.ForeignKey(account_models.CustomerCompanyDetails, on_delete=models.PROTECT)
     history = HistoricalRecords()
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='phase_created_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='phase_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)

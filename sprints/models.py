@@ -18,6 +18,7 @@ class Sprint(models.Model):
     status = models.CharField(max_length=2, default="1")
     company = models.ForeignKey(account_models.CustomerCompanyDetails, on_delete=models.PROTECT)
     history = HistoricalRecords()
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
     start_date = models.DateField() # The date when work on the sprint started.
     end_date = models.DateField() # The date when the sprint was completed or resolved.
     tickets = models.ManyToManyField(ticket_models.Ticket, through='SprintTicket')

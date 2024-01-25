@@ -9,19 +9,21 @@ User = get_user_model()
 # Create your models here.
 class Project(models.Model):
     """
-    By default project status is 1. That means project is currently open and running.
+    By default project status is 1. That means project is currently open and running. Otherwise closed project.
+    Project title is unique.
     """
     title = models.CharField(max_length=200, unique=True)
     description = models.TextField(blank=True, null=True)
     start_date = models.DateField()
     end_date = models.DateField()
-    status = models.CharField(max_length=2, default="1")
+    status = models.CharField(max_length=2, default="1") # opened or closed project
     company = models.ForeignKey(account_models.CustomerCompanyDetails, on_delete=models.PROTECT)
     assigned_by = models.ManyToManyField(User, through='ProjectAssignment', related_name='project_assigned_by', through_fields=('project', 'assigned_by'), blank=True)
     assigned_to = models.ManyToManyField(User, through='ProjectAssignment', related_name='project_assigned_to', through_fields=('project', 'assigned_to'), blank=True)
     members = models.ManyToManyField(User, related_name='project_members', blank=True)
     phases = models.ManyToManyField(phase_models.Phase, through='ProjectPhase')
     history = HistoricalRecords()
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='project_created_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='project_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -33,7 +35,6 @@ class Project(models.Model):
 class ProjectPhase(models.Model):
     """
     This model ProjectPhase will contain all the possible Project-Phase saved relations. 
-    Project title is unique.
     There might be mutiple records with the same phase.
     There might be multiple records with same status.
     alpha phase with active status
@@ -49,7 +50,8 @@ class ProjectPhase(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     phase = models.ForeignKey(phase_models.Phase, on_delete=models.CASCADE)
     history = HistoricalRecords()
-    status = models.CharField(max_length=2, default="1")
+    status = models.CharField(max_length=2, default="1") # active phase connection, deactivated phase connection
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='projectphase_created_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='projectphase_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -85,6 +87,7 @@ class ProjectAssignment(models.Model):
     assigned_to = models.ForeignKey(User, related_name='assignments_received', on_delete=models.SET_NULL, null=True, blank=True)
     assigned_at = models.DateTimeField(auto_now_add=True)
     history = HistoricalRecords()
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='assignment_created_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='assignment_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
