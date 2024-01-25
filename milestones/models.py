@@ -17,7 +17,7 @@ User = get_user_model()
 # Create your models here.
 class Milestone(models.Model):
     title = models.CharField(max_length=100, unique=True)
-    status = models.CharField(max_length=2)
+    status = models.CharField(max_length=2, default="1")
     company = models.ForeignKey(account_models.CustomerCompanyDetails, on_delete=models.PROTECT)
     history = HistoricalRecords()
     completion_date = models.DateField() # A date milestone is achieved.
@@ -29,8 +29,8 @@ class Milestone(models.Model):
     segment = models.ForeignKey(segment_models.Segment, on_delete=models.CASCADE, related_name='segment_milestones', null=True, blank=True) # segment specific milestone
     created_by = models.ForeignKey(User, related_name='milestone_created_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='milestone_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
     def __str__(self):
         return self.title

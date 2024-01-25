@@ -33,4 +33,4 @@ class CustomerCompanyDetails(models.Model):
     company_sub_domain_name = models.CharField(max_length=100, blank=True, null=True, unique=True)
     
     def __str__(self):
-        return self.company_name 
+        return self.company_name

@@ -4,15 +4,76 @@
 {% block title %}Sign up{% endblock %}
 
 {% block stylesheets %}
+
 <link rel="stylesheet" href="{% static 'accounts/css/signup.css' %}">
 {% endblock %}
 
 {% block headers %}{% endblock %}
 
 {% block content %}
-    <h1>Sign up page</h1>
-    <p>This is the registration page content.</p>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Content for the left column goes here -->
+            <h2>Left Column</h2>
+            <p>This is the left column content.</p>
+        </div>
+
+        <div class="col-md-6">
+            <!-- Content for the right column goes here -->
+    
+            
+    <!-- this is for Bootstrap form https://codepen.io/lilianab/pen/PGNOOm -->
+      <form name="signup" action="" method="POST">
+        
+        <h1>Sign Up</h1>
+        
+        <fieldset>
+          
+          <!--<legend><span class="number">1</span>Your basic info</legend>-->
+          
+          <label for="fullname">Full name</label>
+          <input type="text" id="fullname" name="full_name" placeholder="George Wilson">
+
+          <label for="username">Username</label>
+          <input type="text" id="username" name="user_name" placeholder="georgeteamleader">
+          
+          <label for="mail">Email</label>
+          <input type="email" id="mail" name="user_email" placeholder="george@johndoe.com">
+          
+          <label for="password">Password</label>
+          <input type="password" id="password" name="user_password" placeholder="Secure Password">
+
+          <label for="companyname">Company name</label>
+          <input type="text" id="companyname" name="user_company_name" placeholder="John Doe Co.">
+
+          <label for="phone">Phone</label>
+          <input type="text" id="phone" name="user_phone" placeholder="+1 (999) 888 9999">
+
+          <label for="phone">Passionoverflow URL</label>
+          <div>
+            <div class="fields">
+                <div class="pull-left compName"><input style="margin-bottom:5px;" type="text" class="tfield required noSpecialChars error" placeholder="johndoe" name="company_url" id="company_url" minlength="3" maxlength="250" title="Min 3 letters, numbers, hyphens, underscores" value="" aria-required="true" aria-invalid="true"></div>
+                <div class="pull-left url">.passionoverflow.com</div>
+                {% comment %} <label id="company_url-error" class="error" for="company_url">This field is required.</label> {% endcomment %}
+            </div>
+          </div>
+          <div style="float:left">This'll be a unique PassionOverflow web address for your company to login.</div>
+
+          
+        </fieldset>
+          
+        <button type="submit">Sign Up</button>
+        
+      </form>
+      
+
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block footers %}{% endblock %}
-{% block scripts %}{% endblock %}
+{% block scripts %}
+<script src="{% static 'accounts/js/signup.js' %}"></script>
+{% endblock %}
