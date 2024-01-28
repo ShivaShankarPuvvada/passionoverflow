@@ -27,9 +27,9 @@ list of all possible tasks for segments
 urlpatterns = [
     # path('create_segment/', views.CreateSegmentView.as_view(), name="create_segment"),
     # path('segment/<int:segment_id>/', views.SegmentView.as_view(), name="segment"),
-    # path('get_segments/<int:segment_ids>/', views.GetSegmentsView.as_view(), name="get_segments"),
-    # path('activate_segments/<int:segment_ids>/', views.ActivateSegmentsView.as_view(), name="activate_segments"),
-    # path('deactivate_segments/<int:segment_ids>/', views.DeActivateSegmentsView.as_view(), name="deactivate_segments"),
+    # path('get_segments/<str:segment_ids>/', views.GetSegmentsView.as_view(), name="get_segments"),
+    # path('activate_segments/<str:segment_ids>/', views.ActivateSegmentsView.as_view(), name="activate_segments"),
+    # path('deactivate_segments/<str:segment_ids>/', views.DeActivateSegmentsView.as_view(), name="deactivate_segments"),
     # path('segment_assignment_history/<int:segment_id>/', views.SegmentAssignmentHistoryView.as_view(), name="segment_assignment_history"),
     # path('segment_history/<int:segment_id>/', views.SegmentHistoryView.as_view(), name="segment_history"),
 ]

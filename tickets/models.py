@@ -186,6 +186,7 @@ class SavedPost(models.Model):
     post = models.ForeignKey(Post, related_name='saved_posts', on_delete=models.SET_NULL, null=True, blank=True)
     saved_by = models.ForeignKey(User, related_name='post_saved_by', on_delete=models.SET_NULL, null=True, blank=True)
     saved = models.CharField(max_length=1, choices=Saved.choices, default=Saved.NO) # we will keep the user saved and unsaved posts as well.
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 

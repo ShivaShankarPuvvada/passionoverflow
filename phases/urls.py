@@ -21,9 +21,9 @@ show phase history for a particular phase if possible
 urlpatterns = [
     # path('create_phase/', views.CreatePhaseView.as_view(), name="create_phase"),
     # path('phase/<int:phase_id>/', views.PhaseView.as_view(), name="phase"),
-    # path('get_phases/<int:phase_id>/', views.GetPhasesView.as_view(), name="get_phases"),
-    # path('activate_phases/<int:phase_id>/', views.ActivatePhases.as_view(), name="activate_phases"),
-    # path('deactivate_phases/<int:phase_id>/', views.DeActivatePhases.as_view(), name="deactivate_phases"),
+    # path('get_phases/<str:phase_ids>/', views.GetPhasesView.as_view(), name="get_phases"),
+    # path('activate_phases/<str:phase_ids>/', views.ActivatePhases.as_view(), name="activate_phases"),
+    # path('deactivate_phases/<str:phase_ids>/', views.DeActivatePhases.as_view(), name="deactivate_phases"),
     # path('get_active_phases/', views.GetActivePhasesView.as_view(), name="get_active_phases"),
     # path('get_deactive_phases/', views.GetDeActivePhasesView.as_view(), name="get_Deactive_phases"),
     # path('get_phase_history/<int:phase_id>/', views.GetPhaseHistoryView.as_view(), name="get_phase_history"),

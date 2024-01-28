@@ -29,9 +29,9 @@ list of all possible tasks for projects
 urlpatterns = [
     # path('create_project/', views.CreateProjectView.as_view(), name="create_project"),
     # path('project/<int:project_id>/', views.ProjectView.as_view(), name="project"),
-    # path('get_projects/<int:project_ids>/', views.GetProjectsView.as_view(), name="get_projects"),
-    # path('open_projects/<int:project_ids>/', views.OpenProjectsView.as_view(), name="open_projects"),
-    # path('close_projects/<int:project_ids>/', views.CloseProjectsView.as_view(), name="close_projects"),
+    # path('get_projects/<str:project_ids>/', views.GetProjectsView.as_view(), name="get_projects"),
+    # path('open_projects/<str:project_ids>/', views.OpenProjectsView.as_view(), name="open_projects"),
+    # path('close_projects/<str:project_ids>/', views.CloseProjectsView.as_view(), name="close_projects"),
     # path('project_phase_history/<int:project_id>/', views.ProjectPhaseHistoryView.as_view(), name="project_phase_history"),
     # path('project_assignment_history/<int:project_id>/', views.ProjectAssignmentHistoryView.as_view(), name="project_assignment_history"),
     # path('project_history/<int:project_id>/', views.ProjectHistoryView.as_view(), name="project_history"),
