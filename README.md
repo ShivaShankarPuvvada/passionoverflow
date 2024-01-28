@@ -42,3 +42,7 @@ Title: Need to add Facebook like functionality in this segment
 Description:
 Completion date:
 Assignees: Sam, Adam, Tom
+
+## NOTES
+
+- Even if customer deletes anything, we will not delete in our database. We will have deleted field in everymodel and make it true. We will keep the records until a year (decide this time period later).
