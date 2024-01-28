@@ -8,7 +8,8 @@ User = get_user_model()
 # Create your models here.
 class Stage(models.Model):
     title = models.CharField(max_length=100, unique=True)
-    status = models.CharField(max_length=2, default="1")
+    status = models.CharField(max_length=2, default="1") # to active and deactive stages
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
     company = models.ForeignKey(account_models.CustomerCompanyDetails, on_delete=models.PROTECT)
     history = HistoricalRecords()
     created_by = models.ForeignKey(User, related_name='stage_created_by', on_delete=models.SET_NULL, null=True, blank=True)
