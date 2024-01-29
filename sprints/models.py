@@ -12,6 +12,14 @@ from segments import models as segment_models
 
 User = get_user_model()
 
+"""
+Rules for Sprints:
+1. If Projects added to sprints, the phase which is associated with projects should be autofilled.
+2. If Phase added to sprints, then we should create sprint object with only phase.
+3. If Segments added to sprints, the projects and phases should be autofilled.
+4. If Tickets added to sprints, the we should auto fill the segment, project and phase.
+"""
+
 # Create your models here.
 class Sprint(models.Model):
     title = models.CharField(max_length=100, unique=True)

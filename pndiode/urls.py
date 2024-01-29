@@ -21,5 +21,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('accounts/', include('accounts.urls')),
+    path('phases/', include('phases.urls')),
     path('projects/', include('projects.urls')),
+    path('segments/', include('segments.urls')),
+    path('stages/', include('stages.urls')),
+    path('tags/', include('tags.urls')),
+    path('tickets/', include('tickets.urls')),
+    path('sprints/', include('sprints.urls')),
+    path('milestones/', include('milestones.urls')),
 ]
