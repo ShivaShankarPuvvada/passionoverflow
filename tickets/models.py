@@ -180,6 +180,7 @@ class Post(models.Model):
     If we click on ticket, we can see the list of posts.
     User who created the ticket can mark the post as accepted solution.
     There should be an option to show solution at the top, if one exists.
+    User can reply to any post. The reply will be a other post.
     """
     class Deleted(models.TextChoices):
         YES = '1', _("This post was deleted by user.")
@@ -190,6 +191,7 @@ class Post(models.Model):
     upvotes = models.IntegerField(default=0) # increase the count if upvoted.
     downvotes = models.IntegerField(default=0) # increase the count if downvoted.
     accepted_solution = models.BooleanField(default=False)  # creator of the ticket can check it as accepted solution.
+    parent_post = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE) # new post id will be 2 and this field id is 1. User can select any post and create reply as seperate post.
     history = HistoricalRecords() # this field will store all the updations done to this model so far.
     deleted = models.CharField(max_length=1, choices=Deleted.choices, default=Deleted.NO) # we will keep the user deleted tickets as well.
     created_by = models.ForeignKey(User, related_name='post_created_by', on_delete=models.SET_NULL, null=True, blank=True)
