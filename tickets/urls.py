@@ -51,6 +51,8 @@ urlpatterns = [
     # path('deactivate_posts/<str:post_ids>/', views.DeActivatePosts.as_view(), name="deactivate_posts"),
     # path('get_active_posts/', views.GetActivePostsView.as_view(), name="get_active_posts"),
     # path('get_deactive_posts/', views.GetDeActivePostsView.as_view(), name="get_Deactive_posts"),
+    # path('upvote_post/<int:post_id>/', views.UpVotePostView.as_view(), name='upvote_post'),
+    # path('upvote_post/<int:post_id>/', views.DownVotePostView.as_view(), name='downvote_post'),
     # path('get_post_history/<int:post_id>/', views.GetPostHistoryView.as_view(), name="get_post_history"),
     
     

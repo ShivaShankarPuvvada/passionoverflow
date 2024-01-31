@@ -12,6 +12,15 @@ User = get_user_model()
 
 # Create your models here.
 class Ticket(models.Model):
+    """
+    User can create the ticket in a stage.
+    The ticket will be under a particular segment.
+    The segment will be under particular project.
+    The ticket priority is two types. 
+    Priority can be selected segment wise. 
+    The one who created the segment should select priority. 
+    This should not be changed later.
+    """
     class Status(models.TextChoices):
         ACTIVE = "1", _("Active tickets represent tickets or issues that are currently being worked on, are in progress, or are actively being addressed by team members.")
         INACTIVE = "2", _("Inactive tickets represent tickets or issues that are not currently being worked on, have been completed, or have been put on hold for various reasons like, a ticket has been postponed, deprioritized, or is awaiting further action.")
@@ -157,18 +166,26 @@ class TicketAssignment(models.Model):
      
 
 class TicketStage(models.Model):
+    """
+    User can create multiple stages. A ticket can be at only one stage at a time. Stages are vertical boxes at kanban board.
+    """
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
     stage = models.ForeignKey(stage_models.Stage, on_delete=models.CASCADE)
 
 
 # updated_by is not required for this model because on who creates only able to update.
 class Post(models.Model):
+    """
+    User can post on ticket detail page. If we click on ticket, we can see the list of posts.
+    """
     class Deleted(models.TextChoices):
         YES = '1', _("This post was deleted by user.")
         NO = '2', _("This post was not deleted by user.")
         
     ticket = models.ForeignKey(Ticket, related_name='post_ticket', on_delete=models.CASCADE, null=True, blank=True)
     content = models.TextField() # this is the actual field that will store the data. On React Js side, we have to use the CKEditor. We don't need to use the CKEditor in django. The text field is enough to save the CKEditor RichTextData from React JS.
+    upvotes = models.IntegerField(default=0) # increase the count if upvoted.
+    downvotes = models.IntegerField(default=0) # increase the count if downvoted.
     history = HistoricalRecords() # this field will store all the updations done to this model so far.
     deleted = models.CharField(max_length=1, choices=Deleted.choices, default=Deleted.NO) # we will keep the user deleted tickets as well.
     created_by = models.ForeignKey(User, related_name='post_created_by', on_delete=models.SET_NULL, null=True, blank=True)
@@ -180,15 +197,60 @@ class Post(models.Model):
     
 
 class SavedPost(models.Model):
+    """
+    User can save the post. This is for saving his favourite posts. He can come and check his saved posts later.
+    """
     class Saved(models.TextChoices):
         YES = '1', _("This post was saved by user.")
         NO = '2', _("This post was not saved by user.")
     post = models.ForeignKey(Post, related_name='saved_posts', on_delete=models.SET_NULL, null=True, blank=True)
     saved_by = models.ForeignKey(User, related_name='post_saved_by', on_delete=models.SET_NULL, null=True, blank=True)
-    saved = models.CharField(max_length=1, choices=Saved.choices, default=Saved.NO) # we will keep the user saved and unsaved posts as well.
+    saved = models.CharField(max_length=1, choices=Saved.choices, default=Saved.YES) # we will keep the user saved and unsaved posts as well.
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
-        return f'post - {self.post.id} saved by @{self.created_by.username}'
+        return f'post - {self.post.id} saved by @{self.saved_by.username}'
+
+
+
+class PinnedPost(models.Model):
+    """
+    User can pin the post.
+    All the pinned posts will be shown in top in an order. 
+    At the bottom of that, normal posts will be shown in order.
+    When user un pin the post, we need to change the 'saved' field to Pinned.NO
+    While filtering the Pinned posts we need to inclued saved = YES in the filter.
+    """
+    class Pinned(models.TextChoices):
+        YES = '1', _("This post was pinned by user.")
+        NO = '2', _("This post was not pinned by user.")
+    post = models.ForeignKey(Post, related_name='pinned_posts', on_delete=models.SET_NULL, null=True, blank=True)
+    pinned_by = models.ForeignKey(User, related_name='post_pinned_by', on_delete=models.SET_NULL, null=True, blank=True)
+    saved = models.CharField(max_length=1, choices=Pinned.choices, default=Pinned.YES) # we will keep the user pinned and unpinned posts as well. i.e, if he un pins, we will change this to NO.
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def __str__(self):
+        return f'post - {self.post.id} pinned by @{self.saved_by.username}'
+
+
+
+class Vote(models.Model):
+    """
+    User can upvote or downvote the post.
+    If user was deleted, his opinion won't delete, he already voted to post. Eventhough he left the company the vote matters.
+    If we delete the user, we don't delete his vote.
+    If post is deleted, then we delete the vote.
+    """
+    voted_by = models.ForeignKey(User, related_name='post_voted_by', on_delete=models.SET_NULL, null=True, blank=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    vote_type = models.IntegerField(choices=[(1, 'Upvote'), (-1, 'Downvote')])
+    deleted = models.BooleanField(default=False) # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    
+    def __str__(self):
+        return f'post - {self.post.id} voted by @{self.voted_by.username}'
