@@ -176,7 +176,10 @@ class TicketStage(models.Model):
 # updated_by is not required for this model because on who creates only able to update.
 class Post(models.Model):
     """
-    User can post on ticket detail page. If we click on ticket, we can see the list of posts.
+    User can post on ticket detail page. 
+    If we click on ticket, we can see the list of posts.
+    User who created the ticket can mark the post as accepted solution.
+    There should be an option to show solution at the top, if one exists.
     """
     class Deleted(models.TextChoices):
         YES = '1', _("This post was deleted by user.")
@@ -186,6 +189,7 @@ class Post(models.Model):
     content = models.TextField() # this is the actual field that will store the data. On React Js side, we have to use the CKEditor. We don't need to use the CKEditor in django. The text field is enough to save the CKEditor RichTextData from React JS.
     upvotes = models.IntegerField(default=0) # increase the count if upvoted.
     downvotes = models.IntegerField(default=0) # increase the count if downvoted.
+    accepted_solution = models.BooleanField(default=False)  # creator of the ticket can check it as accepted solution.
     history = HistoricalRecords() # this field will store all the updations done to this model so far.
     deleted = models.CharField(max_length=1, choices=Deleted.choices, default=Deleted.NO) # we will keep the user deleted tickets as well.
     created_by = models.ForeignKey(User, related_name='post_created_by', on_delete=models.SET_NULL, null=True, blank=True)
