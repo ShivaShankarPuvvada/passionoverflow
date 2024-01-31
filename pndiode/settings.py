@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'stages',
     'projects',
     'segments',
+    'invitations',
     'tickets',
     'sprints',
     'milestones',
