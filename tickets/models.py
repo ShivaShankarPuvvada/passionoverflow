@@ -10,6 +10,55 @@ from accounts import models as account_models
 
 User = get_user_model()
 
+
+"""
+    # Users can post the ideas as tickets. 
+    # These ideas can be reviewed by anyone who can access the ticket. 
+    # The calculation for the ideas will be done by adding their inputs.
+    
+    # add this field in the models for idea submission and calculation.
+    idea_calculation = models.TextField(blank=True, null=True)
+
+    # add these methods to the models for idea submission and calculation.
+    def calculate_idea(self):
+        # Consider factors for cost reduction
+        # You can customize this based on your project and business requirements
+
+        # Example: Calculate idea based on estimated cost savings
+        estimated_cost_savings = self.calculate_estimated_cost_savings()
+
+        # Example: Consider impact on productivity
+        productivity_impact = self.calculate_productivity_impact()
+
+        # Example: Consider time saved
+        time_saved = self.calculate_time_saved()
+
+        # Combine factors into an overall idea calculation
+        overall_idea_calculation = f"Estimated Cost Savings: {estimated_cost_savings}, Productivity Impact: {productivity_impact}, Time Saved: {time_saved}"
+
+        # Update the idea_calculation field
+        self.idea_calculation = overall_idea_calculation
+
+    def calculate_estimated_cost_savings(self):
+        # Your logic for estimating cost savings goes here
+        # For example, you might consider reduced resource costs, infrastructure savings, etc.
+        return "$100,000"  # Placeholder value, replace with your actual calculation
+
+    def calculate_productivity_impact(self):
+        # Your logic for estimating productivity impact goes here
+        # For example, you might consider improved efficiency, reduced errors, etc.
+        return "High"  # Placeholder value, replace with your actual calculation
+
+    def calculate_time_saved(self):
+        # Your logic for estimating time saved goes here
+        # For example, you might consider reduced development time, faster processes, etc.
+        return "2 weeks"  # Placeholder value, replace with your actual calculation
+
+    def save(self, *args, **kwargs):
+        self.calculate_idea()  # Call the calculate_idea method before saving
+        super().save(*args, **kwargs)
+
+"""
 # Create your models here.
 class Ticket(models.Model):
     """
