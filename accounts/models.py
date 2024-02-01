@@ -32,7 +32,7 @@ class CustomerCompanyDetails(models.Model):
     company_root_user = models.ForeignKey(User, related_name="company_root_user", on_delete=models.SET_NULL, null=True, blank=True)
     company_user = models.ForeignKey(User, related_name="company_user", on_delete=models.SET_NULL, null=True, blank=True)
     company_name = models.CharField(max_length=300, blank=False, null=False, unique=True)
-    company_sub_domain_name = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    company_sub_domain_name = models.CharField(max_length=1000, blank=True, null=True, unique=True)
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     history = HistoricalRecords()
     created_by = models.ForeignKey(User, related_name='company_created_by', on_delete=models.SET_NULL, null=True, blank=True)
