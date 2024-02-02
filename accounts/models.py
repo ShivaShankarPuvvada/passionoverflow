@@ -30,6 +30,40 @@ class User(AbstractUser):
 
 # Create your models here.
 class Company(models.Model):
+    """
+    If all the user accounts in a company deleted, the company will also be deleted.
+    We will make the deleted = True to every record. this is an another option to keep the records for atleast 6 months.
+    We need to notify the last user, if user account is going to be deleted, the company details will be deleted.
+    If a user tries to register using a company and if the company details were already there, he needs to contact us.
+    There are two ways: 1. he needs to contact us. we will add him manually. this is risky process because we need to change the database.
+    2. we need to give him option to add his account by bypassing the verification, only for him spcifically. In this way we don't touch the actual database.
+    3. If he chooses, he will be the main account from now on, then we will attach the old company record.
+    In any case, if users were not there for the company, it will have to be deleted definitely.
+    If, in case, if the customer want to re open the account in 3 months. With in 3 months, if anybody tries to create a new account
+    Deletion of Company:
+    
+    If all user accounts in a company are deleted, delete the company model after a certain period (e.g., 3 months).
+    User Notification:
+    Notify the last user when their account is going to be deleted, informing them that the associated company details will also be deleted.
+    Manual Addition of Users:
+    Provide the option for a user to contact you for manual addition if they want to re-open an account within 3 months.
+    User Registration with Existing Company:
+    If a user tries to register using a company, and the company details already exist, consider these options:
+    a. Bypass Verification for the User:
+    - Provide an option for the user to register by bypassing the usual verification, specifically for them.
+    b. User Becomes Main Account:
+    - If the user chooses, make them the main account, attaching the old company record.
+    Company Existence Check:
+    If someone attempts to register with a company within 3 months of the last user deletion, and the company already exists:
+    a. Encourage New Company Registration:
+    - Suggest the user register with a new company name.
+    Reopening Account After 3 Months:
+    If a customer wants to reopen the account after 3 months:
+    a. New Company Registration:
+    - Encourage them to register with a new company name.
+        
+    """
+    
     name = models.CharField(max_length=300, unique=True)
     sub_domain_name = models.CharField(max_length=1000, unique=True)
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records

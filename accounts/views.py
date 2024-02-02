@@ -12,7 +12,7 @@ from django_countries import countries
 from .models import GENDER_IN_CHOICES, CustomerCompanyDetails, Company
 from django.db.models import Q
 
-from .serializers import ObtainTokenSerializer, UserResponseSerializer, RefreshTokenSerializer, UserCreationSerializer
+from .serializers import ObtainTokenSerializer, UserResponseSerializer, RefreshTokenSerializer, UserCreationSerializer, CompanySerializer, CustomerCompanyDetailsSerializer
 from .authentication import JWTAuthentication
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.shortcuts import get_object_or_404
@@ -227,47 +227,71 @@ class ProfileView(APIView):
 
 
 class RegistrationView(APIView):
-    renderer_classes = [TemplateHTMLRenderer,]
-    template_name = "accounts/signup.html"
     permission_classes = (permissions.AllowAny,)
     
-    def get(self, request):
-        try:
-            # Retrieve country data from django-countries
-            country_data = [{'code': code, 'name': name} for code, name in list(countries)]
-            response_data = {
-                'countries': country_data,
-                'genders': GENDER_IN_CHOICES,
-            }
-            return Response(response_data, status=status.HTTP_200_OK)
-        except Exception as error:
-            error_message = "Internal Server Error: " + str(error) 
-            return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    """
+    get method is not needed. we don't need to send anything to frontend.
+    """
     def post(self, request):
         try:
-            data=request.data
-            must_keys=["username", "email", "phone_number", "gender", "country"]
-            if bool(set(must_keys)-set(data.keys())):
-                return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
+            data = request.data
+            must_keys = ["username", "email", "phone_number", "gender", "country", "company_name", "company_sub_domain_name"]
+            
+            if bool(set(must_keys) - set(data.keys())):
+                return Response({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = UserCreationSerializer(data)
-            if serializer.is_valid():
-                serializer.save()
-                # Assuming registration was successful, generate the login URL in Django format.
-                login_url = reverse("accounts:login")  # Replace "login" with the name of your login view
+            # Extract user data
+            user_data = {
+                "username": data["username"],
+                "email": data["email"],
+                "phone_number": data["phone_number"],
+                "gender": data["gender"],
+                "country": data["country"],
+            }
+
+            # Extract company data
+            company_data = {
+                "name": data["company_name"],
+                "sub_domain_name": data["company_sub_domain_name"],
+            }
+
+            # Create User and Company instances
+            user_serializer = UserCreationSerializer(data=user_data)
+            company_serializer = CompanySerializer(data=company_data)
+
+            # Validate and save User and Company instances
+            if user_serializer.is_valid() and company_serializer.is_valid():
+                user_instance = user_serializer.save()
+                company_instance = company_serializer.save(created_by=user_instance)
+
+                # Create CustomerCompanyDetails instance
+                customer_company_details_instance = CustomerCompanyDetails.objects.create(
+                    company=company_instance,
+                    company_root_user=user_instance,
+                    company_user=user_instance,
+                    created_by=user_instance
+                )
+
+                login_url = reverse("accounts:login")  # for first user we need to redirect him mail verification, and after, after login.
+                
+                # Serialize customer company details data
+                serialized_customer_company_details = CustomerCompanyDetailsSerializer(customer_company_details_instance).data
+
                 response_data = {
-                    'data': serializer.data,
-                    "message": "Registration successful. Please log in.",
+                    'user_data': user_serializer.data,
+                    'company_data': company_serializer.data,
+                    'customer_company_details_data': serialized_customer_company_details,  # Include serialized customer company details data
+                    "message": "Registration successful. Please Verify email.",
                     "login_url": login_url,
                 }
+
                 return Response(response_data, status=status.HTTP_201_CREATED)
             else:
-                return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': user_serializer.errors, 'company_error': company_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as error:
-            error_message = "Internal Server Error: " + str(error) 
-            return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            error_message = "Internal Server Error: " + str(error)
+            return Response({'Message': error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class LoginView(APIView):

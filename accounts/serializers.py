@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
+from . import models
+
 
 User = get_user_model()
 
@@ -47,3 +49,14 @@ class UserCreationSerializer(serializers.ModelSerializer):
         fields = ("username", "email", "phone_number", "gender", "country")
 
 
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Company
+        fields = '__all__'
+
+
+class CustomerCompanyDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CustomerCompanyDetails
+        fields = '__all__'
