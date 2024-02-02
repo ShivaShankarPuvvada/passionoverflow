@@ -17,7 +17,7 @@ class Project(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.CharField(max_length=2, default="1") # opened or closed project
-    company = models.ForeignKey(account_models.CustomerCompanyDetails, on_delete=models.PROTECT)
+    company = models.ForeignKey(account_models.Company, on_delete=models.PROTECT)
     assigned_by = models.ManyToManyField(User, through='ProjectAssignment', related_name='project_assigned_by', through_fields=('project', 'assigned_by'), blank=True)
     assigned_to = models.ManyToManyField(User, through='ProjectAssignment', related_name='project_assigned_to', through_fields=('project', 'assigned_to'), blank=True)
     members = models.ManyToManyField(User, related_name='project_members', blank=True)

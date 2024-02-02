@@ -24,7 +24,7 @@ Rules for Sprints:
 class Sprint(models.Model):
     title = models.CharField(max_length=100, unique=True)
     status = models.CharField(max_length=2, default="1")
-    company = models.ForeignKey(account_models.CustomerCompanyDetails, on_delete=models.PROTECT)
+    company = models.ForeignKey(account_models.Company, on_delete=models.PROTECT)
     history = HistoricalRecords()
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
     start_date = models.DateField() # The date when work on the sprint started.

@@ -26,13 +26,30 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username']
     def __str__(self):
         return self.username  # You can use username or email as the user's string representation
-    
+
+
+# Create your models here.
+class Company(models.Model):
+    name = models.CharField(max_length=300, unique=True)
+    sub_domain_name = models.CharField(max_length=1000, unique=True)
+    deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
+    history = HistoricalRecords()
+    created_by = models.ForeignKey(User, related_name='company_model_created_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ForeignKey(User, related_name='company_model_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.sub_domain_name}"
+
+    class Meta:
+        unique_together = ['name', 'sub_domain_name']
+
 
 class CustomerCompanyDetails(models.Model):
-    company_root_user = models.ForeignKey(User, related_name="company_root_user", on_delete=models.SET_NULL, null=True, blank=True)
-    company_user = models.ForeignKey(User, related_name="company_user", on_delete=models.SET_NULL, null=True, blank=True)
-    company_name = models.CharField(max_length=300, blank=False, null=False, unique=True)
-    company_sub_domain_name = models.CharField(max_length=1000, blank=True, null=True, unique=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company_root_user = models.ForeignKey(User, related_name="company_root_user", on_delete=models.SET_NULL, null=True, blank=True) # contributor
+    company_user = models.ForeignKey(User, related_name="company_user", on_delete=models.SET_NULL, null=True, blank=True) # collaborator
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     history = HistoricalRecords()
     created_by = models.ForeignKey(User, related_name='company_created_by', on_delete=models.SET_NULL, null=True, blank=True)
@@ -41,4 +58,8 @@ class CustomerCompanyDetails(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
     def __str__(self):
-        return self.company_name
+        current_user = 'Collaborator'
+        if self.company_root_user != None:
+            current_user = 'Contributor'
+        return_string = current_user + 'for' + self.company.name + 'and sub domain is ' + self.company.sub_domain_name
+        return return_string

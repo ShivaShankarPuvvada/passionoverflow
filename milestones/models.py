@@ -59,7 +59,7 @@ It's important to customize milestone models based on the specific needs and cha
 class Milestone(models.Model):
     title = models.CharField(max_length=100, unique=True)
     status = models.CharField(max_length=2, default="1")
-    company = models.ForeignKey(account_models.CustomerCompanyDetails, on_delete=models.PROTECT)
+    company = models.ForeignKey(account_models.Company, on_delete=models.PROTECT)
     completion_date = models.DateField() # A date milestone is achieved.
     phases = models.ManyToManyField(phase_models.Phase, blank=True)
     tickets = models.ManyToManyField(ticket_models.Ticket, blank=True)

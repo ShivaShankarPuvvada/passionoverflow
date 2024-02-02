@@ -161,9 +161,9 @@ class Ticket(models.Model):
         super().save(*args, **kwargs)
 
     def generate_unique_ticket_counter(self):
-        company_details = account_models.CustomerCompanyDetails.objects.filter(company_user=self.created_by).latest()
+        customer_company_details = account_models.CustomerCompanyDetails.objects.filter(company_user=self.created_by).latest()
         # Retrieve the last used counter for this company and increment it
-        last_ticket = Ticket.objects.filter(segment__project__company=company_details).order_by('-company_ticket_counter').first()
+        last_ticket = Ticket.objects.filter(segment__project__company=customer_company_details.company).order_by('-company_ticket_counter').first()
         if last_ticket:
             return last_ticket.company_ticket_counter + 1
         else:
