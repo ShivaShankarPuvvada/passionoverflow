@@ -14,6 +14,9 @@ GENDER_IN_CHOICES = [
     (OTHER, 'Other'),
 ]
 class User(AbstractUser):
+    """
+    Gender and Country will be saved. This is optional for now.
+    """
 
     full_name = models.CharField(max_length=300, blank=True, null=True)
     username = models.CharField(max_length=30, blank=True, null=True, unique=True)
@@ -31,6 +34,7 @@ class User(AbstractUser):
 # Create your models here.
 class Company(models.Model):
     """
+    They can't change the company name directly, they have to contact us to change the company name.
     If all the user accounts in a company deleted, the company will also be deleted.
     We will make the deleted = True to every record. this is an another option to keep the records for atleast 6 months.
     We need to notify the last user, if user account is going to be deleted, the company details will be deleted.
