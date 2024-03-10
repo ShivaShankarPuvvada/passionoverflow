@@ -32,7 +32,6 @@ class ObtainTokenView(APIView):
 
         username_or_phone_number = serializer.validated_data.get('username')
         password = serializer.validated_data.get('password')
-
         user = User.objects.filter(username=username_or_phone_number).first()
         if user is None:
             user = User.objects.filter(phone_number=username_or_phone_number).first()
@@ -42,11 +41,11 @@ class ObtainTokenView(APIView):
 
         if not user.check_password(password):
             return Response({'message': "Oops! It seems you've entered the wrong password. Please double-check your password and try again."}, status=status.HTTP_401_UNAUTHORIZED)
-
+        
         # Generate the JWT token
         access_jwt_token = JWTAuthentication.create_access_jwt(user)
         refresh_jwt_token = JWTAuthentication.create_refresh_jwt(user.id)
-
+        
         return Response({'access_token': access_jwt_token, 'refresh_token': refresh_jwt_token, 'user': user})
 
 
@@ -242,11 +241,13 @@ class RegistrationView(APIView):
 
             # Extract user data
             user_data = {
+                "full_name": data["full_name"],
                 "username": data["username"],
                 "email": data["email"],
                 "phone_number": data["phone_number"],
                 "gender": data["gender"],
                 "country": data["country"],
+                "password": data["password"],
             }
 
             # Extract company data
@@ -260,8 +261,12 @@ class RegistrationView(APIView):
             company_serializer = CompanySerializer(data=company_data)
 
             # Validate and save User and Company instances
-            if user_serializer.is_valid() and company_serializer.is_valid():
+            if not user_serializer.is_valid() and not company_serializer.is_valid():
+                return Response({'error': user_serializer.errors,'company_error': company_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            else:
                 user_instance = user_serializer.save()
+                user_instance.set_password(user_instance.password)
+                user_instance.save()
                 company_instance = company_serializer.save(created_by=user_instance)
 
                 # Create CustomerCompanyDetails instance
@@ -286,9 +291,6 @@ class RegistrationView(APIView):
                 }
 
                 return Response(response_data, status=status.HTTP_201_CREATED)
-            else:
-                return Response({'error': user_serializer.errors, 'company_error': company_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
         except Exception as error:
             error_message = "Internal Server Error: " + str(error)
             return Response({'Message': error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -310,7 +312,6 @@ class LoginView(APIView):
             must_keys=["username", "password"]
             if bool(set(must_keys)-set(data.keys())):
                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
-
 
             obtain_token_instance = ObtainTokenView()
             response_from_obtain_token = obtain_token_instance.post(request)

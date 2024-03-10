@@ -19,6 +19,7 @@ class User(AbstractUser):
     """
 
     full_name = models.CharField(max_length=300, blank=True, null=True)
+    password = models.CharField(max_length=300, blank=True, null=True)
     username = models.CharField(max_length=30, blank=True, null=True, unique=True)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=30, blank=True, null=True, unique=True)

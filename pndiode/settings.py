@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_countries',
     'simple_history',
+    'drf_yasg',
+    'rest_framework_swagger',
     
     # created apps
     'accounts',
@@ -151,11 +153,12 @@ AUTH_USER_MODEL = "accounts.User"
 # REST FRAMEWORK START
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        'rest_framework.permissions.DjangoModelPermissions',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'accounts.authentication.JWTAuthentication',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     # 'DEFAULT_RENDERER_CLASSES': [
     #     'rest_framework.renderers.<corresponding_renderer>',
     # ],
