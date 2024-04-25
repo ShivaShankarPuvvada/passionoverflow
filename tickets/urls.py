@@ -35,12 +35,12 @@ show post history for a particular post if possible
 """
 
 urlpatterns = [
-    # path('create_ticket/', views.CreateTicketView.as_view(), name="create_ticket"),
-    # path('ticket/<int:ticket_id>/', views.TicketView.as_view(), name="ticket"),
+    path('create_ticket/', views.CreateTicketView.as_view(), name="create_ticket"),
+    path('ticket/<int:ticket_id>/', views.TicketView.as_view(), name="ticket"),
     # path('get_tickets/<str:ticket_ids>/', views.GetTicketsView.as_view(), name="get_tickets"),
     # path('activate_tickets/<str:ticket_ids>/', views.ActivateTickets.as_view(), name="activate_tickets"),
     # path('deactivate_tickets/<str:ticket_ids>/', views.DeActivateTickets.as_view(), name="deactivate_tickets"),
-    # path('get_active_tickets/', views.GetActiveTicketsView.as_view(), name="get_active_tickets"),
+    path('get_active_tickets/', views.GetActiveTicketsView.as_view(), name="get_active_tickets"),
     # path('get_deactive_tickets/', views.GetDeActiveTicketsView.as_view(), name="get_Deactive_tickets"),
     # path('get_ticket_history/<int:ticket_id>/', views.GetTicketHistoryView.as_view(), name="get_ticket_history"),
 

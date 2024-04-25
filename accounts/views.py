@@ -262,11 +262,13 @@ class RegistrationView(APIView):
 
             # Validate and save User and Company instances
             if not user_serializer.is_valid() and not company_serializer.is_valid():
-                return Response({'error': user_serializer.errors,'company_error': company_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'user_error': user_serializer.errors,'company_error': company_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
             else:
+                user_serializer.is_valid(raise_exception=True)
                 user_instance = user_serializer.save()
                 user_instance.set_password(user_instance.password)
                 user_instance.save()
+                company_serializer.is_valid(raise_exception=True)
                 company_instance = company_serializer.save(created_by=user_instance)
 
                 # Create CustomerCompanyDetails instance
