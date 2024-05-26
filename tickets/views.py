@@ -1,64 +1,79 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .models import Post, Vote
-from .serializers import PostSerializer
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import views, permissions, status
-from .serializers import TicketCreationSerializer
 from .models import Ticket
 from django.db.models import Q
+from django.http import JsonResponse
+from http import HTTPStatus
+from django.contrib.auth.decorators import login_required
 
-class UpvotePost(APIView):
-    def post(self, request, post_id):
-        post = get_object_or_404(Post, pk=post_id)
-        user = request.user
 
-        # Check if the user has already voted
-        existing_vote = Vote.objects.filter(voted_by=user, post=post, deleted=False).first()
-        if existing_vote:
-            return Response({'error': 'You have already voted on this post.'}, status=status.HTTP_400_BAD_REQUEST)
+def upvote_post(request, post_id):
+    if request.method == "POST" and request.is_ajax():
+        try:
+            post = get_object_or_404(Post, pk=post_id)
+            user = request.user
 
-        # If the user hasn't voted or their previous vote was deleted, create an upvote
-        post.upvotes += 1
-        vote = Vote.objects.create(voted_by=user, post=post, vote_type=1)
-        post.save()
+            # Check if the user has already voted
+            existing_vote = Vote.objects.filter(voted_by=user, post=post, deleted=False).first()
+            if existing_vote:
+                if existing_vote.vote_type == 1:
+                    return JsonResponse({'success': False, 'message': 'Already upvoted.'})
+                else:
+                    post.downvotes -= 1
+                    existing_vote.vote_type = 1
+                    existing_vote.save()
 
-        serializer = PostSerializer(post)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            # If the user hasn't voted or their previous vote was deleted, create an upvote
+            post.upvotes += 1
+            Vote.objects.create(voted_by=user, post=post, vote_type=1)
+            post.save()
+            return JsonResponse({"success": True, "data": [post.upvotes, post.downvotes]})
+        except:
+            return JsonResponse({'success': False, 'error': 'Post not found.'}, status=HTTPStatus.NOT_FOUND)
+    else:
+        return JsonResponse({"success": False, "error": "Invalid request."}, status=HTTPStatus.BAD_REQUEST)
 
-class DownvotePost(APIView):
-    def post(self, request, post_id):
-        post = get_object_or_404(Post, pk=post_id)
-        user = request.user
 
-        # Check if the user has already voted
-        existing_vote = Vote.objects.filter(voted_by=user, post=post, deleted=False).first()
-        if existing_vote:
-            return Response({'error': 'You have already voted on this post.'}, status=status.HTTP_400_BAD_REQUEST)
+def downvote_post(request, post_id):
+    if request.method == "POST" and request.is_ajax():
+        try:
+            post = get_object_or_404(Post, pk=post_id)
+            user = request.user
 
-        # If the user hasn't voted or their previous vote was deleted, create a downvote
-        post.downvotes += 1
-        vote = Vote.objects.create(voted_by=user, post=post, vote_type=-1)
-        post.save()
+            # Check if the user has already voted
+            existing_vote = Vote.objects.filter(voted_by=user, post=post, deleted=False).first()
+            if existing_vote:
+                if existing_vote.vote_type == -1:
+                    return JsonResponse({'success': False, 'message': 'Already downvoted.'})
+                else:
+                    post.upvotes -= 1
+                    existing_vote.vote_type = -1
+                    existing_vote.save()
 
-        serializer = PostSerializer(post)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            # If the user hasn't voted or their previous vote was deleted, create an upvote
+            post.downvotes += 1
+            Vote.objects.create(voted_by=user, post=post, vote_type=-1)
+            post.save()
+            return JsonResponse({"success": True, "data": [post.upvotes, post.downvotes]})
+        except:
+            return JsonResponse({'success': False, 'error': 'Post not found.'}, status=HTTPStatus.NOT_FOUND)
+    else:
+        return JsonResponse({"success": False, "error": "Invalid request."}, status=HTTPStatus.BAD_REQUEST)
 
-class CreateTicketView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+
+@login_required
+def create_ticket(request):
     
     """
     get method is not needed. we don't need to send anything to frontend.
     """
-    def post(self, request):
+    if request.method == "POST":
         try:
             data = request.data
             must_keys = ["title", "start_date", "end_date"]
             
             if bool(set(must_keys) - set(data.keys())):
-                return Response({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=HTTPStatus.BAD_REQUEST)
 
             # Extract user data
             ticket_data = {
@@ -78,29 +93,24 @@ class CreateTicketView(APIView):
 
 
             # Create User and Company instances
-            ticket_serializer = TicketCreationSerializer(data=ticket_data)
+            ticket_object = Ticket(**ticket_data)
             # Validate and save User and Company instances
-            if not ticket_serializer.is_valid():
-                return Response({'user_error': ticket_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                ticket_serializer.is_valid(raise_exception=True)
-                user_instance = ticket_serializer.save()
-                user_instance.save()
+            ticket_object.save()
 
-                response_data = {
-                    'data': ticket_serializer.data,
-                    "message": "Data Saved Successfully.",
-                }
-                return Response(response_data, status=status.HTTP_201_CREATED)
+            response_data = {
+                'data': ticket_object.data,
+                "message": "Data Saved Successfully.",
+            }
+            
+            return JsonResponse(response_data, status=HTTPStatus.CREATED)
         except Exception as error:
             error_message = "Internal Server Error: " + str(error)
-            return Response({'Message': error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'Message': error_message}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
         
-
-class GetActiveTicketsView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+@login_required
+def get_active_tickets(request):
     
-    def get(self, request):
+    if request.method == "GET":
         try:
             
             ticket_object = Ticket.objects.filter()
@@ -125,7 +135,7 @@ class GetActiveTicketsView(APIView):
                         "ticket_ticket_type": ticket_ticket_type,
                         },
                 }
-                return Response(response_data, status=status.HTTP_200_OK)
+                return JsonResponse(response_data, status=HTTPStatus.OK)
             else:
                 response_data = {
                     'data': {
@@ -133,20 +143,21 @@ class GetActiveTicketsView(APIView):
                         },
                     "message": "There are no tickets available",
                 }
-                return Response(response_data, status=status.HTTP_200_OK)
+                return JsonResponse(response_data, status=HTTPStatus.OK)
         except Exception as error:
             error_message = "Internal Server Error: " + str(error) 
-            return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'Message': error_message }, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
-class TicketView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+
+@login_required
+def ticket_view(request):
     
-    def post(self, request):
+    if request.method == "POST":
         try:
             data=request.data
             must_keys=["id"]
             if bool(set(must_keys)-set(data.keys())):
-                return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"}, status=HTTPStatus.BAD_REQUEST)
             
             ticket_id = data.get('id')
             ticket_object = Ticket.objects.filter(Q(id=ticket_id))
@@ -171,7 +182,7 @@ class TicketView(APIView):
                         "ticket_ticket_type": ticket_ticket_type,
                         },
                 }
-                return Response(response_data, status=status.HTTP_200_OK)
+                return JsonResponse(response_data, status=HTTPStatus.OK)
             else:
                 response_data = {
                     'data': {
@@ -179,8 +190,8 @@ class TicketView(APIView):
                         },
                     "message": "This is new data. We can proceed.",
                 }
-                return Response(response_data, status=status.HTTP_200_OK)
+                return JsonResponse(response_data, status=HTTPStatus.OK)
 
         except Exception as error:
             error_message = "Internal Server Error: " + str(error) 
-            return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'Message': error_message }, status=HTTPStatus.INTERNAL_SERVER_ERROR)

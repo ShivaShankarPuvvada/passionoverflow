@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-from datetime import timedelta
-import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,14 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # installed packages
-    'corsheaders',
     "django_phonenumbers",
     "phonenumber_field",
-    'rest_framework',
     'django_countries',
     'simple_history',
-    'drf_yasg',
-    'rest_framework_swagger',
     
     # created apps
     'accounts',
@@ -65,7 +59,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,7 +73,7 @@ ROOT_URLCONF = 'pndiode.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "templates")],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -142,6 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -149,30 +143,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "accounts.User"
-
-# REST FRAMEWORK START
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissions',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'accounts.authentication.JWTAuthentication',
-    ],
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
-    # 'DEFAULT_RENDERER_CLASSES': [
-    #     'rest_framework.renderers.<corresponding_renderer>',
-    # ],
-}
-# REST FRAMEWORK END
-
-
-# pyjwt start
-JWT_CONF = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
-}
-# pyjwt end
-
 
 # django countries package start
 # COUNTRIES_OVERRIDE = {
@@ -183,18 +153,3 @@ JWT_CONF = {
 # django cities packages start
 CITIES_LOCALES = ['en', 'und', 'LANGUAGES']
 # django cities packages end
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    os.path.join(BASE_DIR, 'accounts/static'),
-
-]
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-
-
-# CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = (
-  'http://localhost:3000',
-)
