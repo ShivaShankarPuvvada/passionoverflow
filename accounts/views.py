@@ -16,14 +16,14 @@ from django.db import transaction, IntegrityError
 # # Create your views here.
 # class CustomerCompanyVerificationView(APIView):
 #     permission_classes = (permissions.AllowAny,)
-    
+
 #     def post(self, request):
 #         try:
 #             data=request.data
 #             must_keys=["company_name_or_sub_domain"]
 #             if bool(set(must_keys)-set(data.keys())):
 #                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
-            
+
 #             company_name_or_sub_domain = data.get('company_name_or_sub_domain')
 #             customer_company_object = Company.objects.filter(Q(name=company_name_or_sub_domain) | Q(sub_domain_name=company_name_or_sub_domain))
 
@@ -56,14 +56,14 @@ from django.db import transaction, IntegrityError
 
 # class UserDetailsVerificationView(APIView):
 #     permission_classes = (permissions.AllowAny,)
-    
+
 #     def post(self, request):
 #         try:
 #             data=request.data
 #             must_keys=["email_or_phone_number_or_username"]
 #             if bool(set(must_keys)-set(data.keys())):
 #                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
-            
+
 #             email_or_phone_number_or_username = data.get('email_or_phone_number_or_username')
 #             user_object = User.objects.filter(Q(email=email_or_phone_number_or_username) 
 #                                               | Q(phone_number=email_or_phone_number_or_username) 
@@ -100,7 +100,7 @@ from django.db import transaction, IntegrityError
 
 # class ProfileView(APIView):
 #     permission_classes = (permissions.AllowAny,)
-    
+
 #     def get(self, request):
 #         try:
 #             # Retrieve country data from django-countries
@@ -146,7 +146,7 @@ from django.db import transaction, IntegrityError
 
 # class RegistrationView(APIView):
 #     permission_classes = (permissions.AllowAny,)
-    
+
 #     """
 #     get method is not needed. we don't need to send anything to frontend.
 #     """
@@ -154,7 +154,7 @@ from django.db import transaction, IntegrityError
 #         try:
 #             data = request.data
 #             must_keys = ["username", "email", "phone_number", "gender", "country", "company_name", "company_sub_domain_name"]
-            
+
 #             if bool(set(must_keys) - set(data.keys())):
 #                 return Response({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -199,7 +199,7 @@ from django.db import transaction, IntegrityError
 #                 )
 
 #                 login_url = reverse("accounts:login")  # for first user we need to redirect him mail verification, and after, after login.
-                
+
 #                 # Serialize customer company details data
 #                 serialized_customer_company_details = CustomerCompanyDetailsSerializer(customer_company_details_instance).data
 
@@ -289,11 +289,11 @@ from django.db import transaction, IntegrityError
 #             must_keys=["full_name", ]
 #             if bool(set(must_keys)-set(data.keys())):
 #                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
-        
+
 #             # Check if full_name is empty
 #             if not data['full_name']:
 #                 return Response({'Message': 'Full name cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 #             full_name = request.data.get('full_name')
 #             suggested_username = suggest_username(full_name)
 #             return Response({'suggested_username': suggested_username}, status=status.HTTP_200_OK)
@@ -331,11 +331,11 @@ from django.db import transaction, IntegrityError
 #             must_keys=["company_name", ]
 #             if bool(set(must_keys)-set(data.keys())):
 #                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
-        
+
 #             # Check if company_name is empty
 #             if not data['company_name']:
 #                 return Response({'Message': 'Company name cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 #             company_name = request.data.get('company_name')
 #             suggested_company_sub_domain_name = suggest_company_sub_domain_name(company_name)
 #             return Response({'suggested_company_sub_domain_name': suggested_company_sub_domain_name}, status=status.HTTP_200_OK)
