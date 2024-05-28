@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home_page.css' %}">
+    {% block stylesheets %}{% endblock stylesheets %}
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/logos/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/logos/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/logos/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'images/logos/site.webmanifest' %}">
+    <link rel="mask-icon" href="{% static 'images/logos/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+</head>
+  <body>
+    <section class="header_navbar">
+      <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top" id="no-auth-navbar">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'home_page' %}">
+            <img src="{% static 'images/logos/navlogo.png' %}" width="53.3" height="43.6" alt="home page logo">
+            <img src="{% static 'images/logos/navlogotext.png' %}" width=213.3" height="26.7" alt="home page logo">
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-md-auto gap-2">
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu" aria-current="page" href="{% url 'home_page' %}">Home</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu" aria-current="page" href="{% url 'about_us' %}">About</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu" aria-current="page" href="{% url 'why_choose_us' %}">Why choose us?</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu" href="{% url 'pricing' %}">Pricing</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu nav_login_button_login" href="{% url 'accounts:login' %}">Login</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link nav_login_button_sign_up" href="#">Sign up</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>  
+    </section>
+    {% block main_content %}{% endblock main_content %}
+  
+
+    <footer class="new_footer_area bg_color">
+        <div class="new_footer_top">
+            <div class="container">
+                
+                <div class="row mb-5">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="f_widget company_widget wow fadeInLeft" data-wow-delay="0.2s" style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInLeft;">
+                            <h3 class="f-title f_600 t_color f_size_18">Stay Updated with Our Latest News and Updates</h3>
+                            <p>Subscribe to receive the latest updates on our project management platform, including new features, blog posts, and video tutorials.</p>
+                            <form action="#" class="f_subscribe_two mailchimp" method="post" novalidate="true" _lpchecked="1">
+                                <input type="text" name="EMAIL" class="form-control memail" placeholder="Email">
+                                <button class="btn btn_get btn_get_two nav_login_button_sign_up" type="submit">Subscribe</button>
+                                <p class="mchimp-errmessage" style="display: none;"></p>
+                                <p class="mchimp-sucmessage" style="display: none;"></p>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6"></div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.4s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInLeft;">
+                            <h3 class="f-title f_600 t_color f_size_18">Links</h3>
+                            <ul class="list-unstyled f_list">
+                                <li><a href="#home">Home</a></li>
+                                <li><a href="#about">About us</a></li>
+                                <li><a href="#why_choose_us">Why choose us?</a></li>
+                                <li><a href="#pricing">Pricing</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    {% comment %} <div class="col-lg-3 col-md-6">
+                        <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.6s" style="visibility: visible; animation-delay: 0.6s; animation-name: fadeInLeft;">
+                            <h3 class="f-title f_600 t_color f_size_18">Help</h3>
+                            <ul class="list-unstyled f_list">
+                                <li><a href="#">FAQ</a></li>
+                                <li><a href="#">Terms &amp; conditions</a></li>
+                                <li><a href="#">Reporting</a></li>
+                                <li><a href="#">Documentation</a></li>
+                                <li><a href="#">Support Policy</a></li>
+                                <li><a href="#">Privacy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="f_widget social-widget pl_70 wow fadeInLeft" data-wow-delay="0.8s" style="visibility: visible; animation-delay: 0.8s; animation-name: fadeInLeft;">
+                            <h3 class="f-title f_600 t_color f_size_18">Team Solutions</h3>
+                            <div class="f_social_icon">
+                                <a href="#" class="fab fa-facebook"></a>
+                                <a href="#" class="fab fa-twitter"></a>
+                                <a href="#" class="fab fa-linkedin"></a>
+                                <a href="#" class="fab fa-pinterest"></a>
+                            </div>
+                        </div>
+                    </div> {% endcomment %}
+                </div>
+                
+
+            </div>
+            <div class="footer_bg">
+                <div class="footer_bg_one"></div>
+                <div class="footer_bg_two"></div>
+            </div>
+        </div>
+        <div class="footer_bottom">
+            <div class="container">
+                <hr>
+                <div class="row align-items-center">
+                    <div class="col-lg-6 col-sm-7">
+                        <p class="mb-0 f_400">Copyright © Passion Overflow LLP. 2024 All rights reserved.</p>
+                    </div>
+                    {% comment %} <div class="col-lg-6 col-sm-5 text-right">
+                        <p><a href="#" target="_blank">Privacy Policy</a></p>
+                    </div> {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/no_auth_base.js' %}"></script>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+{% extends 'no_auth_base.html' %}
+{% load static %}
+
+{% block title %}Passionoverflow | Index{% endblock %}
+
+{% block main_content %}
+<section id="pricing" class="price-sec">
+  <div class="container-fluid">
+      <div class="container">
+          <div class="row mb-5">
+            <h1>Pricing</h1>
+          </div>
+          <div class="row mb-5">
+            <p>With our simple and transparent pricing plans, get the most out of our product without any hidden fees. Cancel anytime.</p>
+          </div>
+          <div class="row mb-5">
+              <div class="col-sm-6 price-table">
+                  <div class="card text-center">
+                      <div class="title">
+                          <i class="fa fa-paper-plane"></i>
+                          <h2>Free Forever</h2>
+                      </div>
+                      <div class="price">
+                          <h4><sup>$</sup>0</h4>
+                      </div>
+                      <div class="option">
+                          <ul>
+                              <li>Up to 5 persons</li>
+                              <li>One project</li>
+                              <li>2-factor authentication</li>
+                          </ul>
+                      </div>
+                      <a href="#">Get Started</a>
+                  </div>
+              </div>
+              <!-- (1) ===================================-->
+                <div class="col-sm-6 price-table">
+                  <div class="card text-center">
+                      <div class="title">
+                          <i class="fa fa-plane"></i>
+                          <h2>Standard</h2>
+                      </div>
+                      <div class="price">
+                          <h4><sup>$</sup>6</h4>
+                      </div>
+                      <div class="option">
+                          <ul>
+                              <li>per person per month</li>
+                              <li>Unlimited projects</li>
+                              <li>Live Support</li>
+                          </ul>
+                      </div>
+                      <a href="#">Get Started</a>
+                  </div>
+              </div>
+              <!-- (2) ===================================-->
+          </div>
+      </div>
+  </div>
+</section>
+{% endblock main_content %}

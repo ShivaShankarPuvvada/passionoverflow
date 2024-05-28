@@ -11,7 +11,7 @@ There are mainly two types of users. Contributors (has all the access) if added 
 company sub domain name will be suggested. this is optional, they can choose any kind of sub domain name if available
 username will be suggested. this is optional, they can choose any kind of username if available
 first user will create the profile in our account in a company. He will have to invite the remaining people by allowing them to spaces/company sub domains. He can make invited users as root users as well.
-If company is already there, we need to ask the user to contact his adminstrator.
+If company is already there, we need to ask the user to contact his administrator.
 Payment should be taken care of for a single company. i.e, for a single company, single payment account is sufficient. Any root user/contributor in the company can pay.
 """
 

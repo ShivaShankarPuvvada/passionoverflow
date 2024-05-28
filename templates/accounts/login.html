@@ -1,23 +1,33 @@
-<div class="login-page">
-    <div class="form">
-      <form class="register-form">
-        <h1>Create Account</h1>
-        <label for="name">Name:</label>
-        <input type="text" placeholder="name"/>
-              <label for="name">Name:</label>
-  
-        
-        <input type="password" placeholder="password"/>
-         <input type="password" placeholder="password"/> <input type="password" placeholder="password"/> <input type="password" placeholder="password"/> <input type="password" placeholder="password"/> <input type="password" placeholder="password"/> <input type="password" placeholder="password"/> <input type="password" placeholder="password"/> <input type="password" placeholder="password"/> <input type="password" placeholder="password"/>
-        <input type="text" placeholder="email address"/>
-        <button>create</button>
-        <p class="message">Already registered? <a href="#">Sign In</a></p>
-      </form>
-      <form class="login-form">
-        <input type="text" placeholder="username"/>
-        <input type="password" placeholder="password"/>
-        <button>login</button>
-        <p class="message">Not registered? <a href="#">Create an account</a></p>
-      </form>
+{% extends 'no_auth_base.html' %}
+{% load static %}
+
+{% block title %}Passionoverflow | Login{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock stylesheets %}
+{% block main_content %}
+<section class="login-page-section">
+  <div class="container-fluid">
+    <div class="container">
+      <div class="row">
+        <div class="login-page">
+          <div class="form">
+              <form class="login-form " action="https://www.instagram.com/developer_nikhil27/" target="_blank">
+                  <h2 class="text-center">Log in</h2>
+                  <input type="text" required placeholder="Username" id="user" autocomplete="off" />
+                  <input oninput="return formvalid()" type="password" required placeholder="Password" id="pass" autocomplete="off" />
+                  <img src="https://cdn2.iconfinder.com/data/icons/basic-ui-interface-v-2/32/hide-512.png"
+                      onclick="show()" id="showimg">
+                  <span id="vaild-pass"></span>
+                  <button type="submit">Log in</button>
+                  <p class="message"><a href="#">Forgot your password?</a></p>
+                  <p class="message signup-message text-center">New to PassionOverflow? <a href="#">Sign up</a></p>
+              </form>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+</section>
+
+{% endblock main_content %}
