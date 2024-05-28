@@ -5,64 +5,281 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Passion Overflow - Home</title>
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'css/home_page.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-  </head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/logos/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/logos/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/logos/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'images/logos/site.webmanifest' %}">
+    <link rel="mask-icon" href="{% static 'images/logos/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+</head>
   <body>
-    <div class="navbar" id="navbar">
-      <div class="logo">
-        <a href="#" style="font-size: 20px;">Landing Stars</a>
-      </div>
-      <div class="nav-links">
-        <a href="#">Home</a>
-        <a href="#">About</a>
-        <a href="#">Services</a>
-        <a href="#">Contact</a>
-      </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <img src="{% static 'images/logos/navlogo.png' %}" width="53.3" height="43.6" alt="home page logo">
+            <img src="{% static 'images/logos/navlogotext.png' %}" width=213.3" height="26.7" alt="home page logo">
+        </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-md-auto gap-2">
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu" aria-current="page" href="#home">Home</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu" aria-current="page" href="#about">About</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu" aria-current="page" href="#why_choose_us">Why choose us?</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu" href="#pricing">Pricing</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link navbar_menu nav_login_button_login" href="#">Login</a>
+              </li>
+              <li class="nav-item rounded">
+                <a class="nav-link nav_login_button_sign_up" href="#">Sign up</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+  <section id="home" class="home-sec">
+    <div class="containername">
+        <div class="row mb-3">
+          <h1><colortag>Streamline</colortag> Your Projects. Achieve More.</h1>
+        </div>
+        <div class="row mb-3">
+          <p>Passion Overflow helps you save time and reduce costs, all while enhancing your team's productivity.</p>
+        </div>
+        <div class="row mb-5">
+          <a href="#features" class="cta-button">Get Started</a>
+        </div>
+        <div class="row mb-5">
+          <div id="scroll-down-animation">
+            <span class="mouse">
+              <span class="move"></span>
+            </span>
+            <p class="scroll_down_text">Scroll down</p>
+          </div>
+        </div>
     </div>
+  </section>
+
+
+<section id="about">
+  <div class="container-fluid">
     <div class="container">
-      <h1>Welcome to Landing Stars</h1>
-      <p>Explore the beauty of dynamic backgrounds.</p>
-      <a href="#features" class="cta-button">Learn More</a>
+      <div class="row mb-5">
+        <h1>About Us</h1>
+      </div>
+      <div class="row mb-5">
+        <p>Welcome to Passion Overflow, the ultimate project management tool designed to help small businesses and startups streamline their operations, enhance productivity, and achieve their goals. Our platform is built with the unique needs of growing teams in mind, offering a range of features that simplify project tracking, collaboration, and task management.</p>
+      </div>
+      <div class="row mb-5">
+        <h3>Our Mission</h3>
+      </div>
+      <div class="row mb-5">
+        <p>At Passion Overflow, our mission is to empower small teams to achieve big results. We understand the challenges faced by small businesses and startups, and our goal is to provide an affordable, user-friendly tool that helps you manage projects efficiently and effectively.</p>
+      </div>
     </div>
+  </div>
+</section>
+
+<section id="why_choose_us">
+  <div class="container-fluid">
     <div class="container">
-      <h1>Features</h1>
-      <div class="features">
-        <div class="feature-item">
-          <h2>Feature 1</h2>
-          <p>Detail about Feature 1.</p>
-        </div>
-        <div class="feature-item">
-          <h2>Feature 2</h2>
-          <p>Detail about Feature 2.</p>
-        </div>
-        <div class="feature-item">
-          <h2>Feature 3</h2>
-          <p>Detail about Feature 3.</p>
-        </div>
+      <div class="row mb-5">
+        <h1>Why choose us?</h1>
       </div>
-      <div class="logos">
-        <img src="https://via.placeholder.com/100" alt="Logo 1">
-        <img src="https://via.placeholder.com/100" alt="Logo 2">
-        <img src="https://via.placeholder.com/100" alt="Logo 3">
-        <img src="https://via.placeholder.com/100" alt="Logo 4">
+      <div class="row">
+        <div class="col-lg-6 col-sm-6">
+          <div class="item">
+            <h4>Comprehensive Features</h4>
+            <p>From task management and time tracking to team collaboration and reporting, we provide all the tools you need in one place.</p>
+          </div>
+        </div>
+        <div class="col-lg-6 col-sm-6">
+          <div class="item">
+            <h4>Easy to Use</h4>
+            <p>Our intuitive interface ensures that you can start managing your projects with minimal setup and training.</p>
+          </div>
+        </div>
+        <div class="col-lg-6 col-sm-6">
+          <div class="item">
+            <h4>Secure and Reliable</h4>
+            <p>
+              Your data's security is our top priority. We employ robust security measures, including 2-factor authentication, to keep your information safe.
+            </p>
+          </div>
+        </div>
+        <div class="col-lg-6 col-sm-6">
+          <div class="item">
+            <h4>Scalable</h4>
+            <p>
+              Whether you’re a team of 5 or 50, our platform scales with your business, offering robust features to support your growth.
+            </p>
+          </div>
+        </div>
+        <div class="col-lg-6 col-sm-6">
+          <div class="item"> 
+            <h4>Affordable</h4>
+            <p>
+              With our free plan for small teams and cost-effective pricing for larger groups, you get great value without breaking the bank.
+            </p>
+          </div>
+        </div>
+        <div class="col-lg-6 col-sm-6">
+          <div class="item">
+            <h4>24 x 7 User Support</h4>
+            <p>
+              Our dedicated support team is available to assist you with any issues or questions, ensuring you get the most out of our platform.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="container">
-      <h1>Image Slider</h1>
-      <div class="slider">
-        <div class="slides">
-          <div class="slide"><img src="https://via.placeholder.com/800x400" alt="Slide 1"></div>
-          <div class="slide"><img src="https://via.placeholder.com/800x400" alt="Slide 2"></div>
-          <div class="slide"><img src="https://via.placeholder.com/800x400" alt="Slide 3"></div>
-        </div>
-        <div class="slider-buttons">
-          <button class="slider-button" id="prevBtn">&#10094;</button>
-          <button class="slider-button" id="nextBtn">&#10095;</button>
-        </div>
+  </div>
+</section>
+
+<section id="pricing" class="price-sec">
+  <div class="container-fluid">
+      <div class="container">
+          <div class="row mb-5">
+            <h1>Pricing</h1>
+          </div>
+          <div class="row mb-5">
+            <p>With our simple and transparent pricing plans, get the most out of our product without any hidden fees. Cancel anytime.</p>
+          </div>
+          <div class="row mb-5">
+              <div class="col-sm-6 price-table">
+                  <div class="card text-center">
+                      <div class="title">
+                          <i class="fa fa-paper-plane"></i>
+                          <h2>Free Forever</h2>
+                      </div>
+                      <div class="price">
+                          <h4><sup>$</sup>0</h4>
+                      </div>
+                      <div class="option">
+                          <ul>
+                              <li>Up to 5 persons</li>
+                              <li>One project</li>
+                              <li>2-factor authentication</li>
+                          </ul>
+                      </div>
+                      <a href="#">Get Started</a>
+                  </div>
+              </div>
+              <!-- (1) ===================================-->
+                 <div class="col-sm-6 price-table">
+                  <div class="card text-center">
+                      <div class="title">
+                          <i class="fa fa-plane"></i>
+                          <h2>Standard</h2>
+                      </div>
+                      <div class="price">
+                          <h4><sup>$</sup>6</h4>
+                      </div>
+                      <div class="option">
+                          <ul>
+                              <li>per person per month</li>
+                              <li>Unlimited projects</li>
+                              <li>Live Support</li>
+                          </ul>
+                      </div>
+                      <a href="#">Get Started</a>
+                  </div>
+              </div>
+              <!-- (2) ===================================-->
+          </div>
       </div>
+  </div>
+</section>
+
+<footer class="new_footer_area bg_color">
+    <div class="new_footer_top">
+        <div class="container">
+            
+            <div class="row mb-5">
+                <div class="col-lg-3 col-md-6">
+                    <div class="f_widget company_widget wow fadeInLeft" data-wow-delay="0.2s" style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInLeft;">
+                        <h3 class="f-title f_600 t_color f_size_18">Stay Updated with Our Latest News and Updates</h3>
+                        <p>Subscribe to receive the latest updates on our project management platform, including new features, blog posts, and video tutorials.</p>
+                        <form action="#" class="f_subscribe_two mailchimp" method="post" novalidate="true" _lpchecked="1">
+                            <input type="text" name="EMAIL" class="form-control memail" placeholder="Email">
+                            <button class="btn btn_get btn_get_two nav_login_button_sign_up" type="submit">Subscribe</button>
+                            <p class="mchimp-errmessage" style="display: none;"></p>
+                            <p class="mchimp-sucmessage" style="display: none;"></p>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6"></div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.4s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInLeft;">
+                        <h3 class="f-title f_600 t_color f_size_18">Links</h3>
+                        <ul class="list-unstyled f_list">
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About us</a></li>
+                            <li><a href="#why_choose_us">Why choose us?</a></li>
+                            <li><a href="#pricing">Pricing</a></li>
+                        </ul>
+                    </div>
+                </div>
+                {% comment %} <div class="col-lg-3 col-md-6">
+                    <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.6s" style="visibility: visible; animation-delay: 0.6s; animation-name: fadeInLeft;">
+                        <h3 class="f-title f_600 t_color f_size_18">Help</h3>
+                        <ul class="list-unstyled f_list">
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Terms &amp; conditions</a></li>
+                            <li><a href="#">Reporting</a></li>
+                            <li><a href="#">Documentation</a></li>
+                            <li><a href="#">Support Policy</a></li>
+                            <li><a href="#">Privacy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="f_widget social-widget pl_70 wow fadeInLeft" data-wow-delay="0.8s" style="visibility: visible; animation-delay: 0.8s; animation-name: fadeInLeft;">
+                        <h3 class="f-title f_600 t_color f_size_18">Team Solutions</h3>
+                        <div class="f_social_icon">
+                            <a href="#" class="fab fa-facebook"></a>
+                            <a href="#" class="fab fa-twitter"></a>
+                            <a href="#" class="fab fa-linkedin"></a>
+                            <a href="#" class="fab fa-pinterest"></a>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+            </div>
+            
+
+        </div>
+        <div class="footer_bg">
+            <div class="footer_bg_one"></div>
+            <div class="footer_bg_two"></div>
+        </div>
     </div>
-    <div class="particles"></div>
-    <div class="star-background"></div>
+    <div class="footer_bottom">
+        <div class="container">
+            <hr>
+            <div class="row align-items-center">
+                <div class="col-lg-6 col-sm-7">
+                    <p class="mb-0 f_400">Copyright © Passion Overflow LLP. 2024 All rights reserved.</p>
+                </div>
+                {% comment %} <div class="col-lg-6 col-sm-5 text-right">
+                    <p><a href="#" target="_blank">Privacy Policy</a></p>
+                </div> {% endcomment %}
+            </div>
+        </div>
+    </div>
+</footer>
   </body>
 </html>

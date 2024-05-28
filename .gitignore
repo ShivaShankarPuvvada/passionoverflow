@@ -15,7 +15,6 @@ env/
 db.sqlite3
 
 # Static and media files (usually served by a web server)
-/static/
 /media/
 
 # Logs and error files
@@ -89,13 +88,3 @@ pyproject.toml
 
 # Environment variables file (if using .env)
 .env
-
-# Compiled JavaScript files
-*.js
-*.map
-
-# Compiled CSS files
-*.css
-
-# Node.js dependencies
-node_modules/
