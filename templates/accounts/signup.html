@@ -44,6 +44,7 @@
                     <input name="password" type="password" class="" id="password" placeholder="Secure Password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$" required>
                     <span class="underline"></span>
                   </div>
+                  <p class="company_space_name_helper_text small password-hint" style="display: none;">Password should contain at least one small character, one capital letter, one number, and one symbol, with a minimum length of 8 characters.</p>
                   <div class="form-group mb-4 label_and_input">
                     <label class="mb-1" for="company-name">Company name</label>
                     <input name="company_name" type="text" class="company_name" id="company-name" placeholder="John Doe Co." required>
@@ -79,6 +80,10 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
   $(document).ready(function() {
+    // Show password hint when password input clicked.
+    $('#password').on('click', function() {
+      $('.password-hint').toggle();
+  });
     // Function to show error message
     function showError(messages) {
         var $errorMessages = $('#error-messages');
