@@ -13,6 +13,7 @@
                             <!-- Display server-side validation errors -->
                             <div id="error-messages" class="error-messages d-none">
                               <div class="error-message">
+                                  <p>Errors:</p>
                                   <span class="close-btn">&times;</span>
                                   <span class="error-text"></span>
                               </div>
@@ -113,7 +114,8 @@
             // Check if the input is empty
             if (!$input.val().trim()) {
                 // Display specific error message for empty input
-                errorMessages.push($input.attr('name') + ' is required.');
+                var label = $input.closest('.label_and_input').find('label').text().trim();
+                errorMessages.push(label + ' is required.');
                 isValid = false;
                 return;  // Skip pattern validation for empty inputs
             }
@@ -122,7 +124,8 @@
             var pattern = $input.attr('pattern');
             if (pattern && !RegExp(pattern).test($input.val())) {
                 // Display specific error message for pattern mismatch
-                errorMessages.push($input.attr('name') + ' is invalid.');
+                var label = $input.closest('.label_and_input').find('label').text().trim();
+                errorMessages.push(label + ' is invalid.');
                 isValid = false;
             }
         });
@@ -155,9 +158,6 @@
             }
         });
     });
-});
-
-
-
+  });
 </script>
 {% endblock main_content %}
