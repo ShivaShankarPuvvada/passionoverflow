@@ -1,0 +1,92 @@
+#signup {
+    box-sizing:border-box;
+    padding: 100px 0px;
+    background-color: #6a62d2;
+    }
+
+.sign_up_heading {
+    font-weight: 200;
+    }
+
+.sign_up_form {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    background-color: #cacaff;
+    padding: 40px;
+    border-radius: 5px;
+}
+label {
+    color: #292929;
+}
+.label_and_input {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+
+input {
+    color: rgb(0, 0, 0);
+    font-size: 1.3rem !important; /* Adjust the font size as needed */
+    font-weight: 300 !important;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 1em;
+    box-sizing: border-box;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #797979;
+
+    &:focus + .underline {
+      width: 100%;
+    }
+  }
+
+.underline {
+    position: absolute;
+    bottom: 0;
+    
+    left: 50%;
+    transform: translateX(-50%);
+        
+    height: 2px;
+    width: 0;
+    background-color: #4e23c5;
+    transition: 1s;
+  }
+
+}
+
+.continue_sign_up_button {
+    justify-content: center !important;
+    background-color: #7246eb !important;
+    border-radius: 3px !important;
+    color: #fff !important;
+    padding-right: 20px !important;
+    padding-left: 20px !important;
+    font-weight: 200 !important;
+    font-size: 1.5rem !important;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset !important;
+    transition: .5s !important;
+}
+
+.continue_sign_up_button:hover{
+    background-color: #5e2ced !important;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px 3px 0px inset !important;
+}
+
+input::placeholder {
+    color: rgb(94, 93, 94);
+    font-size: 1.3rem !important; /* Adjust the font size as needed */
+    font-weight: 300 !important;
+}
+
+.login_message a {
+    text-decoration: none;
+    color: #512dc0;
+}
+
+.sign_up_heading_message {
+    font-weight: 250 !important;
+    font-size: 1.1rem;
+    padding-top: 3.5%;
+    padding-bottom: 4.5%;
+  }

@@ -10,10 +10,91 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.db import transaction, IntegrityError
 
+from django.http import JsonResponse
+from http import HTTPStatus
 
 # User = get_user_model()
 
-# # Create your views here.
+# Create your views here.
+
+def registration_view(request):
+
+    """
+    get method is not needed. we don't need to send anything to frontend.
+    """
+    if request.method == "POST":
+        try:
+            data = request.data
+            must_keys = ["username", "email", "phone_number", "gender", "country", "company_name", "company_sub_domain_name"]
+
+            if bool(set(must_keys) - set(data.keys())):
+                return JsonResponse({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
+
+            # Extract user data
+            user_data = {
+                "full_name": data["full_name"],
+                "username": data["username"],
+                "email": data["email"],
+                "phone_number": data["phone_number"],
+                "gender": data["gender"],
+                "country": data["country"],
+                "password": data["password"],
+            }
+
+            # Extract company data
+            company_data = {
+                "name": data["company_name"],
+                "sub_domain_name": data["company_sub_domain_name"],
+            }
+
+            # Create User and Company instances
+            user_serializer = UserCreationSerializer(data=user_data)
+            company_serializer = CompanySerializer(data=company_data)
+
+            # Validate and save User and Company instances
+            if not user_serializer.is_valid() and not company_serializer.is_valid():
+                return JsonResponse({'user_error': user_serializer.errors,'company_error': company_serializer.errors}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
+            else:
+                user_serializer.is_valid(raise_exception=True)
+                user_instance = user_serializer.save()
+                user_instance.set_password(user_instance.password)
+                user_instance.save()
+                company_serializer.is_valid(raise_exception=True)
+                company_instance = company_serializer.save(created_by=user_instance)
+
+                # Create CustomerCompanyDetails instance
+                customer_company_details_instance = CustomerCompanyDetails.objects.create(
+                    company=company_instance,
+                    company_root_user=user_instance,
+                    company_user=user_instance,
+                    created_by=user_instance
+                )
+
+                login_url = reverse("accounts:login")  # for first user we need to redirect him mail verification, and after, after login.
+
+                # Serialize customer company details data
+                serialized_customer_company_details = CustomerCompanyDetailsSerializer(customer_company_details_instance).data
+
+                response_data = {
+                    'user_data': user_serializer.data,
+                    'company_data': company_serializer.data,
+                    'customer_company_details_data': serialized_customer_company_details,  # Include serialized customer company details data
+                    "message": "Registration successful. Please Verify email.",
+                    "login_url": login_url,
+                }
+
+                return JsonResponse(response_data, status=HTTPStatus.HTTP_201_CREATED)
+        except Exception as error:
+            error_message = "Internal Server Error: " + str(error)
+            return JsonResponse({'Message': error_message}, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
+    elif request.method == "GET":
+        try:
+            return render(request, "accounts/signup.html")
+        except Exception as error:
+            error_message = "Internal Server Error: " + str(error) 
+            return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 # class CustomerCompanyVerificationView(APIView):
 #     permission_classes = (permissions.AllowAny,)
 
@@ -22,7 +103,7 @@ from django.db import transaction, IntegrityError
 #             data=request.data
 #             must_keys=["company_name_or_sub_domain"]
 #             if bool(set(must_keys)-set(data.keys())):
-#                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             company_name_or_sub_domain = data.get('company_name_or_sub_domain')
 #             customer_company_object = Company.objects.filter(Q(name=company_name_or_sub_domain) | Q(sub_domain_name=company_name_or_sub_domain))
@@ -38,7 +119,7 @@ from django.db import transaction, IntegrityError
 #                         },
 #                     "message": "This Company has already account. Please enter new values if this is not your company. Or Ask your administrator to invite you as contributor.",
 #                 }
-#                 return Response(response_data, status=status.HTTP_409_CONFLICT)
+#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_409_CONFLICT)
 #             else:
 #                 response_data = {
 #                     'data': {
@@ -46,11 +127,11 @@ from django.db import transaction, IntegrityError
 #                         },
 #                     "message": "This is new data. We can proceed.",
 #                 }
-#                 return Response(response_data, status=status.HTTP_200_OK)
+#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
 
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
-#             return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -62,7 +143,7 @@ from django.db import transaction, IntegrityError
 #             data=request.data
 #             must_keys=["email_or_phone_number_or_username"]
 #             if bool(set(must_keys)-set(data.keys())):
-#                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             email_or_phone_number_or_username = data.get('email_or_phone_number_or_username')
 #             user_object = User.objects.filter(Q(email=email_or_phone_number_or_username) 
@@ -83,7 +164,7 @@ from django.db import transaction, IntegrityError
 #                         },
 #                     "message": "This User has already account Or Username already exists. Please enter new values if this is not your email or phone number. Or click on forgot password.",
 #                 }
-#                 return Response(response_data, status=status.HTTP_409_CONFLICT)
+#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_409_CONFLICT)
 #             else:
 #                 response_data = {
 #                     'data': {
@@ -91,11 +172,11 @@ from django.db import transaction, IntegrityError
 #                         },
 #                     "message": "This is new data. We can proceed.",
 #                 }
-#                 return Response(response_data, status=status.HTTP_200_OK)
+#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
 
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
-#             return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # class ProfileView(APIView):
@@ -109,17 +190,17 @@ from django.db import transaction, IntegrityError
 #                 'countries': country_data,
 #                 'genders': GENDER_IN_CHOICES,
 #             }
-#             return Response(response_data, status=status.HTTP_200_OK)
+#             return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
-#             return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #     def post(self, request):
 #         try:
 #             data=request.data
 #             must_keys=[]
 #             if bool(set(must_keys)-set(data.keys())):
-#                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             serializer = UserCreationSerializer(data)
 #             if serializer.is_valid():
@@ -130,91 +211,17 @@ from django.db import transaction, IntegrityError
 #                     "message": "Data Saved Successfully.",
 #                     "profile_url": profile_url,
 #                 }
-#                 return Response(response_data, status=status.HTTP_200_OK)
+#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
 #             else:
 #                 response_data = {
 #                     'data': {},
 #                     "message": "No New Data Passed.",
 #                     "profile_url": profile_url,
 #                 }
-#                 return Response(response_data, status=status.HTTP_200_OK)
+#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
-#             return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-# class RegistrationView(APIView):
-#     permission_classes = (permissions.AllowAny,)
-
-#     """
-#     get method is not needed. we don't need to send anything to frontend.
-#     """
-#     def post(self, request):
-#         try:
-#             data = request.data
-#             must_keys = ["username", "email", "phone_number", "gender", "country", "company_name", "company_sub_domain_name"]
-
-#             if bool(set(must_keys) - set(data.keys())):
-#                 return Response({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=status.HTTP_400_BAD_REQUEST)
-
-#             # Extract user data
-#             user_data = {
-#                 "full_name": data["full_name"],
-#                 "username": data["username"],
-#                 "email": data["email"],
-#                 "phone_number": data["phone_number"],
-#                 "gender": data["gender"],
-#                 "country": data["country"],
-#                 "password": data["password"],
-#             }
-
-#             # Extract company data
-#             company_data = {
-#                 "name": data["company_name"],
-#                 "sub_domain_name": data["company_sub_domain_name"],
-#             }
-
-#             # Create User and Company instances
-#             user_serializer = UserCreationSerializer(data=user_data)
-#             company_serializer = CompanySerializer(data=company_data)
-
-#             # Validate and save User and Company instances
-#             if not user_serializer.is_valid() and not company_serializer.is_valid():
-#                 return Response({'user_error': user_serializer.errors,'company_error': company_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-#             else:
-#                 user_serializer.is_valid(raise_exception=True)
-#                 user_instance = user_serializer.save()
-#                 user_instance.set_password(user_instance.password)
-#                 user_instance.save()
-#                 company_serializer.is_valid(raise_exception=True)
-#                 company_instance = company_serializer.save(created_by=user_instance)
-
-#                 # Create CustomerCompanyDetails instance
-#                 customer_company_details_instance = CustomerCompanyDetails.objects.create(
-#                     company=company_instance,
-#                     company_root_user=user_instance,
-#                     company_user=user_instance,
-#                     created_by=user_instance
-#                 )
-
-#                 login_url = reverse("accounts:login")  # for first user we need to redirect him mail verification, and after, after login.
-
-#                 # Serialize customer company details data
-#                 serialized_customer_company_details = CustomerCompanyDetailsSerializer(customer_company_details_instance).data
-
-#                 response_data = {
-#                     'user_data': user_serializer.data,
-#                     'company_data': company_serializer.data,
-#                     'customer_company_details_data': serialized_customer_company_details,  # Include serialized customer company details data
-#                     "message": "Registration successful. Please Verify email.",
-#                     "login_url": login_url,
-#                 }
-
-#                 return Response(response_data, status=status.HTTP_201_CREATED)
-#         except Exception as error:
-#             error_message = "Internal Server Error: " + str(error)
-#             return Response({'Message': error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # class LoginView(APIView):
@@ -222,17 +229,17 @@ from django.db import transaction, IntegrityError
 
 #     def get(self, request):
 #         try:
-#             return Response({}, status=status.HTTP_200_OK)
+#             return JsonResponse({}, status=HTTPStatus.HTTP_200_OK)
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
-#             return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #     def post(self, request):
 #         try:
 #             data=request.data
 #             must_keys=["username", "password"]
 #             if bool(set(must_keys)-set(data.keys())):
-#                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             obtain_token_instance = ObtainTokenView()
 #             response_from_obtain_token = obtain_token_instance.post(request)
@@ -240,11 +247,11 @@ from django.db import transaction, IntegrityError
 #             access_token = token_response_dictionary['access_token']
 #             refresh_token = token_response_dictionary['refresh_token']
 #             user = token_response_dictionary['user']
-#             user_serializer = UserResponseSerializer(user)
-#             return Response({'access_token': access_token, 'refresh_token': refresh_token, 'user': user_serializer.data}, status=status.HTTP_200_OK)
+#             user_serializer = UserJsonResponseSerializer(user)
+#             return JsonResponse({'access_token': access_token, 'refresh_token': refresh_token, 'user': user_serializer.data}, status=HTTPStatus.HTTP_200_OK)
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
-#             return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # class LogoutView(APIView):
@@ -252,14 +259,14 @@ from django.db import transaction, IntegrityError
 
 #     def post(self, request):
 #         try:
-#             # return Response({"error": e}, status=status.HTTP_400_BAD_REQUEST)
+#             # return JsonResponse({"error": e}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
 #             tokens = request.data.get("tokens")
 #             if "refresh_token" in tokens:
 #                 del tokens["refresh_token"]
-#             return Response({"message": "Logout successful."}, status=status.HTTP_204_NO_CONTENT)
+#             return JsonResponse({"message": "Logout successful."}, status=HTTPStatus.HTTP_204_NO_CONTENT)
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
-#             return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -288,19 +295,19 @@ from django.db import transaction, IntegrityError
 #             # Check if must_keys are present
 #             must_keys=["full_name", ]
 #             if bool(set(must_keys)-set(data.keys())):
-#                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             # Check if full_name is empty
 #             if not data['full_name']:
-#                 return Response({'Message': 'Full name cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message': 'Full name cannot be empty.'}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             full_name = request.data.get('full_name')
 #             suggested_username = suggest_username(full_name)
-#             return Response({'suggested_username': suggested_username}, status=status.HTTP_200_OK)
+#             return JsonResponse({'suggested_username': suggested_username}, status=HTTPStatus.HTTP_200_OK)
 
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
-#             return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -330,19 +337,19 @@ from django.db import transaction, IntegrityError
 #             # Check if must_keys are present
 #             must_keys=["company_name", ]
 #             if bool(set(must_keys)-set(data.keys())):
-#                 return Response({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             # Check if company_name is empty
 #             if not data['company_name']:
-#                 return Response({'Message': 'Company name cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message': 'Company name cannot be empty.'}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             company_name = request.data.get('company_name')
 #             suggested_company_sub_domain_name = suggest_company_sub_domain_name(company_name)
-#             return Response({'suggested_company_sub_domain_name': suggested_company_sub_domain_name}, status=status.HTTP_200_OK)
+#             return JsonResponse({'suggested_company_sub_domain_name': suggested_company_sub_domain_name}, status=HTTPStatus.HTTP_200_OK)
 
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
-#             return Response({'Message': error_message }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # class GiveContributorAccessToCollaborators(views.APIView):
@@ -355,7 +362,7 @@ from django.db import transaction, IntegrityError
 
 #             # Check if required keys are present
 #             if bool(set(must_keys) - set(data.keys())):
-#                 return Response({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             # Get contributor's email and company_id from request data
 #             user_ids = data.get('user_ids')
@@ -386,15 +393,15 @@ from django.db import transaction, IntegrityError
 #                     'company_id': company_id,
 #                 }
 
-#             return Response(response_data, status=status.HTTP_200_OK)
+#             return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
 
 #         except IntegrityError as integrity_error: # this error relates to database.
 #             error_message = "Integrity Error: " + str(integrity_error)
-#             return Response({'Message': error_message}, status=status.HTTP_400_BAD_REQUEST)
+#             return JsonResponse({'Message': error_message}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error)
-#             return Response({'Message': error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message}, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # class RemoveContributorAccess(views.APIView):
@@ -407,7 +414,7 @@ from django.db import transaction, IntegrityError
 
 #             # Check if required keys are present
 #             if bool(set(must_keys) - set(data.keys())):
-#                 return Response({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=status.HTTP_400_BAD_REQUEST)
+#                 return JsonResponse({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #             # Get contributor's email and company_id from request data
 #             user_ids = data.get('user_ids')
@@ -438,12 +445,12 @@ from django.db import transaction, IntegrityError
 #                     'company_id': company_id,
 #                 }
 
-#             return Response(response_data, status=status.HTTP_200_OK)
+#             return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
 
 #         except IntegrityError as integrity_error: # this error relates to database.
 #             error_message = "Integrity Error: " + str(integrity_error)
-#             return Response({'Message': error_message}, status=status.HTTP_400_BAD_REQUEST)
+#             return JsonResponse({'Message': error_message}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
 
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error)
-#             return Response({'Message': error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return JsonResponse({'Message': error_message}, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)

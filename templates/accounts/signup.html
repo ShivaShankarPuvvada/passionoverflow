@@ -2,7 +2,108 @@
 {% load static %}
 
 {% block title %}Passionoverflow | Sign up{% endblock %}
-
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+{% endblock stylesheets %}
 {% block main_content %}
 
+<section id="signup">
+    <div class="container-fluid">
+        <div class="container">
+            <div class="row justify-content-center">
+              <div class="col-md-6">
+                {% comment %} <h2 class="text-center mb-4">Sign Up</h2> {% endcomment %}
+                <form class="sign_up_form">
+                  <h2 class="text-center sign_up_heading">Sign up</h2>
+                  <h5 class="sign_up_heading_message text-center">Its free until you choose the premium plan.</h5>
+                  <div class="form-group mb-4 label_and_input">
+                    <label class="mb-1" for="full-name">Full name</label>
+                    <input type="text" class="full_name" id="full-name" placeholder="George Willson" required>
+                    <span class="underline"></span>
+                    <div class="invalid-feedback">
+                      Please enter your full name.
+                    </div>
+                  </div>
+                  <div class="form-group mb-4 label_and_input">
+                    <label class="mb-1" for="user-name">Username</label>
+                    <input type="text" class="user_name" id="user-name" placeholder="georgeteamleader" required>
+                    <span class="underline"></span>
+                    <div class="invalid-feedback">
+                      Please enter a new username.
+                    </div>
+                  </div>
+                  <div class="form-group mb-4 label_and_input">
+                    <label class="mb-1" for="email">Email</label>
+                    <input type="email" class="" id="email" placeholder="george@johndoe.com" required>
+                    <span class="underline"></span>
+                    <div class="invalid-feedback">
+                      Please enter a valid email address.
+                    </div>
+                  </div>
+                  <div class="form-group mb-4 label_and_input">
+                    <label class="mb-1" for="password">Password</label>
+                    <input type="password" class="" id="password" placeholder="Secure Password" required>
+                    <span class="underline"></span>
+                    <div class="invalid-feedback">
+                      Please enter a password.
+                    </div>
+                  </div>
+                  <div class="form-group mb-4 label_and_input">
+                    <label class="mb-1" for="company-name">Company name</label>
+                    <input type="text" class="company_name" id="company-name" placeholder="John Doe Co." required>
+                    <span class="underline"></span>
+                    <div class="invalid-feedback">
+                      Please enter a your Company name.
+                    </div>
+                  </div>
+                  <div class="form-group mb-4 label_and_input">
+                    <label class="mb-1" for="phone">Phone</label>
+                    <input type="text" class="phone" id="phone" placeholder="+1 (999) 888 9999" required>
+                    <span class="underline"></span>
+                    <div class="invalid-feedback">
+                      Please enter a your Company name.
+                    </div>
+                  </div>
+                  <div class="form-group mb-4 label_and_input">
+                    <label class="mb-1" for="passionoverflow-client-url">PassionOverflow URL</label>
+                    <input type="text" class="passionoverflow_client_url" id="passionoverflow-client-url" placeholder="remove this later client.passionoverflow.com" required>
+                    <span class="underline"></span>
+                    <div class="invalid-feedback">
+                      Please enter a your Company name.
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-block continue_sign_up_button">CONTINUE</button>
+                  <p class="small login_message mt-3">Already a member? <a href="{% url 'accounts:login' %}">Log in</a></p>
+                  <p class="small login_message mt-3">By clicking "Continue" you agree to the PassionOverflow's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+                </form>
+              </div>
+            </div>
+          </div>
+        
+    </div>
+</section>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+            }, false);
+        });
+        }, false);
+    })();
+</script>
 {% endblock main_content %}

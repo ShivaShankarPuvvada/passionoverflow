@@ -1,8 +1,8 @@
 
-/* 
+
 .login-page-section{
       background: #6a62d2 !important;
-  } */
+  }
   
 
   .signup-message {
@@ -23,7 +23,7 @@
     border-radius: 5px;
     width: 360px;
     height: 420px;
-    background-color: #ffffff;
+    background-color: #cacaff;;
     padding:40px;
   }
 
@@ -47,6 +47,10 @@
       font-size: 14px;
   }
   
+  .login_heading {
+    font-weight: 155;
+  }
+
   .form input:focus {
       box-shadow: 0 0 5px 0 rgba(106, 98, 210);
   }
@@ -87,6 +91,6 @@
   }
   .form .message a {
       font-size: 14px;
-      color: #6a62d2;
+      color: #512dc0;
       text-decoration: none;
   }
