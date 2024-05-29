@@ -10,14 +10,19 @@
 <section id="signup">
     <div class="container-fluid">
         <div class="container">
+                            <!-- Display server-side validation errors -->
+                            <div id="error-messages" class="error-messages d-none">
+                              <div class="error-message">
+                                  <span class="close-btn">&times;</span>
+                                  <span class="error-text"></span>
+                              </div>
+                            </div>
             <div class="row justify-content-center">
               <div class="col-md-6">
                 <form class="sign_up_form needs-validation" method="POST" novalidate data-ajax="true">
                   {% csrf_token %}
                   <h2 class="text-center sign_up_heading">Sign up</h2>
                   <h5 class="sign_up_heading_message text-center">It's free until you choose the premium plan.</h5>
-                  <!-- Display server-side validation errors -->
-                  <div id="error-messages" class="alert alert-danger d-none"></div>
                   <div class="form-group mb-4 label_and_input">
                     <label class="mb-1" for="full-name">Full name</label>
                     <input name="full_name" type="text" class="full_name" id="full-name" placeholder="George Willson" required>
@@ -73,23 +78,42 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
   $(document).ready(function() {
+    // Function to show error message
+    function showError(messages) {
+        var $errorMessages = $('#error-messages');
+        var errorMessage = messages.join('<br>'); // Join messages with line breaks
+        $errorMessages.find('.error-text').html(errorMessage);
+        $errorMessages.removeClass('d-none');
+    }
+
+    // Function to hide error message
+    function hideError() {
+        var $errorMessages = $('#error-messages');
+        $errorMessages.addClass('d-none');
+    }
+
+    // Close error message when close button is clicked
+    $('#error-messages').on('click', '.close-btn', function() {
+        hideError();
+    });
+
     $('form[data-ajax=true]').on('submit', function(event) {
         event.preventDefault();
         var $form = $(this);
-        var $errorMessages = $('#error-messages');
 
         // Clear any previous error messages
-        $errorMessages.text('');
+        hideError();
 
         // Perform frontend validations for each input field
         var isValid = true;
+        var errorMessages = [];
         $form.find('input, select, textarea').each(function() {
             var $input = $(this);
 
             // Check if the input is empty
             if (!$input.val().trim()) {
                 // Display specific error message for empty input
-                $errorMessages.text($errorMessages.text() + $input.attr('name') + ' is required. ');
+                errorMessages.push($input.attr('name') + ' is required.');
                 isValid = false;
                 return;  // Skip pattern validation for empty inputs
             }
@@ -98,14 +122,14 @@
             var pattern = $input.attr('pattern');
             if (pattern && !RegExp(pattern).test($input.val())) {
                 // Display specific error message for pattern mismatch
-                $errorMessages.text($errorMessages.text() + $input.attr('name') + ' is invalid. ');
+                errorMessages.push($input.attr('name') + ' is invalid.');
                 isValid = false;
             }
         });
 
         // If any input fails frontend validations, stop form submission
         if (!isValid) {
-            $errorMessages.removeClass('d-none');
+            showError(errorMessages);
             return;
         }
 
@@ -122,18 +146,17 @@
                     window.location.href = response.redirect_url;
                 } else {
                     // Display validation errors from the server
-                    $errorMessages.text(response.errors.join(' '));
-                    $errorMessages.removeClass('d-none');
+                    showError(response.errors);
                 }
             },
             error: function() {
                 // Handle server errors
-                $errorMessages.text('An unexpected error occurred. Please try again.');
-                $errorMessages.removeClass('d-none');
+                showError(['An unexpected error occurred. Please try again.']);
             }
         });
     });
 });
+
 
 
 </script>

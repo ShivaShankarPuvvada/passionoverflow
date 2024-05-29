@@ -94,3 +94,31 @@ input::placeholder {
   .company_space_name_helper_text {
     color: #838383
   }
+ 
+.error-messages {
+    position: fixed;
+    top: 18%;
+    right: 7%;
+    z-index: 1000;
+}
+
+.error-message {
+    background-color: #f44336;
+    color: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.close-btn {
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 20px;
+}
+
+.close-btn:hover {
+    color: black;
+}
