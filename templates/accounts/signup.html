@@ -65,14 +65,14 @@
                     </div>
                   </div>
                   <div class="form-group mb-4 label_and_input">
-                    <label class="mb-1" for="passionoverflow-client-url">PassionOverflow URL</label>
-                    <input type="text" class="passionoverflow_client_url" id="passionoverflow-client-url" placeholder="remove this later client.passionoverflow.com" required>
+                    <label class="mb-1" for="passionoverflow-client-space">Your Company Space</label>
+                    <input type="text" class="passionoverflow_client_space" id="passionoverflow-client-space" placeholder="johndoecompanyspacename" required>
                     <span class="underline"></span>
                     <div class="invalid-feedback">
                       Please enter a your Company name.
                     </div>
                   </div>
-
+                  <p class="small company_space_name_helper_text">This'll be a unique PassionOverflow profile address for your company to login. A unique name will be given to each company.</p>
                   <button type="submit" class="btn btn-block continue_sign_up_button">CONTINUE</button>
                   <p class="small login_message mt-3">Already a member? <a href="{% url 'accounts:login' %}">Log in</a></p>
                   <p class="small login_message mt-3">By clicking "Continue" you agree to the PassionOverflow's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>

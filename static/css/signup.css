@@ -90,3 +90,7 @@ input::placeholder {
     padding-top: 3.5%;
     padding-bottom: 4.5%;
   }
+
+  .company_space_name_helper_text {
+    color: #838383
+  }
