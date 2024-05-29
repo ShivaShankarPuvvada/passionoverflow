@@ -12,6 +12,7 @@ from django.db import transaction, IntegrityError
 
 from django.http import JsonResponse
 from http import HTTPStatus
+import re
 
 # User = get_user_model()
 
@@ -24,22 +25,41 @@ def registration_view(request):
     """
     if request.method == "POST":
         try:
-            data = request.data
-            must_keys = ["username", "email", "phone_number", "gender", "country", "company_name", "company_sub_domain_name"]
+            data = request.POST
+            must_keys = ["full_name", "username", "email", "password", "company_name", "phone_number", "company_sub_domain_name"]
 
             if bool(set(must_keys) - set(data.keys())):
-                return JsonResponse({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'success': False, 'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=HTTPStatus.BAD_REQUEST)
 
             # Extract user data
-            user_data = {
-                "full_name": data["full_name"],
-                "username": data["username"],
-                "email": data["email"],
-                "phone_number": data["phone_number"],
-                "gender": data["gender"],
-                "country": data["country"],
-                "password": data["password"],
-            }
+            full_name = data["full_name"]
+            username = data["username"]
+            email = data["email"]
+            password = data["password"]
+            company_name = data["company_name"]
+            phone_number = data["phone_number"]
+            company_sub_domain_name = data["company_sub_domain_name"]
+
+            # Basic validation
+            errors = []
+            
+            if not full_name:
+                errors.append("Full name is required.")
+            if not username:
+                errors.append("Username is required.")
+            if not email or not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+                errors.append("Enter a valid email address.")
+            if not password or not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$", password):
+                errors.append("Password does not match these rules: min 8 letters, should contain at least one number, one uppercase, one lowercase, one symbol.")
+            if not company_name:
+                errors.append("Company name is required.")
+            if not phone_number or not re.match(r"^\+?\d{10,15}$", phone_number):  # Basic phone number validation
+                errors.append("Enter a valid phone number.")
+            if not company_sub_domain_name:
+                errors.append("Company space name is required.")
+            
+            if errors:
+                return JsonResponse({'success': False, 'errors': errors})
 
             # Extract company data
             company_data = {
@@ -53,7 +73,7 @@ def registration_view(request):
 
             # Validate and save User and Company instances
             if not user_serializer.is_valid() and not company_serializer.is_valid():
-                return JsonResponse({'user_error': user_serializer.errors,'company_error': company_serializer.errors}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'user_error': user_serializer.errors,'company_error': company_serializer.errors}, status=HTTPStatus.BAD_REQUEST)
             else:
                 user_serializer.is_valid(raise_exception=True)
                 user_instance = user_serializer.save()
@@ -76,6 +96,7 @@ def registration_view(request):
                 serialized_customer_company_details = CustomerCompanyDetailsSerializer(customer_company_details_instance).data
 
                 response_data = {
+                    'success': True,
                     'user_data': user_serializer.data,
                     'company_data': company_serializer.data,
                     'customer_company_details_data': serialized_customer_company_details,  # Include serialized customer company details data
@@ -83,16 +104,16 @@ def registration_view(request):
                     "login_url": login_url,
                 }
 
-                return JsonResponse(response_data, status=HTTPStatus.HTTP_201_CREATED)
+                return JsonResponse(response_data, status=HTTPStatus.CREATED)
         except Exception as error:
             error_message = "Internal Server Error: " + str(error)
-            return JsonResponse({'Message': error_message}, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'Message': error_message}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
     elif request.method == "GET":
         try:
             return render(request, "accounts/signup.html")
         except Exception as error:
             error_message = "Internal Server Error: " + str(error) 
-            return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'Message': error_message }, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 # class CustomerCompanyVerificationView(APIView):
