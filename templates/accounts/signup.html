@@ -34,16 +34,16 @@
                     <input name="username" type="text" class="user_name" id="user-name" placeholder="georgeteamleader" required>
                     <span class="underline"></span>
                   </div>
-                  <p class="already_exists_text availability-message small" style="display: none;"></p>
+                  <p id="username-availability-message" class="already_exists_text availability-message small" style="display: none;"></p>
                   <div class="form-group mb-4 label_and_input">
                     <label class="mb-1" for="email">Email</label>
-                    <input name="email" type="email" class="" id="email" placeholder="george@johndoe.com" pattern="[^@]+@[^@]+\.[^@]+" required>
+                    <input name="email" type="email" id="email" placeholder="george@johndoe.com" pattern="[^@]+@[^@]+\.[^@]+" required>
                     <span class="underline"></span>
                   </div>
-                  <p class="already_exists_text availability-message small" style="display: none;"></p>
+                  <p id="email-availability-message" class="already_exists_text availability-message small" style="display: none;"></p>
                   <div class="form-group mb-4 label_and_input">
                     <label class="mb-1" for="password">Password</label>
-                    <input name="password" type="password" class="" id="password" placeholder="Secure Password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$" required>
+                    <input name="password" type="password" id="password" placeholder="Secure Password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$" required>
                     <span class="underline"></span>
                   </div>
                   <div class="password-toggle-wrapper">
@@ -60,7 +60,7 @@
                     <input name="phone_number" type="tel" class="phone" id="phone" placeholder="+19998889999" pattern="^\+?\d{10,15}$" required>
                     <span class="underline"></span>
                   </div>
-                  <p class="already_exists_text availability-message small" style="display: none;"></p>
+                  <p id="phone_number-availability-message" class="already_exists_text availability-message small" style="display: none;"></p>
                   <p class="small company_space_name_helper_text">We are collecting Phone number to enble 2-factor-authentication for enhanced security.</p>
 
                   <div class="form-group mb-4 label_and_input">
@@ -68,7 +68,7 @@
                     <input name="company_sub_domain_name" type="text" class="passionoverflow_client_space" id="passionoverflow-client-space" placeholder="johndoecompanyspacename" required>
                     <span class="underline"></span>
                   </div>
-                  <p class="already_exists_text availability-message small" style="display: none;"></p>
+                  <p id="company_sub_domain_name-availability-message" class="already_exists_text availability-message small" style="display: none;"></p>
                   <p class="small company_space_name_helper_text">This'll be a unique PassionOverflow profile address for your company to login. A unique name will be given to each company.</p>
                   <button type="submit" class="btn btn-block continue_sign_up_button">CONTINUE</button>
                   <p class="small login_message mt-3">Already a member? <a href="{% url 'accounts:login' %}">Log in</a></p>
@@ -139,13 +139,14 @@
                 value: value
             },
             success: function(data) {
-                var $message = $input.next('.availability-message');
+                var messageId = field + "-availability-message"; // Construct the ID of the corresponding availability message
+                var $message = $('#' + messageId);
                 if (data.exists) {
                     $message.text('This ' + field.replace('_', ' ') + ' is already taken. Please choose another one.');
-                    $message.css('color', 'red');
+                    $message.css('color', '#8c1e1e');
                 } else {
                     $message.text('This ' + field.replace('_', ' ') + ' is available.');
-                    $message.css('color', 'green');
+                    $message.css('color', '#095809');
                 }
                 $message.show();
             }
