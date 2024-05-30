@@ -16,14 +16,12 @@ Payment should be taken care of for a single company. i.e, for a single company,
 """
 
 urlpatterns = [
-    re_path(r"login/$", auth_views.LoginView.as_view(template_name="accounts/login.html"),name='login'),
+    re_path(r"login/$", auth_views.LoginView.as_view(template_name="accounts/login.html"), name='login'),
     re_path(r"logout/$", auth_views.LogoutView.as_view(template_name="accounts/logout.html"), name="logout"),
-    
+    path('check-availability/', views.check_availability, name='check_availability'),
     # path("login/", views.LoginView.as_view(), name="login"),
     # path("logout/", views.LogoutView.as_view(), name="logout"),
     path("registration/", views.registration_view, name="registration"),
-    # path("verify_company_details_before_registering/", views.CustomerCompanyVerificationView.as_view(), name="verify_company_details_before_registering"), # it will verify the company name or sub domain name already exists or not.
-    # path("verify_user_details_before_registering/", views.UserDetailsVerificationView.as_view(), name="verify_user_details_before_registering"), # this will verify email or phone or username exists or not.
     # path("profile/", views.ProfileView.as_view(), name="profile"),
     # path("give_contributor_access_to_collaborators/", views.GiveContributorAccessToCollaborators.as_view(), name="give_contributor_access_to_collaborators"),
     # path("remove_contributor_access/", views.GiveContributorAccessToCollaborators.as_view(), name="remove_contributor_access"),

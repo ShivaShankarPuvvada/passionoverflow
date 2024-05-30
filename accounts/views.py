@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.urls import reverse
 
 from django.contrib.auth import get_user_model
@@ -9,14 +10,34 @@ from django.db.models import Q
 
 from django.shortcuts import get_object_or_404
 from django.db import transaction, IntegrityError
+from django.views.decorators.csrf import csrf_exempt
 
 from django.http import JsonResponse
 from http import HTTPStatus
 import re
+from django.db import transaction
 
-# User = get_user_model()
+User = get_user_model()
 
 # Create your views here.
+@csrf_exempt
+def check_availability(request):
+    field = request.GET.get('field')
+    value = request.GET.get('value')
+    response = {'exists': False}
+
+    if field and value:
+        if field == 'username' and User.objects.filter(username=value).exists():
+            response['exists'] = True
+        elif field == 'company_sub_domain_name' and Company.objects.filter(sub_domain_name=value).exists():
+            response['exists'] = True
+        elif field == 'email' and User.objects.filter(email=value).exists():
+            response['exists'] = True
+        elif field == 'phone_number' and User.objects.filter(phone_number=value).exists():
+            response['exists'] = True
+
+    return JsonResponse(response)
+
 
 def registration_view(request):
 
@@ -61,143 +82,41 @@ def registration_view(request):
             if errors:
                 return JsonResponse({'success': False, 'errors': errors})
 
-            # Extract company data
-            company_data = {
-                "name": data["company_name"],
-                "sub_domain_name": data["company_sub_domain_name"],
-            }
+            with transaction.atomic():
 
-            # Create User and Company instances
-            user_serializer = UserCreationSerializer(data=user_data)
-            company_serializer = CompanySerializer(data=company_data)
-
-            # Validate and save User and Company instances
-            if not user_serializer.is_valid() and not company_serializer.is_valid():
-                return JsonResponse({'user_error': user_serializer.errors,'company_error': company_serializer.errors}, status=HTTPStatus.BAD_REQUEST)
-            else:
-                user_serializer.is_valid(raise_exception=True)
-                user_instance = user_serializer.save()
-                user_instance.set_password(user_instance.password)
-                user_instance.save()
-                company_serializer.is_valid(raise_exception=True)
-                company_instance = company_serializer.save(created_by=user_instance)
-
-                # Create CustomerCompanyDetails instance
-                customer_company_details_instance = CustomerCompanyDetails.objects.create(
-                    company=company_instance,
-                    company_root_user=user_instance,
-                    company_user=user_instance,
-                    created_by=user_instance
+                # Create user
+                user = User.objects.create(
+                    full_name=full_name,
+                    username=username,
+                    email=email
                 )
+                user.set_password(password)
+                user.save()
 
-                login_url = reverse("accounts:login")  # for first user we need to redirect him mail verification, and after, after login.
+                # Create company
+                company, company_created = Company.objects.get_or_create(name=company_name, sub_domain_name=company_sub_domain_name)
+                if company_created:
+                    company.created_by = user
+                company.save()
 
-                # Serialize customer company details data
-                serialized_customer_company_details = CustomerCompanyDetailsSerializer(customer_company_details_instance).data
+                # Create customer company details
+                company_customer, company_customer_created = CustomerCompanyDetails.objects.get_or_create(company=company, company_root_user=user)
+                if company_customer_created:
+                    company_customer.created_by = user
+                company_customer.save()
 
-                response_data = {
-                    'success': True,
-                    'user_data': user_serializer.data,
-                    'company_data': company_serializer.data,
-                    'customer_company_details_data': serialized_customer_company_details,  # Include serialized customer company details data
-                    "message": "Registration successful. Please Verify email.",
-                    "login_url": login_url,
-                }
+            return JsonResponse({'success': True, 'redirect_url': reverse('accounts:login')})
 
-                return JsonResponse(response_data, status=HTTPStatus.CREATED)
         except Exception as error:
-            error_message = "Internal Server Error: " + str(error)
-            return JsonResponse({'Message': error_message}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            # Rollback the transaction and return an error response
+            return JsonResponse({'success': False, 'errors': ["An unexpected error occurred. Please try again.",]}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
     elif request.method == "GET":
         try:
             return render(request, "accounts/signup.html")
         except Exception as error:
             error_message = "Internal Server Error: " + str(error) 
             return JsonResponse({'Message': error_message }, status=HTTPStatus.INTERNAL_SERVER_ERROR)
-
-
-# class CustomerCompanyVerificationView(APIView):
-#     permission_classes = (permissions.AllowAny,)
-
-#     def post(self, request):
-#         try:
-#             data=request.data
-#             must_keys=["company_name_or_sub_domain"]
-#             if bool(set(must_keys)-set(data.keys())):
-#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
-
-#             company_name_or_sub_domain = data.get('company_name_or_sub_domain')
-#             customer_company_object = Company.objects.filter(Q(name=company_name_or_sub_domain) | Q(sub_domain_name=company_name_or_sub_domain))
-
-#             if customer_company_object.exists():
-#                 customer_company_object = customer_company_object.latest()
-#                 company_name = customer_company_object.name
-#                 company_sub_domain_name = customer_company_object.sub_domain_name
-#                 response_data = {
-#                     'data': {
-#                         "company_name": company_name,
-#                         "company_sub_domain_name": company_sub_domain_name,
-#                         },
-#                     "message": "This Company has already account. Please enter new values if this is not your company. Or Ask your administrator to invite you as contributor.",
-#                 }
-#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_409_CONFLICT)
-#             else:
-#                 response_data = {
-#                     'data': {
-#                         "proceed": True,
-#                         },
-#                     "message": "This is new data. We can proceed.",
-#                 }
-#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
-
-#         except Exception as error:
-#             error_message = "Internal Server Error: " + str(error) 
-#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-# class UserDetailsVerificationView(APIView):
-#     permission_classes = (permissions.AllowAny,)
-
-#     def post(self, request):
-#         try:
-#             data=request.data
-#             must_keys=["email_or_phone_number_or_username"]
-#             if bool(set(must_keys)-set(data.keys())):
-#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
-
-#             email_or_phone_number_or_username = data.get('email_or_phone_number_or_username')
-#             user_object = User.objects.filter(Q(email=email_or_phone_number_or_username) 
-#                                               | Q(phone_number=email_or_phone_number_or_username) 
-#                                               | Q(username=email_or_phone_number_or_username))
-
-
-#             if user_object.exists():
-#                 user_object = user_object.latest()
-#                 email = user_object.email
-#                 phone_number = user_object.phone_number
-#                 username = user_object.username
-#                 response_data = {
-#                     'data': {
-#                         "email": email,
-#                         "phone_number": phone_number,
-#                         "username": username,
-#                         },
-#                     "message": "This User has already account Or Username already exists. Please enter new values if this is not your email or phone number. Or click on forgot password.",
-#                 }
-#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_409_CONFLICT)
-#             else:
-#                 response_data = {
-#                     'data': {
-#                         "proceed": True,
-#                         },
-#                     "message": "This is new data. We can proceed.",
-#                 }
-#                 return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
-
-#         except Exception as error:
-#             error_message = "Internal Server Error: " + str(error) 
-#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # class ProfileView(APIView):

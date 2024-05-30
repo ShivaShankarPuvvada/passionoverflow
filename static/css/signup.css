@@ -91,10 +91,39 @@ input::placeholder {
     padding-bottom: 4.5%;
   }
 
-  .company_space_name_helper_text {
-    color: #838383
-  }
- 
+.company_space_name_helper_text {
+color: #330000bd;
+}
+
+.already_exists_text {
+color: #330000bd;
+}
+
+.password-toggle-wrapper {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.password-toggle-word {
+    background-color: #7346ec;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+    z-index: 1;
+    transition: 0.5s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.password-toggle-word:hover {
+    background-color: #5e2ced;
+}
+
+
+
+
 .error-messages {
     position: fixed;
     top: 18%;

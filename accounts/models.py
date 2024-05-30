@@ -97,8 +97,11 @@ class CustomerCompanyDetails(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
     def __str__(self):
-        current_user = 'Collaborator'
+        if self.company_user != None:
+            current_user = 'Collaborator'
+            current_user_name = self.company_user.username
         if self.company_root_user != None:
             current_user = 'Contributor'
-        return_string = current_user + 'for' + self.company.name + 'and sub domain is ' + self.company.sub_domain_name
+            current_user_name = self.company_root_user.username
+        return_string = current_user_name + ' is a ' + current_user + ' for ' + self.company.name + ' company and space is ' + self.company.sub_domain_name
         return return_string
