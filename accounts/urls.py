@@ -16,7 +16,7 @@ Payment should be taken care of for a single company. i.e, for a single company,
 """
 
 urlpatterns = [
-    re_path(r"login/$", auth_views.LoginView.as_view(template_name="accounts/login.html"), name='login'),
+    path('login/', views.custom_login_view, name='login'),
     re_path(r"logout/$", auth_views.LogoutView.as_view(template_name="accounts/logout.html"), name="logout"),
     path('check-availability/', views.check_availability, name='check_availability'),
     # path("login/", views.LoginView.as_view(), name="login"),

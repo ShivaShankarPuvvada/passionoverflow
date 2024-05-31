@@ -1,21 +1,27 @@
-from django.shortcuts import render
-from django.shortcuts import redirect
 from django.urls import reverse
 
-from django.contrib.auth import get_user_model
+from django.shortcuts import render, redirect, get_object_or_404
 
-from django_countries import countries
-from .models import GENDER_IN_CHOICES, CustomerCompanyDetails, Company
+from django.contrib import messages
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, login
+
+from django.contrib.auth.views import LoginView, LogoutView
+
+from django.db import transaction, IntegrityError
 from django.db.models import Q
 
-from django.shortcuts import get_object_or_404
-from django.db import transaction, IntegrityError
+from django_countries import countries
+
+from .models import GENDER_IN_CHOICES, CustomerCompanyDetails, Company
+
 from django.views.decorators.csrf import csrf_exempt
 
 from django.http import JsonResponse
+
 from http import HTTPStatus
 import re
-from django.db import transaction
 
 User = get_user_model()
 
@@ -42,7 +48,10 @@ def check_availability(request):
 def registration_view(request):
 
     """
-    get method is not needed. we don't need to send anything to frontend.
+    username, email, phone_number and company_sub_domain_name are unique fields. 
+    We don't need to validate if they already exists in our db or not. 
+    Even though they submit the form, they will get unexpected error.
+    Also, it will show error below the html fields that these are already taken.
     """
     if request.method == "POST":
         try:
@@ -119,6 +128,20 @@ def registration_view(request):
             return JsonResponse({'Message': error_message }, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
+def custom_login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({'success': True, 'redirect_url': reverse('home_page')})  # Replace with your success URL
+        else:
+            return JsonResponse({'success': False, 'error': 'Invalid username or password'}, status=HTTPStatus.BAD_REQUEST)
+    
+    return render(request, 'accounts/login.html')
+
+
 # class ProfileView(APIView):
 #     permission_classes = (permissions.AllowAny,)
 
@@ -159,134 +182,6 @@ def registration_view(request):
 #                     "profile_url": profile_url,
 #                 }
 #                 return JsonResponse(response_data, status=HTTPStatus.HTTP_200_OK)
-#         except Exception as error:
-#             error_message = "Internal Server Error: " + str(error) 
-#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# class LoginView(APIView):
-#     permission_classes = (permissions.AllowAny,)
-
-#     def get(self, request):
-#         try:
-#             return JsonResponse({}, status=HTTPStatus.HTTP_200_OK)
-#         except Exception as error:
-#             error_message = "Internal Server Error: " + str(error) 
-#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
-
-#     def post(self, request):
-#         try:
-#             data=request.data
-#             must_keys=["username", "password"]
-#             if bool(set(must_keys)-set(data.keys())):
-#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
-
-#             obtain_token_instance = ObtainTokenView()
-#             response_from_obtain_token = obtain_token_instance.post(request)
-#             token_response_dictionary = response_from_obtain_token.data
-#             access_token = token_response_dictionary['access_token']
-#             refresh_token = token_response_dictionary['refresh_token']
-#             user = token_response_dictionary['user']
-#             user_serializer = UserJsonResponseSerializer(user)
-#             return JsonResponse({'access_token': access_token, 'refresh_token': refresh_token, 'user': user_serializer.data}, status=HTTPStatus.HTTP_200_OK)
-#         except Exception as error:
-#             error_message = "Internal Server Error: " + str(error) 
-#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-# class LogoutView(APIView):
-#     permission_classes = (permissions.AllowAny,)
-
-#     def post(self, request):
-#         try:
-#             # return JsonResponse({"error": e}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
-#             tokens = request.data.get("tokens")
-#             if "refresh_token" in tokens:
-#                 del tokens["refresh_token"]
-#             return JsonResponse({"message": "Logout successful."}, status=HTTPStatus.HTTP_204_NO_CONTENT)
-#         except Exception as error:
-#             error_message = "Internal Server Error: " + str(error) 
-#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
-# def suggest_username(full_name):
-#     # Extract initials from full name
-#     initials = ''.join([name[0] for name in full_name.split()])
-
-#     # Generate a username using initials
-#     suggested_username = initials.lower()
-
-#     # Check if the username already exists
-#     suffix = 1
-#     while User.objects.filter(username=suggested_username).exists():
-#         suggested_username = f"{initials.lower()}{suffix}"
-#         suffix += 1
-
-#     return suggested_username
-
-
-# class SuggestUsernameView(APIView):
-#     def post(self, request):
-
-#         try:
-#             data=request.data
-#             # Check if must_keys are present
-#             must_keys=["full_name", ]
-#             if bool(set(must_keys)-set(data.keys())):
-#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
-
-#             # Check if full_name is empty
-#             if not data['full_name']:
-#                 return JsonResponse({'Message': 'Full name cannot be empty.'}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
-
-#             full_name = request.data.get('full_name')
-#             suggested_username = suggest_username(full_name)
-#             return JsonResponse({'suggested_username': suggested_username}, status=HTTPStatus.HTTP_200_OK)
-
-#         except Exception as error:
-#             error_message = "Internal Server Error: " + str(error) 
-#             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
-# def suggest_company_sub_domain_name(company_name):
-#     # Extract initials from company name
-#     initials = ''.join([name[0] for name in company_name.split()])
-
-#     # Generate a sub domain using initials
-#     suggested_sub_domain_name = initials.lower()
-
-#     # Check if the username already exists
-#     suffix = 1
-#     while Company.objects.filter(sub_domain_name=suggested_sub_domain_name).exists():
-#         suggested_sub_domain_name = f"{initials.lower()}{suffix}"
-#         suffix += 1
-
-#     return suggested_sub_domain_name
-
-
-
-# class SuggestCompanySubDomainNameView(APIView):
-#     def post(self, request):
-
-#         try:
-#             data=request.data
-#             # Check if must_keys are present
-#             must_keys=["company_name", ]
-#             if bool(set(must_keys)-set(data.keys())):
-#                 return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"},status=HTTPStatus.HTTP_400_BAD_REQUEST)
-
-#             # Check if company_name is empty
-#             if not data['company_name']:
-#                 return JsonResponse({'Message': 'Company name cannot be empty.'}, status=HTTPStatus.HTTP_400_BAD_REQUEST)
-
-#             company_name = request.data.get('company_name')
-#             suggested_company_sub_domain_name = suggest_company_sub_domain_name(company_name)
-#             return JsonResponse({'suggested_company_sub_domain_name': suggested_company_sub_domain_name}, status=HTTPStatus.HTTP_200_OK)
-
 #         except Exception as error:
 #             error_message = "Internal Server Error: " + str(error) 
 #             return JsonResponse({'Message': error_message }, status=HTTPStatus.HTTP_500_INTERNAL_SERVER_ERROR)

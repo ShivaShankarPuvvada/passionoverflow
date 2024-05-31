@@ -1,18 +1,62 @@
 {% extends 'no_auth_base.html' %}
 {% load static %}
 
-{% block title %}Passionoverflow | Login{% endblock %}
+{% block title %}Passionoverflow | Logout{% endblock %}
 {% block stylesheets %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}">
+<style>
+  .parallax1 {
+    background-image: url('{% static 'images/parallax1.jpg' %}');
+  }
+  
+  .parallax2 {
+    background-image: url('{% static 'images/parallax2.jpg' %}');
+  }
+  
+  .parallax3 {
+    background-image: url('{% static 'images/parallax3.jpg' %}');
+  }
+  
+  .parallax4 {
+    background-image: url('{% static 'images/parallax4.jpg' %}');
+  }
+  
+  .parallax5 {
+    background-image: url('{% static 'images/parallax5.jpg' %}');
+  }
+  
+</style>
+<link rel="stylesheet" href="{% static 'css/logout.css' %}">
 {% endblock stylesheets %}
 {% block main_content %}
-<section class="login-page-section">
-  <div class="container-fluid">
-    <div class="container">
-      <div class="row mb-5">
-        <h1>See you soon.</h1>
-        <h2>Thanks to use our web-client, We hope you liked it.</h2>
-      </div>
+<section class="logout-page-section">
+  <div class="parallax-section parallax1">
+    <div class="parallax1_container">
+      <h1>See you soon!</h1>
+      <div class="scroll-indicator">Scroll down</div>
+    </div>
+  </div>
+  <div class="parallax-section parallax2">
+    <div class="parallax2_container">
+      <h2>We hope your work is <em>complete</em>. <br>
+        Have a <strong>great day</strong>.</h2>
+    </div>
+  </div>
+  <div class="parallax-section parallax3">
+    <div class="parallax3_container">
+      <h2>Feel free to <em>take a break</em>. <br>
+        You can finish it later.</h2>
+    </div>
+  </div>
+  <div class="parallax-section parallax4">
+    <div class="parallax4_container">
+      <h2>Changed your mind or still have time? <br>
+        Let's <em>achieve</em> something <strong>together</strong>. <br> <a href="{% url 'accounts:login' %}" class="login-button">Login</a> again.</h2>
+    </div>
+  </div>
+  <div class="parallax-section parallax5">
+    <div class="parallax5_container">
+      <h2><strong>Thank you</strong> for using <em>Passionoverflow</em>. <br>
+        We hope you enjoyed it.</h2>
     </div>
   </div>
 </section>

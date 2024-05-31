@@ -12,15 +12,17 @@
       <div class="row">
         <div class="login-page">
           <div class="form">
-              <form class="login-form " action="https://www.instagram.com/developer_nikhil27/" target="_blank">
+              <form id="login-form" class="login-form">
                   {% csrf_token %}
                   <h2 class="text-center login_heading">Log in</h2>
-                  <input type="text" required placeholder="Username" id="user" autocomplete="off" />
-                  <input oninput="return formvalid()" type="password" required placeholder="Password" id="pass" autocomplete="off" />
-                  <img src="https://cdn2.iconfinder.com/data/icons/basic-ui-interface-v-2/32/hide-512.png"
-                      onclick="show()" id="showimg">
-                  <span id="vaild-pass"></span>
-                  <button type="submit">Log in</button>
+
+                  <!-- Error message container -->
+                  <div id="error-messages" class="error-messages" style="display: none;"></div>
+                  
+                  <input name="username" type="text" required placeholder="Username" id="user" autocomplete="off" />
+                  <input name="password" type="password" required placeholder="Password" id="pass" autocomplete="off" />
+                  <img src="https://cdn2.iconfinder.com/data/icons/basic-ui-interface-v-2/32/hide-512.png" onclick="show()" id="showimg">
+                  <button type="submit" class="continue_login_button">Log in</button>
                   <p class="message"><a href="#">Forgot your password?</a></p>
                   <p class="message signup-message text-center">New to PassionOverflow? <a href="{% url 'accounts:registration' %}">Sign up</a></p>
               </form>
@@ -30,5 +32,48 @@
     </div>
   </div>
 </section>
+
+<script>
+document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const formData = new FormData(form);
+    const csrfToken = formData.get('csrfmiddlewaretoken');
+
+    fetch("{% url 'accounts:login' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.redirect_url;
+        } else {
+          const errorMessagesDiv = document.getElementById('error-messages');
+          errorMessagesDiv.innerHTML = `
+              <div class="error-message">
+                  <span class="close-btn">&times;</span>
+                  ${data.error}
+              </div>
+          `;
+          errorMessagesDiv.style.display = 'block';
+
+          document.querySelectorAll('.close-btn').forEach(btn => {
+              btn.onclick = function() {
+                  this.parentElement.style.display = 'none';
+              };
+          });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+</script>
 
 {% endblock main_content %}
