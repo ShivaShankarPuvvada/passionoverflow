@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Project Phase History{% endblock %}
+{% block content %}
+<div class="container">
+
+<h1>Project Phase History for {{ project.title }}</h1>
+<ul>
+    {% for phase in phases %}
+    <li>{{ phase.phase.name }} - Status: {{ phase.status }} - Created At: {{ phase.created_at }}</li>
+    {% endfor %}
+</ul>
+</div>
+
+{% endblock %}

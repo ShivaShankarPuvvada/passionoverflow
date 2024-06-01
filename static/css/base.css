@@ -1,0 +1,97 @@
+/* Reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base Styles */
+body {
+  font-family: Arial, sans-serif;
+}
+
+/* Top Navbar */
+.navbar {
+  height: 70px; /* Increase the height as needed */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add shadow */
+  position: fixed; /* Make navbar fixed */
+  top: 0; /* Position navbar at the top */
+  width: 100%; /* Make navbar full width */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.navbar-brand img {
+  margin-right: 10px;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px; /* Set a fixed width for the sidebar */
+  background-color: #e7e1fc; /* Set background color */
+  position: fixed; /* Make sidebar fixed */
+  top: 70px; /* Position sidebar below navbar */
+  bottom: 0; /* Position sidebar at the bottom */
+  left: 0; /* Position sidebar at the left */
+  z-index: 999; /* Ensure it's above other content */
+  overflow-y: auto; /* Allow sidebar to scroll if needed */
+  padding: 20px;
+  border-right: 1px solid #2b1270; /* Adjust as needed */
+}
+
+.sidebar .nav-link {
+  font-size: 16px;
+  color: #2b1270;
+}
+
+.sidebar .nav-link:hover {
+  color: #56098a;
+}
+
+.sidebar .nav-item .collapse {
+  display: none;
+}
+
+.sidebar .nav-item.active .collapse {
+  display: block;
+}
+
+/* Main Content */
+.content {
+  margin-left: 300px; /* Adjust based on sidebar width */
+  padding-top: 110px;
+  padding-bottom: 110px;
+}
+
+/* Submenu */
+#projectsSubMenu.show {
+  display: block;
+}
+
+.container {
+  padding: 6% !important;
+  background-color: #ffffff; /* Set container background color */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Add box shadow */
+  border-radius: 10px; /* Add border radius for rounded corners */
+}
+
+.container h1 {
+  text-align: center !important;
+  font-weight: 300 !important;
+  margin-bottom: 3rem !important
+}
+
+/* Default button style */
+.btn-custom {
+  color: #ffffff !important;
+  background-color: #673AB7 !important; /* Blue color */
+  border-color: #9066d4 !important;
+  transition: .5s !important;
+  padding: 17px !important;
+}
+
+.btn-custom:hover {
+  color: #ffffff !important;
+  background-color: #9066d4 !important; /* Blue color */
+  border-color: #9066d4 !important;
+  transition: .5s !important;
+}

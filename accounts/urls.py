@@ -5,11 +5,7 @@ from django.contrib.auth import views as auth_views
 app_name = "accounts"
 
 """
-We used custom JWT creation decoding encoding generating access_token and refresh_tokens
-Frontend will handle those tokens
 There are mainly two types of users. Contributors (has all the access) if added to the project, Collaborator has only tickets and posts wide access.
-company sub domain name will be suggested. this is optional, they can choose any kind of sub domain name if available
-username will be suggested. this is optional, they can choose any kind of username if available
 first user will create the profile in our account in a company. He will have to invite the remaining people by allowing them to spaces/company sub domains. He can make invited users as root users as well.
 If company is already there, we need to ask the user to contact his administrator.
 Payment should be taken care of for a single company. i.e, for a single company, single payment account is sufficient. Any root user/contributor in the company can pay.
@@ -19,8 +15,6 @@ urlpatterns = [
     path('login/', views.custom_login_view, name='login'),
     re_path(r"logout/$", auth_views.LogoutView.as_view(template_name="accounts/logout.html"), name="logout"),
     path('check-availability/', views.check_availability, name='check_availability'),
-    # path("login/", views.LoginView.as_view(), name="login"),
-    # path("logout/", views.LogoutView.as_view(), name="logout"),
     path("registration/", views.registration_view, name="registration"),
     # path("profile/", views.ProfileView.as_view(), name="profile"),
     # path("give_contributor_access_to_collaborators/", views.GiveContributorAccessToCollaborators.as_view(), name="give_contributor_access_to_collaborators"),

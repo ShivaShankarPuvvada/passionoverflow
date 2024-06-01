@@ -135,7 +135,7 @@ def custom_login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return JsonResponse({'success': True, 'redirect_url': reverse('home_page')})  # Replace with your success URL
+            return JsonResponse({'success': True, 'redirect_url': reverse('projects:project_list')})  # Replace with your success URL
         else:
             return JsonResponse({'success': False, 'error': 'Invalid username or password'}, status=HTTPStatus.BAD_REQUEST)
     

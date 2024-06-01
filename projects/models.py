@@ -32,19 +32,27 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # This is a new object, set the created_by field
+            self.created_by = kwargs.pop('user', None)
+        # Always set the updated_by field
+        self.updated_by = kwargs.pop('user', None)
+        super(Project, self).save(*args, **kwargs)
+
 class ProjectPhase(models.Model):
     """
     This model ProjectPhase will contain all the possible Project-Phase saved relations. 
-    There might be mutiple records with the same phase.
+    There might be multiple records with the same phase.
     There might be multiple records with same status.
     alpha phase with active status
-    alpha phase with deactive status
+    alpha phase with de-active status
     beta phase with active status
-    beta phase with deactive status
-    We will create a new record everytime user make change to the phase for project.
+    beta phase with de-active status
+    We will create a new record every time user make change to the phase for project.
     If user tries to use Same phase with same status, it will not create new record.
     Single project will be associated with only one single phase at a time.
-    We need to get the latest record from ProjectPhase table to know which phase is currently assoicated with this project.
+    We need to get the latest record from ProjectPhase table to know which phase is currently associated with this project.
     There will always be one active phase associated with the project.
     """
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -57,6 +65,18 @@ class ProjectPhase(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
+    def __str__(self):
+        object_display_message = "Project " + self.project.title + " is in " + self.phase.title + " phase."
+        return object_display_message
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # This is a new object, set the created_by field
+            self.created_by = kwargs.pop('user', None)
+        # Always set the updated_by field
+        self.updated_by = kwargs.pop('user', None)
+        super(ProjectPhase, self).save(*args, **kwargs)
+
 
 class ProjectAssignment(models.Model):
     """
@@ -92,3 +112,12 @@ class ProjectAssignment(models.Model):
     updated_by = models.ForeignKey(User, related_name='assignment_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # This is a new object, set the created_by field
+            self.created_by = kwargs.pop('user', None)
+        # Always set the updated_by field
+        self.updated_by = kwargs.pop('user', None)
+        super(ProjectAssignment, self).save(*args, **kwargs)

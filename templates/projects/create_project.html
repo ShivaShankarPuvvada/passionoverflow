@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block title %}Create Project{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Create Project</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="text-center mt-5"> <!-- Center align the button -->
+            <button type="submit" class="btn btn-custom">Create Project</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

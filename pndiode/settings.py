@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # installed packages
+    "bootstrap4",
     "django_phonenumbers",
     "phonenumber_field",
     'django_countries',
