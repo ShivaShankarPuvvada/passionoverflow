@@ -5,6 +5,14 @@ from simple_history.models import HistoricalRecords
 
 User = get_user_model()
 
+OPEN = '1'
+CLOSED = '0'
+STATUS_CHOICES = [
+    (OPEN, 'Open'),
+    (CLOSED, 'Close'),
+]
+
+
 # Create your models here.
 class Phase(models.Model):
     """
@@ -14,7 +22,7 @@ class Phase(models.Model):
     If, in future, requires, we will add the phases to segment level and even ticket level.
     """
     title = models.CharField(max_length=100, unique=True)
-    status = models.CharField(max_length=2, default="1")
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default=OPEN)
     company = models.ForeignKey(account_models.Company, on_delete=models.PROTECT)
     history = HistoricalRecords()
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records

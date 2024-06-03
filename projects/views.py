@@ -1,173 +1,85 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from .models import Project, ProjectPhase, ProjectAssignment
-from .forms import ProjectForm, ProjectPhaseForm, ProjectAssignmentForm
-from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 
+from django.contrib.auth.decorators import login_required
+from django.db import transaction, IntegrityError
+from .models import Project, ProjectPhase, ProjectAssignment, STATUS_CHOICES
+from accounts.models import CustomerCompanyDetails, Company
+from phases.models import Phase
+from accounts.views import User
+from http import HTTPStatus
+import json
 
 
 @login_required
 def create_project(request):
     if request.method == 'POST':
-        form = ProjectForm(request.POST)
-        if form.is_valid():
-            project = form.save(commit=False)
-            project.save()
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            required_fields = ['title', 'description', 'start_date', 'end_date', 'status', 'phases', 'assigned_to']
+            
+            # Check for missing required fields
+            missing_fields = [field for field in required_fields if field not in data]
+            if missing_fields:
+                return JsonResponse({'success': False, 'errors': f'Missing fields: {", ".join(missing_fields)}'}, status=HTTPStatus.BAD_REQUEST)
 
-            # Create related ProjectPhase records
-            for phase_data in form.cleaned_data['phases']:
-                phase = ProjectPhase.objects.create(project=project, **phase_data)
+            title = data['title']
+            description = data['description']
+            start_date = data['start_date']
+            end_date = data['end_date']
+            status = data['status']
+            phases_data = data['phases']
+            assigned_to = data['assigned_to']
 
-            # Create related ProjectAssignment records
-            for user in form.cleaned_data['assigned_to']:
-                assignment = ProjectAssignment.objects.create(project=project, assigned_to=user)
+            # Basic validation
+            errors = []
+            if not title:
+                errors.append("Title is required.")
+            if not start_date:
+                errors.append("Start date is required.")
+            if not end_date:
+                errors.append("End date is required.")
+            if not status:
+                errors.append("Status is required.")
+            if not isinstance(phases_data, list):
+                errors.append("Phases must be a list.")
+            if not isinstance(assigned_to, list):
+                errors.append("Assigned to must be a list of user IDs.")
+            if errors:
+                return JsonResponse({'success': False, 'errors': errors}, status=HTTPStatus.BAD_REQUEST)
 
-            return redirect('projects:project_list')
-    else:
-        form = ProjectForm()
-    return render(request, 'projects/create_project.html', {'form': form})
+            with transaction.atomic():
+                project = Project.objects.create(
+                    title=title,
+                    description=description,
+                    start_date=start_date,
+                    end_date=end_date,
+                    status=status
+                )
 
+                # Create related ProjectPhase records
+                for phase_data in phases_data:
+                    ProjectPhase.objects.create(project=project, **phase_data)
 
-@login_required
-def update_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    if request.method == 'POST':
-        form = ProjectForm(request.POST, instance=project)
-        if form.is_valid():
-            form.save()
-            return redirect('projects:project', project_id=project.id)
-    else:
-        form = ProjectForm(instance=project)
-    return render(request, 'projects/update_project.html', {'form': form, 'project': project})
+                # Create related ProjectAssignment records
+                for user_id in assigned_to:
+                    ProjectAssignment.objects.create(project=project, assigned_to_id=user_id)
 
+            return JsonResponse({'success': True, 'redirect_url': reverse('projects:project_list')})
 
-@login_required
-def delete_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    if request.method == 'POST':
-        project.delete()
-        return redirect('projects:project_list')
-    return render(request, 'projects/delete_project.html', {'project': project})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'errors': ["Invalid JSON data."]}, status=HTTPStatus.BAD_REQUEST)
 
+        except IntegrityError as integrity_error:
+            return JsonResponse({'success': False, 'errors': ["Integrity Error: " + str(integrity_error)]}, status=HTTPStatus.BAD_REQUEST)
 
-@login_required
-def get_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    return render(request, 'projects/project_detail.html', {'project': project})
+        except Exception as error:
+            return JsonResponse({'success': False, 'errors': ["An unexpected error occurred. Please try again."]}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
-
-@login_required
-def get_all_projects(request):
-    projects = Project.objects.all()
-    return render(request, 'projects/project_list.html', {'projects': projects})
-
-
-@login_required
-def change_project_status(request, project_ids, status):
-    project_ids = project_ids.split(',')
-    projects = Project.objects.filter(id__in=project_ids)
-    projects.update(status=status)
-    return redirect('projects:project_list')
-
-
-@login_required
-def open_projects(request, project_ids):
-    return change_project_status(request, project_ids, "1")
-
-
-@login_required
-def close_projects(request, project_ids):
-    return change_project_status(request, project_ids, "0")
-
-
-@login_required
-def project_phase_history(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    phases = project.phases.all()
-    return render(request, 'projects/project_phase_history.html', {'project': project, 'phases': phases})
-
-
-@login_required
-def project_assignment_history(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    assignments = project.assignment_history.all()
-    return render(request, 'projects/project_assignment_history.html', {'project': project, 'assignments': assignments})
-
-
-@login_required
-def project_history(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    history = project.history.all()
-    return render(request, 'projects/project_history.html', {'project': project, 'history': history})
-
-
-@login_required
-def create_project_phase(request, project_id):
-    if request.method == 'POST':
-        form = ProjectPhaseForm(request.POST)
-        if form.is_valid():
-            project_phase = form.save(commit=False)
-            project_phase.project_id = project_id
-            project_phase.save()
-            return redirect('projects:project_phase_history', project_id=project_id)
-    else:
-        form = ProjectPhaseForm()
-    return render(request, 'projects/create_project_phase.html', {'form': form})
-
-
-@login_required
-def update_project_phase(request, project_id, phase_id):
-    project_phase = get_object_or_404(ProjectPhase, project_id=project_id, id=phase_id)
-    if request.method == 'POST':
-        form = ProjectPhaseForm(request.POST, instance=project_phase)
-        if form.is_valid():
-            form.save()
-            return redirect('projects:project_phase_history', project_id=project_id)
-    else:
-        form = ProjectPhaseForm(instance=project_phase)
-    return render(request, 'projects/update_project_phase.html', {'form': form, 'project_phase': project_phase})
-
-
-@login_required
-def delete_project_phase(request, project_id, phase_id):
-    project_phase = get_object_or_404(ProjectPhase, project_id=project_id, id=phase_id)
-    if request.method == 'POST':
-        project_phase.delete()
-        return redirect('projects:project_phase_history', project_id=project_id)
-    return render(request, 'projects/delete_project_phase.html', {'project_phase': project_phase})
-
-
-@login_required
-def create_project_assignment(request, project_id):
-    if request.method == 'POST':
-        form = ProjectAssignmentForm(request.POST)
-        if form.is_valid():
-            project_assignment = form.save(commit=False)
-            project_assignment.project_id = project_id
-            project_assignment.save()
-            return redirect('projects:project_assignment_history', project_id=project_id)
-    else:
-        form = ProjectAssignmentForm()
-    return render(request, 'projects/create_project_assignment.html', {'form': form})
-
-
-@login_required
-def update_project_assignment(request, project_id, assignment_id):
-    project_assignment = get_object_or_404(ProjectAssignment, project_id=project_id, id=assignment_id)
-    if request.method == 'POST':
-        form = ProjectAssignmentForm(request.POST, instance=project_assignment)
-        if form.is_valid():
-            form.save()
-            return redirect('projects:project_assignment_history', project_id=project_id)
-    else:
-        form = ProjectAssignmentForm(instance=project_assignment)
-    return render(request, 'projects/update_project_assignment.html', {'form': form, 'project_assignment': project_assignment})
-
-
-@login_required
-def delete_project_assignment(request, project_id, assignment_id):
-    project_assignment = get_object_or_404(ProjectAssignment, project_id=project_id, id=assignment_id)
-    if request.method == 'POST':
-        project_assignment.delete()
-        return redirect('projects:project_assignment_history', project_id=project_id)
-    return render(request, 'projects/delete_project_assignment.html', {'project_assignment': project_assignment})
+    elif request.method == 'GET':
+        status_choices = STATUS_CHOICES
+        user = User.objects.get(pk=request.user.id)
+        company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
+        phases = Phase.objects.filter(company=company)
+        return render(request, 'projects/create_project.html', {'status_choices': status_choices, 'phases': phases})

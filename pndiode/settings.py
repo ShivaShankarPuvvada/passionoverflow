@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # installed packages
+    "django_select2",
     "bootstrap4",
     "django_phonenumbers",
     "phonenumber_field",

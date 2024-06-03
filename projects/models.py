@@ -6,22 +6,28 @@ from phases import models as phase_models
 
 User = get_user_model()
 
+OPEN = '1'
+CLOSED = '0'
+STATUS_CHOICES = [
+    (OPEN, 'Open'),
+    (CLOSED, 'Close'),
+]
+
 # Create your models here.
 class Project(models.Model):
     """
-    By default project status is 1. That means project is currently open and running. Otherwise closed project.
     Project title is unique.
     """
     title = models.CharField(max_length=200, unique=True)
     description = models.TextField(blank=True, null=True)
     start_date = models.DateField()
-    end_date = models.DateField()
-    status = models.CharField(max_length=2, default="1") # opened or closed project
+    end_date = models.DateField(blank=True, null=True)
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=OPEN)
     company = models.ForeignKey(account_models.Company, on_delete=models.PROTECT)
     assigned_by = models.ManyToManyField(User, through='ProjectAssignment', related_name='project_assigned_by', through_fields=('project', 'assigned_by'), blank=True)
     assigned_to = models.ManyToManyField(User, through='ProjectAssignment', related_name='project_assigned_to', through_fields=('project', 'assigned_to'), blank=True)
     members = models.ManyToManyField(User, related_name='project_members', blank=True)
-    phases = models.ManyToManyField(phase_models.Phase, through='ProjectPhase')
+    phases = models.ManyToManyField(phase_models.Phase, through='ProjectPhase', blank=True)
     history = HistoricalRecords()
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='project_created_by', on_delete=models.SET_NULL, null=True, blank=True)
