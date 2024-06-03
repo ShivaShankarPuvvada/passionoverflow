@@ -6,7 +6,6 @@ django-bootstrap4==24.3
 django-countries==7.6.1
 django-phonenumber-field==7.3.0
 django-phonenumbers==1.0.1
-django-select2==8.1.2
 django-simple-history==3.5.0
 phonenumbers==8.13.37
 setuptools==69.5.1

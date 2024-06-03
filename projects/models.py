@@ -20,7 +20,7 @@ class Project(models.Model):
     """
     title = models.CharField(max_length=200, unique=True)
     description = models.TextField(blank=True, null=True)
-    start_date = models.DateField()
+    start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=OPEN)
     company = models.ForeignKey(account_models.Company, on_delete=models.PROTECT)
