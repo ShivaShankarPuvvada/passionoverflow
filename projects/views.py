@@ -15,8 +15,9 @@ import json
 @login_required
 def create_project(request):
     if request.method == 'POST':
+        phases, assigned_to = [], []
         try:
-            data = json.loads(request.body.decode('utf-8'))
+            data = request.POST
             # required_fields = ['title', 'description', 'start_date', 'end_date', 'status', 'phases', 'assigned_to']
             required_fields = ['title']
             # Check for missing required fields
@@ -24,13 +25,20 @@ def create_project(request):
             if missing_fields:
                 return JsonResponse({'success': False, 'errors': f'Missing fields: {", ".join(missing_fields)}'}, status=HTTPStatus.BAD_REQUEST)
 
-            title = data['title']
-            description = data.get('description', '')  # Description is optional
-            start_date = data.get('start_date', None)
-            end_date = data.get('end_date', None)
-            status = data.get('status', '')  # Status is optional
-            phases = data['phases']
-            assigned_to = data['assigned_to']
+            if 'title' in data:
+                title = data['title']
+            if 'description' in data:
+                description = data.get('description', '')  # Description is optional
+            if 'start_date' in data:
+                start_date = data.get('start_date', None)
+            if 'end_date' in data:
+                end_date = data.get('end_date', None)
+            if 'status' in data:
+                status = data.get('status', '')  # Status is optional
+            if 'phases' in data:
+                phases = data['phases']
+            if 'assigned_to' in data:
+                assigned_to = data['assigned_to']
 
             # Basic validation
             errors = []
@@ -81,7 +89,7 @@ def create_project(request):
                     if user:
                         ProjectAssignment.objects.create(project=project, assigned_to=user)
 
-            return JsonResponse({'success': True, 'redirect_url': reverse('projects:project_list')})
+            return redirect('projects:project_list')
 
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'errors': ["Invalid JSON data."]}, status=HTTPStatus.BAD_REQUEST)
@@ -90,6 +98,7 @@ def create_project(request):
             return JsonResponse({'success': False, 'errors': ["Integrity Error: " + str(integrity_error)]}, status=HTTPStatus.BAD_REQUEST)
 
         except Exception as error:
+            print(error)
             return JsonResponse({'success': False, 'errors': ["An unexpected error occurred. Please try again."]}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
     elif request.method == 'GET':
@@ -111,3 +120,15 @@ def create_project(request):
                     'same_company_users': same_company_users
                 }
         return render(request=request, template_name='projects/create_project.html', context=context)
+    
+
+@login_required
+def get_all_projects(request):
+    user = request.user
+    company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
+    projects = Project.objects.filter(company=company).order_by('-start_date')
+    
+    context = {
+        'projects': projects
+    }
+    return render(request, 'projects/project_list.html', context)
