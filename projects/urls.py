@@ -41,7 +41,7 @@ urlpatterns = [
     # Project URLs
     path('create_project/', views.create_project, name="create_project"),
     # path('project/<int:project_id>/', views.get_project, name="project"),
-    # path('update_project/<int:project_id>/', views.update_project, name="update_project"),
+    path('update_project/<int:project_id>/', views.update_project, name="update_project"),
     # path('delete_project/<int:project_id>/', views.delete_project, name="delete_project"),
     path('projects/', views.get_all_projects, name="project_list"),
     # path('open_projects/<str:project_ids>/', views.open_projects, name="open_projects"),

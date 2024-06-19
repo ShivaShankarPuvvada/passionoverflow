@@ -1,18 +1,166 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load bootstrap4 %}
 
 {% block title %}Update Project{% endblock %}
 {% block content %}
-<div class="container">
-<h1>Update Project</h1>
-<form method="post">
-    {% csrf_token %}
-    {% bootstrap_form form %}
-    <div class="text-center mt-5"> <!-- Center align the button -->
-        <button type="submit" class="btn btn-custom">Update Project</button>
-    </div>
-</form>
-</div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Update Project</div>
+                <div class="card-body">
+                    <form method="post" id="update-project-form">
+                        {% csrf_token %}
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_title">Title</label>
+                            <div class="col-md-9">
+                                <input type="text" name="title" class="form-control" placeholder="Enter title" maxlength="200" required id="id_title" value="{{ project.title }}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="summernote">Description</label>
+                            <div class="col-md-9">
+                                <textarea name="description" class="form-control" placeholder="Description" id="summernote">{{ project.description }}</textarea>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_start_date">Start date</label>
+                            <div class="col-md-9">
+                                <input type="date" name="start_date" class="form-control" placeholder="Start date" id="id_start_date" value="{% if project.start_date %}{{ project.start_date|date:'Y-m-d' }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_end_date">End date</label>
+                            <div class="col-md-9">
+                                <input type="date" name="end_date" class="form-control" placeholder="End date" id="id_end_date" value="{% if project.end_date %}{{ project.end_date|date:'Y-m-d' }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_status">Status</label>
+                            <div class="col-md-9">
+                                <select name="status" class="form-select" id="id_status">
+                                    {% for value, display in status_choices %}
+                                        <option value="{{ value }}" {% if project.status == value %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_assigned_to">Assign to</label>
+                            <div class="col-md-9">
+                                <select name="assigned_to" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_assigned_to" data-max-options="4" data-width="100%">
+                                    {% for same_company_user in same_company_users %}
+                                        <option value="{{ same_company_user.id }}" {% if same_company_user in project.members.all %}selected{% endif %}>{{ same_company_user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_phase">Phases</label>
+                            <div class="col-md-9">
+                                <select name="phases" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_phase" data-max-options="3" data-width="100%">
+                                    {% for phase in phases %}
+                                        <option value="{{ phase.id }}" {% if phase in project.phases.all %}selected{% endif %}>{{ phase.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-md-6 offset-md-4">
+                                <button type="submit" class="btn btn-primary">Update Project</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
+        <!-- Right Side Display -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Project Preview</div>
+                <div class="card-body">
+                    <h5>Title: <span id="preview-title">{{ project.title }}</span></h5>
+                    <p>Description: <span id="preview-description">{{ project.description }}</span></p>
+                    <p>Start Date: <span id="preview-start-date">{{ project.start_date }}</span></p>
+                    <p>End Date: <span id="preview-end-date">{{ project.end_date }}</span></p>
+                    <p>Status: <span id="preview-status">{{ project.get_status_display }}</span></p>
+                    <p>Assigned To: <span id="preview-assigned-to">{% for member in project.members.all %}{{ member.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></p>
+                    <p>Phases: <span id="preview-phase">{% for phase in project.phases.all %}{{ phase.title }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block endscript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        function updatePreview() {
+            document.getElementById('preview-title').innerText = document.getElementById('id_title').value;
+            document.getElementById('preview-description').innerHTML = $('#summernote').summernote('code');
+            document.getElementById('preview-start-date').innerText = document.getElementById('id_start_date').value;
+            document.getElementById('preview-end-date').innerText = document.getElementById('id_end_date').value;
+            document.getElementById('preview-status').innerText = document.getElementById('id_status').options[document.getElementById('id_status').selectedIndex].text;
+            document.getElementById('preview-assigned-to').innerText = Array.from(document.getElementById('id_assigned_to').selectedOptions).map(option => option.text).join(', ');
+            document.getElementById('preview-phase').innerText = Array.from(document.getElementById('id_phase').selectedOptions).map(option => option.text).join(', ');
+        }
+
+        // Function to add custom 'code' button to toolbar
+        function addCodeButton() {
+            var Button = $.summernote.ui.button;
+            var button = Button({
+                contents: '<i class="fa fa-code"/> Code',
+                tooltip: 'Insert Code',
+                click: function() {
+                    var selection = window.getSelection();
+                    if (selection.rangeCount > 0) {
+                        var range = selection.getRangeAt(0);
+                        var codeNode = document.createElement('code');
+                        codeNode.appendChild(range.extractContents());
+                        range.insertNode(codeNode);
+                    }
+                }
+            });
+            return button.render();   // return button as jquery object
+        }
+
+        // Initialize Summernote and add an onChange event
+        $('#summernote').summernote({
+            height: 200,
+            placeholder: '',
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['fullscreen', 'codeview', 'help']],
+                ['custom', ['codeButton']]
+            ],
+            buttons: {
+                codeButton: addCodeButton
+            },
+            callbacks: {
+                onChange: updatePreview,
+            }
+        });
+
+        // Add event listeners to other form inputs
+        document.getElementById('id_title').addEventListener('input', updatePreview);
+        document.getElementById('id_start_date').addEventListener('input', updatePreview);
+        document.getElementById('id_end_date').addEventListener('input', updatePreview);
+        document.getElementById('id_status').addEventListener('change', updatePreview);
+        document.getElementById('id_assigned_to').addEventListener('change', updatePreview);
+        document.getElementById('id_phase').addEventListener('change', updatePreview);
+
+        // Initial update
+        updatePreview();
+
+    });
+</script>
 {% endblock %}
