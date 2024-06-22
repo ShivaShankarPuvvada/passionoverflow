@@ -15,9 +15,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css">
     <!-- Include Summernote CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.css" rel="stylesheet">
- 
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.css" rel="stylesheet">
 
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/logos/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/logos/favicon-32x32.png' %}">
@@ -37,7 +35,7 @@
         <a class="navbar-brand" href="{% url 'home_page' %}">
         {% endif %}
             <img src="{% static 'images/logos/navlogo.png' %}" width="53.3" height="43.6" alt="home page logo">
-            <img src="{% static 'images/logos/navlogotext.png' %}" width=213.3" height="26.7" alt="home page logo">
+            <img src="{% static 'images/logos/navlogotext.png' %}" width="213.3" height="26.7" alt="home page logo">
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
@@ -58,61 +56,85 @@
     </nav>
 
     <!-- Sidebar -->
-    <div class="sidebar">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-toggle="collapse" data-target="#projectsSubMenu" aria-expanded="false" aria-controls="projectsSubMenu">
-                    Projects
-                </a>
-                <div class="collapse" id="projectsSubMenu">
-                    <ul class="nav flex-column ml-3">
-                        <!-- Add your project links here -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Project Link 1</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Project Link 2</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Segments</a>
-            </li>
-        </ul>
-        <div class="mt-auto">
+    <div class="d-flex">
+        <div class="sidebar bg-light p-3" style="min-width: 250px;">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <form action="{% url 'accounts:logout' %}" method="POST">
-                        {% csrf_token %}
-                        <button class="nav-link btn btn-link" type="submit">logout</button>
-                    </form>
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#projectsSubMenu" aria-expanded="false" aria-controls="projectsSubMenu">
+                        Projects
+                    </a>
+                    <div class="collapse" id="projectsSubMenu">
+                        <ul class="nav flex-column ml-3">
+                            <!-- Add your project links here -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'projects:create_project' %}">Create Project</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'projects:project_list' %}">All Projects</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Segments</a>
                 </li>
             </ul>
+            <div class="mt-auto">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <form action="{% url 'accounts:logout' %}" method="POST">
+                            {% csrf_token %}
+                            <button class="nav-link btn btn-link" type="submit">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-    
-
-    <!-- Main Content -->
-    <div class="content">
-        {% block content %}
-        {% endblock %}
+        
+        <!-- Main Content -->
+        <div class="content flex-grow-1 p-3" style="padding-top: 110px !important; padding-bottom: 110px !important;">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
 
     <!-- Include jQuery first -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <!-- Include Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
     <!-- Include Summernote JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs5.min.js"></script>
 
     {% block endscript %}
     {% endblock %}
-
-
+    <script>
+        $(document).ready(function() {
+            $('.table').DataTable();
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Find all elements with data-toggle attribute
+            var elements = document.querySelectorAll('[data-toggle]');
+            elements.forEach(function(element) {
+                // Get the value of the data-toggle attribute
+                var toggleValue = element.getAttribute('data-toggle');
+                // Set the value to data-bs-toggle attribute
+                element.setAttribute('data-bs-toggle', toggleValue);
+                // Remove the old data-toggle attribute
+                element.removeAttribute('data-toggle');
+            });
     
+            // Repeat the process for other attributes if needed
+            // Example: data-target to data-bs-target
+            elements = document.querySelectorAll('[data-target]');
+            elements.forEach(function(element) {
+                var targetValue = element.getAttribute('data-target');
+                element.setAttribute('data-bs-target', targetValue);
+                element.removeAttribute('data-target');
+            });
+        });
+    </script>
 </body>
 </html>
