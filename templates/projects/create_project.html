@@ -55,13 +55,16 @@
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label class="col-md-3 col-form-label" for="id_phase">Phases</label>
-                            <div class="col-md-9">
+                            <label class="col-md-3 col-form-label" for="id_phase">Phases (Max 3)</label>
+                            <div class="col-md-6">
                                 <select name="phases" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_phase" data-max-options="3" data-width="100%">
                                     {% for phase in phases %}
                                         <option value="{{ phase.id }}">{{ phase.title }}</option>
                                     {% endfor %}
                                 </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'phases:create_phase' %}" class="btn btn-primary btn-sm" target="_blank">Create Phase</a>
                             </div>
                         </div>
                         <div class="mb-3 row">
