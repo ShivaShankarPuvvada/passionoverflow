@@ -82,7 +82,7 @@ def update_phase(request, phase_id):
                 return JsonResponse({'success': False, 'errors': f'Missing fields: {", ".join(missing_fields)}'}, status=HTTPStatus.BAD_REQUEST)
             
             title = data['title']
-            status = data.get('status', '')
+            status = data.get('status', OPEN)  # Default to OPEN if not provided
 
             errors = []
             if not title:

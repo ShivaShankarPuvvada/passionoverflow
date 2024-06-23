@@ -5,13 +5,20 @@ from projects import models as project_models
 
 User = get_user_model()
 
+OPEN = '1'
+CLOSED = '0'
+STATUS_CHOICES = [
+    (OPEN, 'Open'),
+    (CLOSED, 'Close'),
+]
+
 # Create your models here.
 class Segment(models.Model):
     title = models.CharField(max_length=200, unique=True)
     description = models.TextField(blank=True, null=True)
     start_date = models.DateField()
     end_date = models.DateField()
-    status = models.CharField(max_length=2, default="1") # this is for customer to make segment deactive
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=OPEN) # this is for customer to make segment deactive
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
     project = models.ForeignKey(project_models.Project, related_name='segment_project', on_delete=models.SET_NULL, null=True, blank=True) # one segment belongs to one project only at one time, later we can move it if we want.
     assigned_by = models.ManyToManyField(User, through='SegmentAssignment', related_name='segment_assigned_by', through_fields=('segment', 'assigned_by'), blank=True)
@@ -25,7 +32,15 @@ class Segment(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # This is a new object, set the created_by field
+            self.created_by = kwargs.pop('user', None)
+        # Always set the updated_by field
+        self.updated_by = kwargs.pop('user', None)
+        super(Segment, self).save(*args, **kwargs)
+
 
 class SegmentAssignment(models.Model):
     """
@@ -54,10 +69,21 @@ class SegmentAssignment(models.Model):
     segment = models.ForeignKey(Segment, on_delete=models.CASCADE)
     assigned_by = models.ForeignKey(User, related_name='segment_assignment_given_by', on_delete=models.SET_NULL, null=True, blank=True)
     assigned_to = models.ForeignKey(User, related_name='segment_assignment_received_to', on_delete=models.SET_NULL, null=True, blank=True)
-    assigned_at = models.DateTimeField(auto_now_add=True)
     history = HistoricalRecords()
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='segment_assignment_created_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name='segment_assignment_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def __str__(self):
+        segment_assignment = "This segment " + str(self.segment.title) + " is assigned to " + str(self.assigned_to.get_username) + " by " + str(self.assigned_by.get_username)
+        return segment_assignment
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # This is a new object, set the created_by field
+            self.created_by = kwargs.pop('user', None)
+        # Always set the updated_by field
+        self.updated_by = kwargs.pop('user', None)
+        super(SegmentAssignment, self).save(*args, **kwargs)

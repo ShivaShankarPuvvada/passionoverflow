@@ -119,6 +119,9 @@ class ProjectAssignment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
+    def __str__(self):
+        project_assignment = "This project " + str(self.project.title) + " is assigned to " + str(self.assigned_to.get_username) + " by " + str(self.assigned_by.get_username)
+        return project_assignment
 
     def save(self, *args, **kwargs):
         if not self.pk:

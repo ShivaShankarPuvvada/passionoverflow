@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
-from .models import Project, ProjectPhase, ProjectAssignment, STATUS_CHOICES
+from .models import Project, ProjectPhase, ProjectAssignment, STATUS_CHOICES, OPEN
 from accounts.models import CustomerCompanyDetails, Company
 from phases.models import Phase
 from accounts.views import User
@@ -34,11 +34,11 @@ def create_project(request):
             if 'end_date' in data:
                 end_date = data.get('end_date', None)
             if 'status' in data:
-                status = data.get('status', '')  # Status is optional
+                status = data.get('status', OPEN)  # Default to OPEN if not provided
             if 'phases' in data:
-                phases = data['phases']
+                phases = data.getlist('phases')  # Assuming phases are received as a list of IDs
             if 'assigned_to' in data:
-                assigned_to = data['assigned_to']
+                assigned_to = data.getlist('assigned_to')  # Assuming assigned_to are received as a list of IDs
 
             # Basic validation
             errors = []
@@ -78,6 +78,10 @@ def create_project(request):
                     each_phase = Phase.objects.filter(id=phase_id).first()
                     if each_phase:
                         ProjectPhase.objects.create(project=project, phase=each_phase)
+
+                # Add the current user to assigned_to list if not already included
+                if str(request.user.id) not in assigned_to:
+                    assigned_to.append(str(request.user.id))
 
                 # Create related ProjectAssignment records
                 for user_id in assigned_to:
@@ -136,7 +140,7 @@ def update_project(request, project_id):
             description = data.get('description', '')
             start_date = data.get('start_date', None)
             end_date = data.get('end_date', None)
-            status = data.get('status', '')
+            status = data.get('status', OPEN)  # Default to OPEN if not provided
 
             errors = []
             if not title:
@@ -264,7 +268,7 @@ def update_project(request, project_id):
 def get_all_projects(request):
     user = request.user
     company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
-    projects = Project.objects.filter(company=company).order_by('-start_date')
+    projects = Project.objects.filter(company=company).order_by('-id')
     
     context = {
         'projects': projects

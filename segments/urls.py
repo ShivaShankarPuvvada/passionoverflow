@@ -25,6 +25,10 @@ list of all possible tasks for segments
 """
 
 urlpatterns = [
+    path('create_segment/', views.create_segment, name="create_segment"),
+    path('update_segment/<int:segment_id>/', views.update_segment, name="update_segment"),
+    path('segments/', views.get_all_segments, name="segment_list"),
+
     # path('create_segment/', views.CreateSegmentView.as_view(), name="create_segment"),
     # path('segment/<int:segment_id>/', views.SegmentView.as_view(), name="segment"),
     # path('get_segments/<str:segment_ids>/', views.GetSegmentsView.as_view(), name="get_segments"),

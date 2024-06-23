@@ -86,7 +86,17 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Segments</a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#SegmentsSubMenu" role="button" aria-expanded="false" aria-controls="SegmentsSubMenu">Segments</a>
+                    <div class="collapse" id="SegmentsSubMenu">
+                        <ul class="nav flex-column ml-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'segments:create_segment' %}">Create Segment</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'segments:segment_list' %}">All Segments</a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
             </ul>
             <div class="mt-auto">
