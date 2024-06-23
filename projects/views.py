@@ -270,15 +270,3 @@ def get_all_projects(request):
         'projects': projects
     }
     return render(request, 'projects/project_list.html', context)
-
-
-def get_all_projects(request):
-    user = request.user
-    company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
-    projects = Project.objects.filter(company=company).order_by('-start_date')
-    
-    context = {
-        'projects': projects
-    }
-    return render(request, 'projects/project_list.html', context)
-

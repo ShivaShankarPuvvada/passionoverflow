@@ -60,17 +60,27 @@
         <div class="sidebar bg-light p-3" style="min-width: 250px;">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#projectsSubMenu" aria-expanded="false" aria-controls="projectsSubMenu">
-                        Projects
-                    </a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#projectsSubMenu" role="button" aria-expanded="false" aria-controls="projectsSubMenu">Projects</a>
                     <div class="collapse" id="projectsSubMenu">
                         <ul class="nav flex-column ml-3">
-                            <!-- Add your project links here -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'projects:create_project' %}">Create Project</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'projects:project_list' %}">All Projects</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#phasesSubMenu" role="button" aria-expanded="false" aria-controls="phasesSubMenu">Phases</a>
+                    <div class="collapse" id="phasesSubMenu">
+                        <ul class="nav flex-column ml-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'phases:create_phase' %}">Create Phase</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'phases:phase_list' %}">All Phases</a>
                             </li>
                         </ul>
                     </div>
@@ -111,9 +121,6 @@
     {% block endscript %}
     {% endblock %}
     <script>
-        $(document).ready(function() {
-            $('.table').DataTable();
-        });
         document.addEventListener('DOMContentLoaded', function() {
             // Find all elements with data-toggle attribute
             var elements = document.querySelectorAll('[data-toggle]');

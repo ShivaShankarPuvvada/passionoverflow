@@ -33,3 +33,11 @@ class Phase(models.Model):
     
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # This is a new object, set the created_by field
+            self.created_by = kwargs.pop('user', None)
+        # Always set the updated_by field
+        self.updated_by = kwargs.pop('user', None)
+        super(Phase, self).save(*args, **kwargs)

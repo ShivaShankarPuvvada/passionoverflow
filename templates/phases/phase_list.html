@@ -1,0 +1,48 @@
+<!-- phases/templates/phases/phase_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Phases{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <a href="{% url 'phases:create_phase' %}" class="btn btn-custom">Create New Phase</a>
+    <h2>All Phases</h2>
+    <table class="table table-bordered table-striped table-light table-hover" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Actions</th>
+                <!-- Add more headers as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for phase in phases %}
+            <tr>
+                <td>{{ phase.title }}</td>
+                <td>{{ phase.get_status_display }}</td>
+                <td>
+                    <a href="{% url 'phases:update_phase' phase.id %}" class="btn btn-primary btn-sm">Edit</a> <!-- Add edit button -->
+                </td>
+                <!-- Adjust based on your Phase model fields -->
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No phases found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block endscript %}
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="{% static 'DataTables/datatables.min.css' %}">
+    <!-- Include DataTables JS -->
+    <script src="{% static 'DataTables/datatables.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.table').DataTable();
+        });
+    </script>
+{% endblock %}

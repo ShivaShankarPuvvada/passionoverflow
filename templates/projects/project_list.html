@@ -58,4 +58,9 @@
     <link rel="stylesheet" href="{% static 'DataTables/datatables.min.css' %}">
     <!-- Include DataTables JS -->
     <script src="{% static 'DataTables/datatables.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.table').DataTable();
+        });
+    </script>
 {% endblock %}

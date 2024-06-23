@@ -69,6 +69,15 @@ body {
   display: block;
 }
 
+#phasesSubMenu.show {
+  display: block;
+}
+
+.sidebar .nav .nav-item .collapse .nav {
+  padding-left: 1rem; /* Adjust the left padding to increase or decrease indentation */
+  transition: 0.5s;
+}
+
 .form-container {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
   border-radius: 8px; /* Optional: Add rounded corners for a softer look */

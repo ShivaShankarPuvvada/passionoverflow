@@ -19,7 +19,10 @@ show phase history for a particular phase if possible
 """
 
 urlpatterns = [
-    # path('create_phase/', views.CreatePhaseView.as_view(), name="create_phase"),
+    path('create_phase/', views.create_phase, name="create_phase"),
+    path('update_phase/<int:phase_id>/', views.update_phase, name="update_phase"),
+    path('phases/', views.get_all_phases, name="phase_list"),
+
     # path('phase/<int:phase_id>/', views.PhaseView.as_view(), name="phase"),
     # path('get_phases/<str:phase_ids>/', views.GetPhasesView.as_view(), name="get_phases"),
     # path('activate_phases/<str:phase_ids>/', views.ActivatePhases.as_view(), name="activate_phases"),
