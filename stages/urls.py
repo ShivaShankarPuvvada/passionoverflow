@@ -19,6 +19,10 @@ show stage history for a particular stage if possible
 """
 
 urlpatterns = [
+    path('create_stage/', views.create_stage, name="create_stage"),
+    path('update_stage/<int:stage_id>/', views.update_stage, name="update_stage"),
+    path('stages/', views.get_all_stages, name="stage_list"),
+
     # path('create_stage/', views.CreateStageView.as_view(), name="create_stage"),
     # path('stage/<int:stage_id>/', views.StageView.as_view(), name="stage"),
     # path('get_stages/<str:stage_ids>/', views.GetStagesView.as_view(), name="get_stages"),
