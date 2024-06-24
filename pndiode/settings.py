@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'segments',
     'invitations',
     'tickets',
+    'posts',
     'sprints',
     'milestones',
     
