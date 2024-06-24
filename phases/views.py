@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
 from .models import Phase, STATUS_CHOICES, OPEN
 from accounts.models import CustomerCompanyDetails, Company
-from phases.models import Phase
 from accounts.views import User
 from http import HTTPStatus
 import json

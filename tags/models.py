@@ -5,10 +5,18 @@ from simple_history.models import HistoricalRecords
 
 User = get_user_model()
 
+OPEN = '1'
+CLOSED = '0'
+STATUS_CHOICES = [
+    (OPEN, 'Open'),
+    (CLOSED, 'Close'),
+]
+
+
 # Create your models here.
 class Tag(models.Model):
     title = models.CharField(max_length=100, unique=True)
-    status = models.CharField(max_length=2, default="1")  # to active and deactive tags.
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default=OPEN) # to active and deactive tags.
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
     company = models.ForeignKey(account_models.Company, on_delete=models.PROTECT)
     history = HistoricalRecords()
@@ -19,3 +27,11 @@ class Tag(models.Model):
     
     def __str__(self):
         return self.title
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # This is a new object, set the created_by field
+            self.created_by = kwargs.pop('user', None)
+        # Always set the updated_by field
+        self.updated_by = kwargs.pop('user', None)
+        super(Tag, self).save(*args, **kwargs)

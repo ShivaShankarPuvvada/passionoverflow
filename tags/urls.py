@@ -19,6 +19,10 @@ show tag history for a particular tag if possible
 """
 
 urlpatterns = [
+    path('create_tag/', views.create_tag, name="create_tag"),
+    path('update_tag/<int:tag_id>/', views.update_tag, name="update_tag"),
+    path('tags/', views.get_all_tags, name="tag_list"),
+
     # path('create_tag/', views.CreateTagView.as_view(), name="create_tag"),
     # path('tag/<int:tag_id>/', views.TagView.as_view(), name="tag"),
     # path('get_tags/<str:tag_ids>/', views.GetTagsView.as_view(), name="get_tags"),

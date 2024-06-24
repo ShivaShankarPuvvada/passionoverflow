@@ -98,6 +98,19 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#TagsSubMenu" role="button" aria-expanded="false" aria-controls="TagsSubMenu">Tags</a>
+                    <div class="collapse" id="TagsSubMenu">
+                        <ul class="nav flex-column ml-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'tags:create_tag' %}">Create Tag</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'tags:tag_list' %}">All Tags</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
             <div class="mt-auto">
                 <ul class="nav flex-column">

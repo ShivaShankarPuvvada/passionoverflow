@@ -1,0 +1,48 @@
+<!-- tags/templates/tags/tag_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Tags{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <a href="{% url 'tags:create_tag' %}" class="btn btn-custom">Create New Tag</a>
+    <h2>All Tags</h2>
+    <table class="table table-bordered table-striped table-light table-hover" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Actions</th>
+                <!-- Add more headers as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for tag in tags %}
+            <tr>
+                <td>{{ tag.title }}</td>
+                <td>{{ tag.get_status_display }}</td>
+                <td>
+                    <a href="{% url 'tags:update_tag' tag.id %}" class="btn btn-primary btn-sm">Edit</a> <!-- Add edit button -->
+                </td>
+                <!-- Adjust based on your Tag model fields -->
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No tags found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block endscript %}
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="{% static 'DataTables/datatables.min.css' %}">
+    <!-- Include DataTables JS -->
+    <script src="{% static 'DataTables/datatables.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.table').DataTable();
+        });
+    </script>
+{% endblock %}
