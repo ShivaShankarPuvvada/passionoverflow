@@ -98,7 +98,7 @@ def update_stage(request, stage_id):
 
                 stage.title = title
                 stage.status = status
-                stage.save()
+                stage.save(user=request.user)
                 
 
             # Prepare context for rendering the update form with the updated stage

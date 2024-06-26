@@ -28,6 +28,7 @@ urlpatterns = [
     path('create_segment/', views.create_segment, name="create_segment"),
     path('update_segment/<int:segment_id>/', views.update_segment, name="update_segment"),
     path('segments/', views.get_all_segments, name="segment_list"),
+    path('get_segment_members/', views.get_segment_members, name='get_segment_members'),
 
     # path('create_segment/', views.CreateSegmentView.as_view(), name="create_segment"),
     # path('segment/<int:segment_id>/', views.SegmentView.as_view(), name="segment"),

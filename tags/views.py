@@ -98,7 +98,7 @@ def update_tag(request, tag_id):
 
                 tag.title = title
                 tag.status = status
-                tag.save()
+                tag.save(user=request.user)
                 
 
             # Prepare context for rendering the update form with the updated tag

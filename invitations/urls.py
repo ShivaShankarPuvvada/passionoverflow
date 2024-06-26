@@ -45,6 +45,8 @@ get all or specific invitations ()
 get active invitations
 get deactive invitations
 show invitation history for a particular invitation if possible, this may not be needed for any kind of users. this is purely for devleoper.
+For all list data table views, need to do bulk update option. Need to write get views based on permissions. Add all possible filters seperately for each field. Not a common search bar.
+
 """
 
 urlpatterns = [

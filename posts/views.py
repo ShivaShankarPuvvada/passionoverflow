@@ -20,12 +20,12 @@ def upvote_post(request, post_id):
                 else:
                     post.down_votes -= 1
                     existing_vote.vote_type = 1
-                    existing_vote.save()
+                    existing_vote.save(user=request.user)
 
             # If the user hasn't voted or their previous vote was deleted, create an upvote
             post.up_votes += 1
             Vote.objects.create(voted_by=user, post=post, vote_type=1)
-            post.save()
+            post.save(user=request.user)
             return JsonResponse({"success": True, "data": [post.up_votes, post.down_votes]})
         except:
             return JsonResponse({'success': False, 'error': 'Post not found.'}, status=HTTPStatus.NOT_FOUND)
@@ -47,12 +47,12 @@ def downvote_post(request, post_id):
                 else:
                     post.up_votes -= 1
                     existing_vote.vote_type = -1
-                    existing_vote.save()
+                    existing_vote.save(user=request.user)
 
             # If the user hasn't voted or their previous vote was deleted, create an upvote
             post.down_votes += 1
             Vote.objects.create(voted_by=user, post=post, vote_type=-1)
-            post.save()
+            post.save(user=request.user)
             return JsonResponse({"success": True, "data": [post.up_votes, post.down_votes]})
         except:
             return JsonResponse({'success': False, 'error': 'Post not found.'}, status=HTTPStatus.NOT_FOUND)

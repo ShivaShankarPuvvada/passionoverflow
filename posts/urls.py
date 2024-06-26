@@ -17,6 +17,9 @@ deactivate all or specific posts
 get active posts
 get deactive posts
 show post history for a particular post if possible
+For all list data table views, need to do bulk update option.
+For all list data table views, need to do bulk update option. Need to write get views based on permissions. Add all possible filters seperately for each field. Not a common search bar.
+
 """
 
 urlpatterns = [

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.urls import reverse
 
 from django.contrib.auth.decorators import login_required
@@ -71,8 +71,7 @@ def create_segment(request):
                 segment.status = status
                 if project_objects.exists():
                     segment.project = project_objects.first()
-                segment.save()
-
+                segment.save(user=request.user)
                 segment.members.add(request.user) # this will add the current user itself as a member to the segment.
 
                 # Add the current user to assigned_to list if not already included
@@ -160,9 +159,11 @@ def update_segment(request, segment_id):
                     project_objects = Project.objects.filter(id=project_id)
                     if project_objects.exists():
                         segment.project = project_objects.first()
-                segment.save()
+                segment.save(user=request.user)
 
-                # Ensure current requested user is added as a member if not already.
+                # Ensure current requested user is added as a member if not already. 
+                # We don't need to add current user to the project again. 
+                # We are already sending projects based on request.user in GET method.
                 if request.user not in segment.members.all():
                     segment.members.add(request.user)
 
@@ -234,7 +235,7 @@ def update_segment(request, segment_id):
         status_choices = STATUS_CHOICES
         user = User.objects.get(pk=request.user.id)
         company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
-        projects = Project.objects.filter(company=company)
+        projects = Project.objects.filter(company=company, members=user) # getting only projects he was involved in.
 
         customer_company_details = CustomerCompanyDetails.objects.filter(company=company)
         company_root_user_ids = customer_company_details.values_list('company_root_user_id', flat=True)
@@ -262,3 +263,20 @@ def get_all_segments(request):
         'segments': segments
     }
     return render(request, 'segments/segment_list.html', context)
+
+
+@login_required
+def get_segment_members(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        segment_id = request.GET.get('segment_id')
+        segment = get_object_or_404(Segment, id=segment_id)
+        members = segment.members.all()
+        
+        # Serialize members if needed
+        members_list = [{'id': member.id, 'name': member.username} for member in members]
+
+        return JsonResponse({'success': True, 'members': members_list})
+    else:
+        # Handle non-Ajax request
+        return HttpResponseForbidden('Forbidden')
+    # return JsonResponse({'success': False, 'error': 'Invalid request'})

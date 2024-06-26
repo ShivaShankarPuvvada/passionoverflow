@@ -106,17 +106,18 @@ def registration_view(request):
                 company, company_created = Company.objects.get_or_create(name=company_name, sub_domain_name=company_sub_domain_name)
                 if company_created:
                     company.created_by = user
-                company.save()
+                company.save(user=request.user)
 
                 # Create customer company details
                 company_customer, company_customer_created = CustomerCompanyDetails.objects.get_or_create(company=company, company_root_user=user)
                 if company_customer_created:
                     company_customer.created_by = user
-                company_customer.save()
+                company_customer.save(user=request.user)
 
             return JsonResponse({'success': True, 'redirect_url': reverse('accounts:login')})
 
         except Exception as error:
+            print(error)
             # Rollback the transaction and return an error response
             return JsonResponse({'success': False, 'errors': ["An unexpected error occurred. Please try again.",]}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
@@ -167,7 +168,7 @@ def custom_login_view(request):
 
 #             serializer = UserCreationSerializer(data)
 #             if serializer.is_valid():
-#                 serializer.save()
+#                 serializer.save(user=request.user)
 #                 profile_url = reverse("accounts:profile")  # Replace "login" with the name of your login view
 #                 response_data = {
 #                     'data': serializer.data,
@@ -220,7 +221,7 @@ def custom_login_view(request):
 
 #                         # Assign contributor access to the collaborator
 #                         customer_company_details.company_root_user = collaborator
-#                         customer_company_details.save()
+#                         customer_company_details.save(user=request.user)
 
 #                 response_data = {
 #                     'message': f'Contributor access granted for given user ids.',
@@ -270,7 +271,7 @@ def custom_login_view(request):
 #                     if customer_company_details.exits():
 #                         # Assign contributor access to the collaborator
 #                         customer_company_details.company_root_user = None
-#                         customer_company_details.save()
+#                         customer_company_details.save(user=request.user)
 
 
 

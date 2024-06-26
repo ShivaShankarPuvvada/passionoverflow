@@ -1,141 +1,369 @@
-from .models import Ticket
-from django.db.models import Q
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from http import HTTPStatus
+from django.urls import reverse
+
 from django.contrib.auth.decorators import login_required
+from django.db import transaction, IntegrityError
+from .models import Ticket, TicketStage, TicketAssignment
+from accounts.models import CustomerCompanyDetails, Company
+from stages.models import Stage
+from projects.models import Project
+from segments.models import Segment
+from tags.models import Tag
+from accounts.views import User
+from http import HTTPStatus
+import json
 
 
+"""
+Ticket will be visible to only to people who are in the segment.
+Ticket can be moved to another segment.
+"""
 @login_required
 def create_ticket(request):
-    
-    """
-    get method is not needed. we don't need to send anything to frontend.
-    """
-    if request.method == "POST":
+    if request.method == 'POST':
+        super_tickets, sub_tickets, tags, assigned_to = [], [], [], []
         try:
-            data = request.data
-            must_keys = ["title", "start_date", "end_date"]
-            
-            if bool(set(must_keys) - set(data.keys())):
-                return JsonResponse({'Message': str(set(must_keys) - set(data.keys())) + " missing"}, status=HTTPStatus.BAD_REQUEST)
+            data = request.POST
+            # required_fields = ['super_tickets', 'sub_tickets', 'title', 'description', 'start_date', 'end_date', 
+            # 'estimated_end_date', 'due_date', 'status', 'stages', 'priority_type', 'priority', 'priority_scale', 
+            # 'ticket_type', 'segment_id', 'assigned_to', 'tags']
+            required_fields = ['title']
+            # Check for missing required fields
+            missing_fields = [field for field in required_fields if field not in data]
+            if missing_fields:
+                return JsonResponse({'success': False, 'errors': f'Missing fields: {", ".join(missing_fields)}'}, status=HTTPStatus.BAD_REQUEST)
 
-            # Extract user data
-            ticket_data = {
-                "title": data["title"],
-                "description": data["description"],
-                "start_date": data["start_date"],
-                "end_date": data["end_date"],
-                "estimated_end_date": data["estimated_end_date"],
-                "due_date": data["due_date"],
-                "status": data["status"],
-                "priority_type": data["priority_type"],
-                "priority": data["priority"],
-                "priority_scale": data["priority_scale"],
-                "ticket_type": data["ticket_type"],
-                "deleted": data["deleted"],
-            }
+            if 'super_tickets' in data:
+                super_tickets = data.getlist('super_tickets')
+            if 'sub_tickets' in data:
+                sub_tickets = data.getlist('sub_tickets')
+            if 'title' in data:
+                title = data['title']
+            if 'description' in data:
+                description = data.get('description', '')  # Description is optional
+            if 'start_date' in data:
+                start_date = data.get('start_date', None)
+            if 'end_date' in data:
+                end_date = data.get('end_date', None)
+            if 'estimated_end_date' in data:
+                estimated_end_date = data.get('estimated_end_date', None)
+            if 'due_date' in data:
+                due_date = data.get('due_date', None)
+            if 'status' in data:
+                status = data.get('status', Ticket.Status.ACTIVE)  # Default to OPEN if not provided
+            if 'stages' in data:
+                stages = data.get('stages')  # Assuming stages is a single id.
+            # if 'priority_type' in data:
+            #     priority_type = data.get('priority_type', Ticket.PriorityType.TEXTOPTION)
+            # if 'priority' in data:
+            #     priority = data.get('priority', Ticket.Priority.MEDIUM)
+            if 'priority_scale' in data:
+                priority_scale = data.get('priority_scale', Ticket.PriorityScale.FIVE)
+            if 'ticket_type' in data:
+                ticket_type = data.get('ticket_type', Ticket.TicketType.FEATURE)
+            if 'segment_id' in data:
+                segment_id = data.get('segment_id')
+            if 'tags' in data:
+                tags = data.getlist('tags')
+            if 'assigned_to' in data:
+                assigned_to = data.getlist('assigned_to')  # Assuming assigned_to are received as a list of IDs
+
+            # Check for common tickets in super and sub tickets
+            if super_tickets and sub_tickets:
+                common_tickets = list(set(super_tickets) & set(sub_tickets))
+                if common_tickets:
+                    error = f'Ticket(s) {", ".join(map(str, common_tickets))} cannot be both super and sub tickets.'
+                    errors.append(error)
+
+            # Basic validation
+            errors = []
+            if not title:
+                errors.append("Title is required.")
+
+            if errors:
+                return JsonResponse({'success': False, 'errors': errors}, status=HTTPStatus.BAD_REQUEST)
 
 
-            # Create User and Company instances
-            ticket_object = Ticket(**ticket_data)
-            # Validate and save User and Company instances
-            ticket_object.save()
+            with transaction.atomic():
+                # Getting company
+                contributor = CustomerCompanyDetails.objects.filter(company_root_user=request.user)
+                collaborator = CustomerCompanyDetails.objects.filter(company_user=request.user)
+                if contributor.exists():
+                    company = contributor.first().company
+                elif collaborator.exists():
+                    company = collaborator.first().company
 
-            response_data = {
-                'data': ticket_object.data,
-                "message": "Data Saved Successfully.",
-            }
-            
-            return JsonResponse(response_data, status=HTTPStatus.CREATED)
+                ticket = Ticket()
+                ticket.title=title
+                ticket.description=description
+                ticket.start_date=start_date
+                ticket.end_date=end_date
+                ticket.estimated_end_date=estimated_end_date
+                ticket.due_date=due_date
+                ticket.status=status
+                # ticket.priority_type=priority_type,
+                # ticket.priority=priority,
+                ticket.priority_scale=priority_scale
+                ticket.ticket_type=ticket_type
+                if segment_id:
+                    segment_objects = Segment.objects.filter(id=segment_id)
+                    if segment_objects.exists():
+                        ticket.segment = segment_objects.first()
+                
+                ticket.save(user=request.user)
+
+
+                ticket.members.add(request.user) # this will add the current user itself as a member to the ticket.
+
+                # Add super tickets
+                for super_ticket_id in super_tickets:
+                    super_ticket = Ticket.objects.get(pk=super_ticket_id)
+                    ticket.super_tickets.add(super_ticket)
+
+                # Add sub tickets
+                for sub_ticket_id in sub_tickets:
+                    sub_ticket = Ticket.objects.get(pk=sub_ticket_id)
+                    ticket.sub_tickets.add(sub_ticket)
+
+                # Add tags
+                for tag_id in tags:
+                    tag = Tag.objects.get(pk=tag_id)
+                    ticket.tags.add(tag)
+
+                # Create related TicketStage records
+                stage = Stage.objects.filter(id=stages).first()
+                if stage:
+                    TicketStage.objects.create(ticket=ticket, stage=stage)
+
+                # Add the current user to assigned_to list if not already included
+                if str(request.user.id) not in assigned_to:
+                    assigned_to.append(str(request.user.id))
+
+                # write a function here, it will add the users to the segment if they are not already in the segment.
+                # An ajax function should tell by clicking create ticket if users are not in the segment and we should add them.
+                # If collaborator is trying to create a ticket then it should mail it to the contributors. currently sending segment only users to the ticket.
+
+                # Create related TicketAssignment records
+                for user_id in assigned_to:
+                    user = User.objects.filter(id=user_id).first()
+                    # Adding all invited users to members
+                    ticket.members.add(user)
+                    if user:
+                        TicketAssignment.objects.create(ticket=ticket, assigned_by=request.user, assigned_to=user)
+
+            return redirect('tickets:ticket_list')
+
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'errors': ["Invalid JSON data."]}, status=HTTPStatus.BAD_REQUEST)
+
+        except IntegrityError as integrity_error:
+            return JsonResponse({'success': False, 'errors': ["Integrity Error: " + str(integrity_error)]}, status=HTTPStatus.BAD_REQUEST)
+
         except Exception as error:
-            error_message = "Internal Server Error: " + str(error)
-            return JsonResponse({'Message': error_message}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+            print(error)
+            import os,sys
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+            return JsonResponse({'success': False, 'errors': ["An unexpected error occurred. Please try again."]}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    elif request.method == 'GET':
+        # sending all choices to template
+        status_choices = Ticket.Status.choices
+        priority_scale = Ticket.PriorityScale.choices
+        ticket_type = Ticket.TicketType.choices
+
+        # checking type of user and getting company
+        user = User.objects.get(pk=request.user.id)
+        contributor = CustomerCompanyDetails.objects.filter(company_root_user=user)
+        collaborator = CustomerCompanyDetails.objects.filter(company_user=user)
+        if contributor.exists():
+            company = contributor.first().company
+        elif collaborator.exists():
+            company = collaborator.first().company
         
-@login_required
-def get_active_tickets(request):
-    
-    if request.method == "GET":
-        try:
+        # getting all the segments he is involved in. 
+        # He should be able to create ticket in all segments he is involved in.
+        segments = Segment.objects.filter(project__company=company, members=user)
+
+        # Getting all stages related to the company
+        stages = Stage.objects.filter(company=company)
+        
+        # Getting all tags related to the company
+        tags = Tag.objects.filter(company=company)
+
+        # Getting all tickets related to the company
+        tickets = Ticket.objects.filter(segment__project__company=company)
+
+        # Retrieve all unique users related to the all segments. 
+        # If the required user is not in the selected segments, contributor need to assign him to segment.
+        # currently sending all users related to segments only.
+        # if the selected users were not in the selected segment, we need to show pop up that,
+        # we will send mail to contributor that you requested them to add to the selected segment.
+        # If current user is a contributor, we will directly add them to the segment.
+        context = {
+                    'tags': tags,
+                    'stages': stages, 
+                    'tickets': tickets,
+                    'segments': segments,
+                    'ticket_type': ticket_type,
+                    'status_choices': status_choices,
+                    'priority_scale': priority_scale,
+                }
+        return render(request=request, template_name='tickets/create_ticket.html', context=context)
+
+
+# @login_required
+# def update_ticket(request, ticket_id):
+#     ticket = get_object_or_404(Ticket, id=ticket_id)
+#     if request.method == 'POST':
+#         stage_ids, assigned_to_ids = [], []
+#         try:
+#             data = request.POST
+#             required_fields = ['title']
+#             missing_fields = [field for field in required_fields if field not in data]
+#             if missing_fields:
+#                 return JsonResponse({'success': False, 'errors': f'Missing fields: {", ".join(missing_fields)}'}, status=HTTPStatus.BAD_REQUEST)
             
-            ticket_object = Ticket.objects.filter()
+#             title = data['title']
+#             description = data.get('description', '')
+#             start_date = data.get('start_date', None)
+#             end_date = data.get('end_date', None)
+#             status = data.get('status', Ticket.Status.ACTIVE)  # Default to OPEN if not provided
 
-            if ticket_object.exists():
-                ticket_object = ticket_object.latest()
-                ticket_title = ticket_object.title
-                ticket_description = ticket_object.description
-                ticket_startdate = ticket_object.start_date
-                ticket_enddate = ticket_object.end_date
-                ticket_status = ticket_object.status
-                ticket_priority = ticket_object.priority
-                ticket_ticket_type = ticket_object.ticket_type
-                response_data = {
-                    'data': {
-                        "ticket_title": ticket_title,
-                        "ticket_description": ticket_description,
-                        "ticket_startdate": ticket_startdate,
-                        "ticket_enddate": ticket_enddate,
-                        "ticket_status": ticket_status,
-                        "ticket_priority": ticket_priority,
-                        "ticket_ticket_type": ticket_ticket_type,
-                        },
-                }
-                return JsonResponse(response_data, status=HTTPStatus.OK)
-            else:
-                response_data = {
-                    'data': {
-                        "proceed": True,
-                        },
-                    "message": "There are no tickets available",
-                }
-                return JsonResponse(response_data, status=HTTPStatus.OK)
-        except Exception as error:
-            error_message = "Internal Server Error: " + str(error) 
-            return JsonResponse({'Message': error_message }, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+#             errors = []
+#             if not title:
+#                 errors.append("Title is required.")
+#             if errors:
+#                 return JsonResponse({'success': False, 'errors': errors}, status=HTTPStatus.BAD_REQUEST)
 
+#             # Convert stages and assigned_to to lists if they are not already
+#             stage_ids = data.getlist('stages')  # Assuming stages are received as a list of IDs
+#             assigned_to_ids = data.getlist('assigned_to')  # Assuming assigned_to are received as a list of IDs
 
-@login_required
-def ticket_view(request):
+#             with transaction.atomic():
+#                 ticket.title = title
+#                 ticket.description = description
+#                 ticket.start_date = start_date
+#                 ticket.end_date = end_date
+#                 ticket.status = status
+#                 ticket.save(user=request.user)
+
+#                 # Ensure current requested user is added as a member if not already.
+#                 if request.user not in ticket.members.all():
+#                     ticket.members.add(request.user)
+
+#                 # Update members via ManyToManyField
+#                 current_members = set(ticket.members.all())
+#                 new_members = set(User.objects.filter(id__in=assigned_to_ids))
+
+#                 # Add new members
+#                 members_to_add = new_members - current_members
+#                 for member in members_to_add:
+#                     ticket.members.add(member)
+
+#                 # Remove old members except the current requested user.
+#                 members_to_remove = current_members - new_members
+#                 for member in members_to_remove:
+#                     # Avoid removing the current user from members
+#                     if member != request.user:
+#                         ticket.members.remove(member)
+
+#                 # Update members via TicketAssignment model
+#                 current_assignments = TicketAssignment.objects.filter(ticket=ticket)
+#                 current_assignment_user_ids = set(current_assignments.values_list('assigned_to', flat=True))
+#                 new_assignment_user_ids = set(map(int, assigned_to_ids))
+
+#                 assignments_to_add = new_assignment_user_ids - current_assignment_user_ids
+#                 assignments_to_remove = current_assignment_user_ids - new_assignment_user_ids
+
+#                 for user_id in assignments_to_add:
+#                     user = User.objects.get(id=user_id)
+#                     TicketAssignment.objects.create(ticket=ticket, assigned_by=request.user, assigned_to=user)
+
+#                 for user_id in assignments_to_remove:
+#                     TicketAssignment.objects.filter(ticket=ticket, assigned_to=user_id).delete()
+
+#                 # Update TicketStages
+#                 current_stages = ticket.stages.all()
+#                 current_stage_ids = set(current_stages.values_list('id', flat=True))
+#                 new_stage_ids = set(map(int, stage_ids))
+
+#                 stages_to_add = new_stage_ids - current_stage_ids
+#                 stages_to_remove = current_stage_ids - new_stage_ids
+
+#                 for stage_id in stages_to_add:
+#                     stage = Stage.objects.get(id=stage_id)
+#                     TicketStage.objects.create(ticket=ticket, stage=stage)
+
+#                 for stage_id in stages_to_remove:
+#                     TicketStage.objects.filter(ticket=ticket, stage_id=stage_id).delete()
+
+#             # Fetch updated ticket again to ensure you have the latest data
+#             ticket = Ticket.objects.get(id=ticket_id)
+
+#             # Prepare context for rendering the update form with the updated ticket
+#             status_choices = Ticket.Status.choices
+#             user = User.objects.get(pk=request.user.id)
+#             company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
+#             stages = Stage.objects.filter(company=company)
+
+#             customer_company_details = CustomerCompanyDetails.objects.filter(company=company)
+#             company_root_user_ids = customer_company_details.values_list('company_root_user_id', flat=True)
+#             company_user_ids = customer_company_details.values_list('company_user_id', flat=True)
+#             all_user_ids = set(company_root_user_ids).union(set(company_user_ids))
+#             same_company_users = User.objects.filter(id__in=all_user_ids)
+
+#             context = {
+#                 'ticket': ticket,
+#                 'status_choices': status_choices,
+#                 'stages': stages,
+#                 'same_company_users': same_company_users,
+#             }
+#             return render(request, 'tickets/update_ticket.html', context=context)
+
+#         except json.JSONDecodeError:
+#             return JsonResponse({'success': False, 'errors': ["Invalid JSON data."]}, status=HTTPStatus.BAD_REQUEST)
+
+#         except IntegrityError as integrity_error:
+#             return JsonResponse({'success': False, 'errors': ["Integrity Error: " + str(integrity_error)]}, status=HTTPStatus.BAD_REQUEST)
+
+#         except Exception as error:
+#             print(error)
+#             return JsonResponse({'success': False, 'errors': ["An unexpected error occurred. Please try again."]}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
     
-    if request.method == "POST":
-        try:
-            data=request.data
-            must_keys=["id"]
-            if bool(set(must_keys)-set(data.keys())):
-                return JsonResponse({'Message':str(set(must_keys)-set(data.keys()))+" missing"}, status=HTTPStatus.BAD_REQUEST)
-            
-            ticket_id = data.get('id')
-            ticket_object = Ticket.objects.filter(Q(id=ticket_id))
+#     elif request.method == 'GET':
+#         status_choices = Ticket.Status.choices
+#         user = User.objects.get(pk=request.user.id)
+#         company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
+#         stages = Stage.objects.filter(company=company)
 
-            if ticket_object.exists():
-                ticket_object = ticket_object.latest()
-                ticket_title = ticket_object.title
-                ticket_description = ticket_object.description
-                ticket_startdate = ticket_object.start_date
-                ticket_enddate = ticket_object.end_date
-                ticket_status = ticket_object.status
-                ticket_priority = ticket_object.priority
-                ticket_ticket_type = ticket_object.ticket_type
-                response_data = {
-                    'data': {
-                        "ticket_title": ticket_title,
-                        "ticket_description": ticket_description,
-                        "ticket_startdate": ticket_startdate,
-                        "ticket_enddate": ticket_enddate,
-                        "ticket_status": ticket_status,
-                        "ticket_priority": ticket_priority,
-                        "ticket_ticket_type": ticket_ticket_type,
-                        },
-                }
-                return JsonResponse(response_data, status=HTTPStatus.OK)
-            else:
-                response_data = {
-                    'data': {
-                        "proceed": True,
-                        },
-                    "message": "This is new data. We can proceed.",
-                }
-                return JsonResponse(response_data, status=HTTPStatus.OK)
+#         customer_company_details = CustomerCompanyDetails.objects.filter(company=company)
+#         company_root_user_ids = customer_company_details.values_list('company_root_user_id', flat=True)
+#         company_user_ids = customer_company_details.values_list('company_user_id', flat=True)
+#         all_user_ids = set(company_root_user_ids).union(set(company_user_ids))
+#         same_company_users = User.objects.filter(id__in=all_user_ids)
+        
+#         context = {
+#             'ticket': ticket,
+#             'status_choices': status_choices, 
+#             'stages': stages, 
+#             'same_company_users': same_company_users
+#         }
+#         return render(request=request, template_name='tickets/update_ticket.html', context=context)
 
-        except Exception as error:
-            error_message = "Internal Server Error: " + str(error) 
-            return JsonResponse({'Message': error_message }, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+# This view is for contributor only, it will show all the tickets in all projects where he is a member.
+@login_required
+def get_all_tickets(request):
+    user = request.user
+    company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
+    # Filter tickets based on projects where user is a member
+    projects = Project.objects.filter(company=company, members=user)
+    tickets = Ticket.objects.filter(segment__project__in=projects).order_by('-id')
+
+    context = {
+        'tickets': tickets
+    }
+    return render(request, 'tickets/ticket_list.html', context)

@@ -95,7 +95,7 @@ def update_phase(request, phase_id):
                 if is_contributor.exists():
                     phase.title = title
                     phase.status = status
-                    phase.save()
+                    phase.save(user=request.user)
                 else:
                     return JsonResponse({'success': False, 'errors': errors.append('Only contributor can have access to Phases.')}, status=HTTPStatus.BAD_REQUEST)
 

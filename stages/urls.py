@@ -16,6 +16,9 @@ deactivate all or specific stages
 get active stages
 get deactive stages
 show stage history for a particular stage if possible
+For all list data table views, need to do bulk update option.
+For all list data table views, need to do bulk update option. Need to write get views based on permissions. Add all possible filters seperately for each field. Not a common search bar.
+
 """
 
 urlpatterns = [

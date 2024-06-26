@@ -24,6 +24,8 @@ list of all possible tasks for projects
 # show assignment history for a project (get all the rows for this project and display them in order)
 # show phase history for a project (added this phase, deleted this phase on this date, added this phase on a particular date, current phase)
 # show project model history if possible
+For all list data table views, need to do bulk update option. Need to write get views based on permissions. Add all possible filters seperately for each field. Not a common search bar.
+
 """
 
 # urlpatterns = [

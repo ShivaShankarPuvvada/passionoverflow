@@ -27,17 +27,21 @@ class Phase(models.Model):
     history = HistoricalRecords()
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='phase_created_by', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='phase_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='phase_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
     def __str__(self):
         return self.title
-    
+
     def save(self, *args, **kwargs):
-        if not self.pk:
-            # This is a new object, set the created_by field
-            self.created_by = kwargs.pop('user', None)
-        # Always set the updated_by field
-        self.updated_by = kwargs.pop('user', None)
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
         super(Phase, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user
+

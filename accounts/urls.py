@@ -5,6 +5,7 @@ from django.contrib.auth import views as auth_views
 app_name = "accounts"
 
 """
+For all list data table views, need to do bulk update option. Need to write get views based on permissions. Add all possible filters seperately for each field. Not a common search bar.
 There are mainly two types of users. Contributors (has all the access) if added to the project, Collaborator has only tickets and posts wide access.
 first user will create the profile in our account in a company. He will have to invite the remaining people by allowing them to spaces/company sub domains. He can make invited users as root users as well.
 If company is already there, we need to ask the user to contact his administrator.

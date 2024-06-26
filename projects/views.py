@@ -158,7 +158,7 @@ def update_project(request, project_id):
                 project.start_date = start_date
                 project.end_date = end_date
                 project.status = status
-                project.save()
+                project.save(user=request.user)
 
                 # Ensure current requested user is added as a member if not already.
                 if request.user not in project.members.all():

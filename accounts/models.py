@@ -74,7 +74,7 @@ class Company(models.Model):
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     history = HistoricalRecords()
     created_by = models.ForeignKey(User, related_name='company_model_created_by', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='company_model_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='company_model_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
@@ -85,6 +85,18 @@ class Company(models.Model):
         unique_together = ['name', 'sub_domain_name']
 
 
+    def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
+        super(Company, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user
+
+
 class CustomerCompanyDetails(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     company_root_user = models.ForeignKey(User, related_name="company_root_user", on_delete=models.SET_NULL, null=True, blank=True) # contributor
@@ -92,7 +104,7 @@ class CustomerCompanyDetails(models.Model):
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     history = HistoricalRecords()
     created_by = models.ForeignKey(User, related_name='company_created_by', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='company_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='company_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
@@ -105,3 +117,14 @@ class CustomerCompanyDetails(models.Model):
             current_user_name = self.company_root_user.username
         return_string = current_user_name + ' is a ' + current_user + ' for ' + self.company.name + ' company and space is ' + self.company.sub_domain_name
         return return_string
+
+    def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
+        super(CustomerCompanyDetails, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user

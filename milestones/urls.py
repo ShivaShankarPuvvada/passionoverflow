@@ -16,6 +16,8 @@ deactivate all or specific milestones
 get active milestones
 get deactive milestones
 show milestone history for a particular milestone if possible
+For all list data table views, need to do bulk update option. Need to write get views based on permissions. Add all possible filters seperately for each field. Not a common search bar.
+
 """
 
 urlpatterns = [

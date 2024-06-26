@@ -23,6 +23,7 @@ class Invitation(models.Model):
     The Contributor can give write only access.
     If the contributor changes the invitation read_only mode or tries to add or remove the existing record, we will make the old record status to 0 and create a new record.
     We need to always get the records with status 1.
+    When segment is changed to another project, we need to make sure we get current project details only.
     """
     title = models.CharField(max_length=200, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -33,10 +34,22 @@ class Invitation(models.Model):
     read_only = models.BooleanField(default=True)
     expiration_date = models.DateTimeField()
     created_by = models.ForeignKey(User, related_name='invitation_created_by', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='invitation_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='invitation_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
 
     def has_expired(self):
         return timezone.now() > self.expiration_date
+    
+    def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
+        super(Invitation, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user
+

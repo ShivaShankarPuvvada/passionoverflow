@@ -31,7 +31,7 @@ class Project(models.Model):
     history = HistoricalRecords()
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='project_created_by', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='project_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='project_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
@@ -39,12 +39,15 @@ class Project(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            # This is a new object, set the created_by field
-            self.created_by = kwargs.pop('user', None)
-        # Always set the updated_by field
-        self.updated_by = kwargs.pop('user', None)
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
         super(Project, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user
 
 class ProjectPhase(models.Model):
     """
@@ -67,7 +70,7 @@ class ProjectPhase(models.Model):
     status = models.CharField(max_length=2, default="1") # active phase connection, deactivated phase connection
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='projectphase_created_by', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='projectphase_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='projectphase_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
@@ -76,12 +79,15 @@ class ProjectPhase(models.Model):
         return object_display_message
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            # This is a new object, set the created_by field
-            self.created_by = kwargs.pop('user', None)
-        # Always set the updated_by field
-        self.updated_by = kwargs.pop('user', None)
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
         super(ProjectPhase, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user
 
 
 class ProjectAssignment(models.Model):
@@ -115,7 +121,7 @@ class ProjectAssignment(models.Model):
     history = HistoricalRecords()
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='assignment_created_by', on_delete=models.SET_NULL, null=True, blank=True)
-    updated_by = models.ForeignKey(User, related_name='assignment_updated_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='assignment_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
@@ -124,9 +130,12 @@ class ProjectAssignment(models.Model):
         return project_assignment
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            # This is a new object, set the created_by field
-            self.created_by = kwargs.pop('user', None)
-        # Always set the updated_by field
-        self.updated_by = kwargs.pop('user', None)
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
         super(ProjectAssignment, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user
