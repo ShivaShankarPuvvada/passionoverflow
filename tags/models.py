@@ -38,3 +38,4 @@ class Tag(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(Tag, self).save()

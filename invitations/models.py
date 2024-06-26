@@ -52,4 +52,5 @@ class Invitation(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(Invitation, self).save()
 

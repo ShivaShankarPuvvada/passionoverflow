@@ -192,9 +192,14 @@ By incorporating these fields into your Ticket model and managing them effective
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def generate_unique_ticket_counter(self):
-        customer_company_details = account_models.CustomerCompanyDetails.objects.filter(company_user=self.created_by).order_by('-id').first()
+        contributor = account_models.CustomerCompanyDetails.objects.filter(company_root_user=self.created_by).order_by('-id')
+        collaborator = account_models.CustomerCompanyDetails.objects.filter(company_user=self.created_by).order_by('-id')
+        if contributor.exists():
+            company = contributor.first().company
+        elif collaborator.exists():
+            company = collaborator.first().company
         # Retrieve the last used counter for this company and increment it
-        last_ticket = Ticket.objects.filter(segment__project__company=customer_company_details.company).order_by('-company_ticket_counter').first()
+        last_ticket = Ticket.objects.filter(segment__project__company=company).order_by('-company_ticket_counter').first()
         if last_ticket:
             return last_ticket.company_ticket_counter + 1
         else:
@@ -211,8 +216,9 @@ By incorporating these fields into your Ticket model and managing them effective
             self.updated_by.add(user)
             if is_new:
                 # Generate a unique ticket ID based on the company's identifier
-                self.company_ticket_counter = self.generate_unique_ticket_counter()
                 self.created_by = user
+                self.company_ticket_counter = self.generate_unique_ticket_counter()
+                super(Ticket, self).save()  # Save again to update with generated counter
 
 
 class TicketAssignment(models.Model):
@@ -264,6 +270,8 @@ class TicketAssignment(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(TicketAssignment, self).save()
+
 
 class TicketStage(models.Model):
     """
@@ -292,3 +300,4 @@ class TicketStage(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(TicketStage, self).save()

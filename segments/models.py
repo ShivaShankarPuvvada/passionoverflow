@@ -43,6 +43,8 @@ class Segment(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(Segment, self).save()
+
 
 
 class SegmentAssignment(models.Model):
@@ -93,3 +95,4 @@ class SegmentAssignment(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(SegmentAssignment, self).save()

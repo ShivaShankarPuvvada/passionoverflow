@@ -95,7 +95,7 @@ class Company(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
-
+                super(Company, self).save()
 
 class CustomerCompanyDetails(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
@@ -128,3 +128,5 @@ class CustomerCompanyDetails(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(CustomerCompanyDetails, self).save()
+

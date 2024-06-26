@@ -48,6 +48,8 @@ class Project(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(Project, self).save()
+
 
 class ProjectPhase(models.Model):
     """
@@ -88,6 +90,8 @@ class ProjectPhase(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(ProjectPhase, self).save()
+
 
 
 class ProjectAssignment(models.Model):
@@ -139,3 +143,4 @@ class ProjectAssignment(models.Model):
             self.updated_by.add(user)
             if is_new:
                 self.created_by = user
+                super(ProjectAssignment, self).save()
