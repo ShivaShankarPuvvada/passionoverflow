@@ -213,10 +213,11 @@ def create_ticket(request):
 
         # Retrieve all unique users related to the all segments. 
         # If the required user is not in the selected segments, contributor need to assign him to segment.
-        # currently sending all users related to segments only.
-        # if the selected users were not in the selected segment, we need to show pop up that,
+        # currently sending all users related to company only.
+        # if the selected users were not in the selected segment, it will directly add the new users to segment members.
         # we will send mail to contributor that you requested them to add to the selected segment.
         # If current user is a contributor, we will directly add them to the segment.
+        # currently for all, we are directly adding them to the segment. Only collaborators can't directly add others to the project.
         context = {
                     'tags': tags,
                     'stages': stages, 
