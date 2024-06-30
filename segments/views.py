@@ -196,7 +196,8 @@ def update_segment(request, segment_id):
                     SegmentAssignment.objects.create(segment=segment, assigned_by=request.user, assigned_to=user)
 
                 for user_id in assignments_to_remove:
-                    SegmentAssignment.objects.filter(segment=segment, assigned_to=user_id).delete()
+                    user = User.objects.get(id=user_id)
+                    SegmentAssignment.objects.filter(segment=segment, assigned_to=user).delete()
 
             # Fetch updated segment again to ensure you have the latest data
             segment = Segment.objects.get(id=segment_id)

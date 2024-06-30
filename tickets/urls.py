@@ -37,7 +37,7 @@ Show all the choice descriptions in the tickets create and update fields.
 
 urlpatterns = [
     path('create_ticket/', views.create_ticket, name="create_ticket"),
-    # path('update_ticket/<int:ticket_id>/', views.update_ticket, name="update_ticket"),
+    path('update_ticket/<int:ticket_id>/', views.update_ticket, name="update_ticket"),
     path('tickets/', views.get_all_tickets, name="ticket_list"),
 
     # path('create_ticket/', views.create_ticket, name="create_ticket"),

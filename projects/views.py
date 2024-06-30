@@ -193,7 +193,8 @@ def update_project(request, project_id):
                     ProjectAssignment.objects.create(project=project, assigned_by=request.user, assigned_to=user)
 
                 for user_id in assignments_to_remove:
-                    ProjectAssignment.objects.filter(project=project, assigned_to=user_id).delete()
+                    user = User.objects.get(id=user_id)
+                    ProjectAssignment.objects.filter(project=project, assigned_to=user).delete()
 
                 # Update ProjectPhases
                 current_phases = project.phases.all()

@@ -11,8 +11,8 @@
             <tr>
                 <th>Title</th>
                 <th>Members</th>
-                <th>Parent Tickets</th>
-                <th>Child Tickets</th>
+                <th>Root Tickets</th>
+                <th>Branch Tickets</th>
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Esitmated End Date</th>
@@ -67,8 +67,7 @@
                         {% endfor %}
                     </td>
                     <td>
-                        {% comment %} <a href="{% url 'tickets:update_ticket' ticket.id %}" class="btn btn-primary btn-sm">Edit</a> {% endcomment %}
-                        <a href="#">Edit</a>
+                        <a href="{% url 'tickets:update_ticket' ticket.id %}" class="btn btn-primary btn-sm">Edit</a>
                     </td>
                 </tr>
             {% empty %}

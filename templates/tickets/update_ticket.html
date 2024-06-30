@@ -1,0 +1,386 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block title %}Update Ticket{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{% static 'css/tickets/update_ticket.css' %}">
+{% endblock stylesheets %}
+{% block content %}
+
+    <div id="error-messages" class="error-messages d-none">
+        <div class="error-message">
+            <p>Errors:</p>
+            <span class="close-btn">&times;</span>
+            <span class="error-text"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Update Ticket</div>
+                <div class="card-body">
+                    <form method="post" id="update-ticket-form">
+                        {% csrf_token %}
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_title">Title</label>
+                            <div class="col-md-9">
+                                <input type="text" name="title" class="form-control" placeholder="Enter title" maxlength="200" required id="id_title" value="{{ ticket.title }}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="summernote">Description</label>
+                            <div class="col-md-9">
+                                <textarea name="description" class="form-control" placeholder="Description" id="summernote">{{ ticket.description }}</textarea>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_super_tickets">Root Tickets</label>
+                            <div class="col-md-9">
+                                <select name="super_tickets" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_super_tickets" data-width="100%">
+                                    {% for ticket_option in tickets %}
+                                        <option value="{{ ticket_option.id }}" {% if ticket|check_super_id:ticket_option.id %}selected{% endif %}>{{ ticket_option.title }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="additional-info" id="" style="font-size: 0.8rem; padding-top: 4px; color: #5e5e5e;">Root tickets are parent tickets. Root ticket should not be branch ticket for the same ticket.</p>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_sub_tickets">Branch Tickets</label>
+                            <div class="col-md-9">
+                                <select name="sub_tickets" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_sub_tickets" data-width="100%">
+                                    {% for ticket_option in tickets %}
+                                        <option value="{{ ticket_option.id }}" {% if ticket|check_sub_id:ticket_option.id %}selected{% endif %}>{{ ticket_option.title }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p class="additional-info" id="" style="font-size: 0.8rem; padding-top: 4px; color: #5e5e5e;">Branch tickets are child tickets. Branch ticket should not be root ticket for the same ticket.</p>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_start_date">Start date</label>
+                            <div class="col-md-9">
+                                <input type="date" name="start_date" class="form-control" placeholder="Start date" id="id_start_date" value="{{ ticket.start_date|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_end_date">End date</label>
+                            <div class="col-md-9">
+                                <input type="date" name="end_date" class="form-control" placeholder="End date" id="id_end_date" value="{{ ticket.end_date|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_estimated_end_date">Estimated End date</label>
+                            <div class="col-md-9">
+                                <input type="date" name="estimated_end_date" class="form-control" placeholder="Estimated End date" id="id_estimated_end_date" value="{{ ticket.estimated_end_date|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_due_date">Due date</label>
+                            <div class="col-md-9">
+                                <input type="date" name="due_date" class="form-control" placeholder="Due date" id="id_due_date" value="{{ ticket.due_date|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_status">Status</label>
+                            <div class="col-md-9">
+                                <select name="status" class="form-select" id="id_status">
+                                    {% for value, display in status_choices %}
+                                        <option value="{{ value }}" {% if value == ticket.status %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_priority_scale">Priority scale</label>
+                            <div class="col-md-9">
+                                <select name="priority_scale" class="form-select" id="id_priority_scale">
+                                    {% for value, display in priority_scale %}
+                                        <option value="{{ value }}" {% if value == ticket.priority_scale %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_ticket_type">Ticket type</label>
+                            <div class="col-md-9">
+                                <select name="ticket_type" class="form-select" id="id_ticket_type">
+                                    {% for value, display in ticket_type %}
+                                        <option value="{{ value }}" {% if value == ticket.ticket_type %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_stage">Stage</label>
+                            <div class="col-md-6">
+                                <select name="stages" class="form-select" id="id_stage" required>
+                                    {% for stage in stages %}
+                                        <option value="{{ stage.id }}" {% if ticket|check_stage:stage.id %}selected{% endif %}>{{ stage.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'stages:create_stage' %}" class="btn btn-primary btn-sm" target="_blank">Create Stage</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_segment">Segment</label>
+                            <div class="col-md-6">
+                                <select name="segment_id" class="form-select" id="id_segment" required>
+                                    <option value="">Select Segment</option>
+                                    {% for segment in segments %}
+                                        <option value="{{ segment.id }}" {% if segment.id == ticket.segment.id %}selected{% endif %}>{{ segment.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'segments:create_segment' %}" class="btn btn-primary btn-sm" target="_blank">Create Segment</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_assigned_to">Assign to</label>
+                            <div class="col-md-9">
+                                <select name="assigned_to" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_assigned_to" data-max-options="4" data-width="100%">
+                                    {% for user in same_company_users %}
+                                        <option value="{{ user.id }}" {% if user.id|is_user_assigned:ticket.assigned_to.all %}selected{% endif %}>{{ user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_tag">Tags (Max 5)</label>
+                            <div class="col-md-6">
+                                <select name="tags" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_tag" data-width="100%" data-max-options="5">
+                                    {% for tag in tags %}
+                                        <option value="{{ tag.id }}" {% if ticket|check_tag:tag.id %}selected{% endif %}>{{ tag.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'tags:create_tag' %}" class="btn btn-primary btn-sm" target="_blank">Create Tag</a>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <div class="col-md-9 offset-md-3">
+                                <button type="submit" class="btn btn-primary">Update Ticket</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Display -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Ticket Preview</div>
+                <div class="card-body">
+                    <h5>Title: <span id="preview-title"></span></h5>
+                    <p>Description: <span id="preview-description"></span></p>
+                    <p>Parent Tickets: <span id="preview-super-tickets"></span></p>
+                    <p>Child Tickets: <span id="preview-sub-tickets"></span></p>
+                    <p>Start Date: <span id="preview-start-date"></span></p>
+                    <p>End Date: <span id="preview-end-date"></span></p>
+                    <p>Estimated End Date: <span id="preview-estimated-end-date"></span></p>
+                    <p>Due Date: <span id="preview-due-date"></span></p>
+                    <p>Status: <span id="preview-status"></span></p>
+                    <p>Priority Scale: <span id="preview-priority-scale"></span></p>
+                    <p>Ticket Type: <span id="preview-ticket-type"></span></p>
+                    <p>Stage: <span id="preview-stage"></span></p>
+                    <p>Segment: <span id="preview-segment"></span></p>
+                    <p>Assigned To: <span id="preview-assigned-to"></span></p>
+                    <p>Tags: <span id="preview-tags"></span></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block endscript %}
+        <script>
+            $(document).ready(function() {
+
+                // Function to validate super and sub tickets
+                function validateTickets() {
+                    var superTickets = $('#id_super_tickets').val() || [];
+                    var subTickets = $('#id_sub_tickets').val() || [];
+                    var errors = [];
+
+                    // Check for identical super and sub tickets
+                    superTickets.forEach(function(superTicketId) {
+                        if (subTickets.includes(superTicketId)) {
+                            errors.push(`Ticket ${superTicketId} cannot be both a super and a sub ticket.`);
+                        }
+                    });
+
+                    return errors;
+                }
+
+                // Function to display errors
+                function displayErrors(errors) {
+                    var errorHtml = '';
+                    if (errors.length > 0) {
+                        errorHtml += '<div class="alert alert-danger" role="alert">';
+                        errors.forEach(function(error) {
+                            errorHtml += '<p>' + error + '</p>';
+                        });
+                        errorHtml += '<span class="close-btn">&times;</span>'; // Close button added
+                        errorHtml += '</div>';
+                        $('#error-messages').html(errorHtml).removeClass('d-none'); // Display errors and remove d-none class
+
+                    } else {
+                        $('#error-messages').addClass('d-none').html(''); // Hide error messages and clear content
+                    }
+                }
+
+                // Function to undo the previous selection
+                function undoPreviousSelection(selector) {
+                    var previousValue = $(selector).data('previous');
+                    if (previousValue) {
+                        $(selector).val(previousValue).selectpicker('refresh');
+                    }
+                }
+
+                // Store the previous value before change
+                $('#id_super_tickets, #id_sub_tickets').on('show.bs.select', function () {
+                    $(this).data('previous', $(this).val());
+                });
+
+                // Event delegation for Bootstrap multiselect fields
+                $(document).on('changed.bs.select', '#id_super_tickets, #id_sub_tickets', function() {
+                    var errors = validateTickets();
+                    if (errors.length > 0) {
+                        // Undo the previous selection if there's an error
+                        undoPreviousSelection(this);
+                    }
+                    displayErrors(errors);
+                });
+
+                // Form submission handling
+                $('#update-ticket-form').submit(function(event) {
+                    // Prevent default form submission
+                    event.preventDefault();
+
+                    // Validate tickets
+                    var errors = validateTickets();
+
+                    // Display errors if any
+                    displayErrors(errors);
+
+                    // Proceed with form submission if no errors
+                    if (errors.length === 0) {
+                        this.submit(); // Submit the form
+                    }
+                });
+
+                // Functionality to close error messages
+                $(document).on('click', '.close-btn', function() {
+                    $('#error-messages').addClass('d-none').html(''); // Hide error messages and clear content
+                });
+
+                // Initialize error display on page load
+                displayErrors([]);
+
+                // Refresh and set the initial values for select pickers
+                function refreshSelectPickers() {
+                    $('#id_super_tickets').selectpicker('refresh');
+                    $('#id_sub_tickets').selectpicker('refresh');
+                }
+
+                // Call refreshSelectPickers on page load to display initial selections
+                refreshSelectPickers();
+            
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+
+                function updatePreview() {
+                    document.getElementById('preview-title').innerText = document.getElementById('id_title').value;
+                    document.getElementById('preview-description').innerHTML = $('#summernote').summernote('code');
+                    document.getElementById('preview-super-tickets').innerText = Array.from(document.getElementById('id_super_tickets').selectedOptions).map(option => option.text).join(', ');
+                    document.getElementById('preview-sub-tickets').innerText = Array.from(document.getElementById('id_sub_tickets').selectedOptions).map(option => option.text).join(', ');
+                    document.getElementById('preview-start-date').innerText = document.getElementById('id_start_date').value;
+                    document.getElementById('preview-end-date').innerText = document.getElementById('id_end_date').value;
+                    document.getElementById('preview-estimated-end-date').innerText = document.getElementById('id_estimated_end_date').value;
+                    document.getElementById('preview-due-date').innerText = document.getElementById('id_due_date').value;
+                    document.getElementById('preview-status').innerText = document.getElementById('id_status').options[document.getElementById('id_status').selectedIndex].text;
+                    document.getElementById('preview-priority-scale').innerText = document.getElementById('id_priority_scale').options[document.getElementById('id_priority_scale').selectedIndex].text;
+                    document.getElementById('preview-ticket-type').innerText = document.getElementById('id_ticket_type').options[document.getElementById('id_ticket_type').selectedIndex].text;
+                    document.getElementById('preview-stage').innerText = document.getElementById('id_stage').options[document.getElementById('id_stage').selectedIndex].text;
+                    document.getElementById('preview-segment').innerText = document.getElementById('id_segment').options[document.getElementById('id_segment').selectedIndex].text;
+                    document.getElementById('preview-assigned-to').innerText = Array.from(document.getElementById('id_assigned_to').selectedOptions).map(option => option.text).join(', ');
+                    document.getElementById('preview-tags').innerText = Array.from(document.getElementById('id_tag').selectedOptions).map(option => option.text).join(', ');
+                }
+
+                // Function to add custom 'code' button to toolbar
+                function addCodeButton() {
+                    var Button = $.summernote.ui.button;
+                    var button = Button({
+                        contents: '<i class="fa fa-code"/> Code',
+                        tooltip: 'Insert Code',
+                        click: function() {
+                            var selection = window.getSelection();
+                            if (selection.rangeCount > 0) {
+                                var range = selection.getRangeAt(0);
+                                var codeNode = document.createElement('code');
+                                codeNode.appendChild(range.extractContents());
+                                range.insertNode(codeNode);
+                            }
+                        }
+                    });
+                    return button.render();   // return button as jquery object
+                }
+
+                // Initialize Summernote and add an onChange event
+                $('#summernote').summernote({
+                    height: 200,
+                    placeholder: '',
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['table', ['table']],
+                        ['insert', ['link', 'picture', 'video']],
+                        ['view', ['fullscreen', 'codeview', 'help']],
+                        ['custom', ['codeButton']]
+                    ],
+                    buttons: {
+                        codeButton: addCodeButton
+                    },
+                    callbacks: {
+                        onChange: updatePreview,
+                    }
+                });
+                
+                // Add event listeners to other form inputs
+                document.getElementById('id_title').addEventListener('input', updatePreview);
+                document.getElementById('id_super_tickets').addEventListener('change', updatePreview);
+                document.getElementById('id_sub_tickets').addEventListener('change', updatePreview);
+                document.getElementById('id_start_date').addEventListener('input', updatePreview);
+                document.getElementById('id_end_date').addEventListener('input', updatePreview);
+                document.getElementById('id_estimated_end_date').addEventListener('input', updatePreview);
+                document.getElementById('id_due_date').addEventListener('input', updatePreview);
+                document.getElementById('id_status').addEventListener('change', updatePreview);
+                document.getElementById('id_priority_scale').addEventListener('change', updatePreview);
+                document.getElementById('id_ticket_type').addEventListener('change', updatePreview);
+                document.getElementById('id_stage').addEventListener('change', updatePreview);
+                document.getElementById('id_segment').addEventListener('change', updatePreview);
+                document.getElementById('id_assigned_to').addEventListener('change', updatePreview);
+                document.getElementById('id_tag').addEventListener('change', updatePreview);
+
+                // Initial update
+                updatePreview();
+
+            });
+        </script>
+{% endblock %}

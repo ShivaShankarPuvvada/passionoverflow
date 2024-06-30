@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}Create Ticket{% endblock %}
 {% block stylesheets %}
@@ -142,7 +143,9 @@
                             <label class="col-md-3 col-form-label" for="id_assigned_to">Assign to</label>
                             <div class="col-md-9">
                                 <select name="assigned_to" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_assigned_to" data-max-options="4" data-width="100%">
-                                    {% comment %} Options will be filled by ajax {% endcomment %}
+                                    {% for user in same_company_users %}
+                                        <option value="{{ user.id }}" {% if user.id|is_user_assigned:ticket.assigned_to.all %}selected{% endif %}>{{ user.username }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -269,39 +272,6 @@
         // Initialize error display on page load
         displayErrors([]);
 
-
-            $('#id_segment').change(function() {
-                var segment_id = $(this).val();
-                
-                $.ajax({
-                    url: "{% url 'segments:get_segment_members' %}",
-                    type: 'GET',
-                    data: {
-                        'segment_id': segment_id
-                    },
-                    dataType: 'json',
-                    success: function(data) {
-                        if (data.success) {
-                            // Populate assigned_to select options with fetched members
-                            populateAssignedToOptions(data.members);
-                            $('#id_assigned_to').selectpicker('refresh');
-                        } else {
-                            console.log('Failed to fetch segment members:', data.error);
-                        }
-                    },
-                    error: function(xhr, errmsg, err) {
-                        console.log('Error:', errmsg);
-                    }
-                });
-                function populateAssignedToOptions(members) {
-                    var selectAssignedTo = $('#id_assigned_to');
-                    selectAssignedTo.empty(); // Clear existing options
-                    // Add options from the members array
-                    $.each(members, function(index, member) {
-                        selectAssignedTo.append('<option value="' + member.id + '">' + member.name + '</option>');
-                    });
-                }
-            });
         });
 
         document.addEventListener('DOMContentLoaded', function() {
