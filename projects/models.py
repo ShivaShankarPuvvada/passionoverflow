@@ -69,7 +69,6 @@ class ProjectPhase(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     phase = models.ForeignKey(phase_models.Phase, on_delete=models.CASCADE)
     history = HistoricalRecords()
-    status = models.CharField(max_length=2, default="1") # active phase connection, deactivated phase connection
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='projectphase_created_by', on_delete=models.SET_NULL, null=True, blank=True)
     updated_by = models.ManyToManyField(User, related_name='projectphase_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.

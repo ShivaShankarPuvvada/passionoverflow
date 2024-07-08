@@ -1,0 +1,85 @@
+<!-- milestones/templates/milestones/milestone_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Milestones{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <a href="{% url 'milestones:create_milestone' %}" class="btn btn-custom">Create New Milestone</a>
+    <h2>All Milestones</h2>
+    <table class="table table-bordered table-striped table-light table-hover" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Milestone Type</th>
+                <th>Completion Date</th>
+                <th>Tickets</th>
+                <th>Phases</th>
+                <th>Stages</th>
+                <th>Sprints</th>
+                <th>Project</th>
+                <th>Segment</th>
+                <th>Status</th>
+                <th>Actions</th>
+                <!-- Add more headers as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for milestone in milestones %}
+            <tr>
+                <td>{{ milestone.title }}</td>
+                <td>{{ milestone.get_milestone_type_display }}</td>
+                <td>{{ milestone.completion_date }}</td>
+                <td>
+                    {% for ticket in milestone.tickets.all %}
+                        {{ ticket.title }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for phase in milestone.phases.all %}
+                        {{ phase.title }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for stage in milestone.stages.all %}
+                        {{ stage.title }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for sprint in milestone.sprints.all %}
+                        {{ sprint.title }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ milestone.project }}</td>
+                <td>{{ milestone.segment }}</td>
+                <td>{{ milestone.get_status_display }}</td>
+                <td>
+                    <a href="{% url 'milestones:update_milestone' milestone.id %}" class="btn btn-primary btn-sm">Edit</a> <!-- Add edit button -->
+                </td>
+                <!-- Adjust based on your Milestone model fields -->
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8">No milestones found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block endscript %}
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="{% static 'DataTables/datatables.min.css' %}">
+    <!-- Include DataTables JS -->
+    <script src="{% static 'DataTables/datatables.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.table').DataTable({
+                // Add any specific DataTables configurations here if needed
+                "columnDefs": [
+                    { "orderable": false, "targets": 6 } // Disable sorting on the description column if needed. But it will generate the error if description has more tables.
+                ]
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Milestone{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{% static 'css/milestones/create_milestone.css' %}">
+{% endblock stylesheets %}
+{% block content %}
+    <div id="error-messages" class="error-messages d-none">
+    <div class="error-message">
+        <p>Errors:</p>
+        <span class="close-btn">&times;</span>
+        <span class="error-text"></span>
+    </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Create Milestone</div>
+                <div class="card-body">
+                    <form method="post" id="create-milestone-form">
+                        {% csrf_token %}
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_title">Title</label>
+                            <div class="col-md-9">
+                                <input type="text" name="title" class="form-control" placeholder="Enter title" maxlength="200" required id="id_title">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_completion_date">Completion date</label>
+                            <div class="col-md-9">
+                                <input type="date" name="completion_date" class="form-control" placeholder="Completion date" id="id_completion_date">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_milestone_type">Milestone type</label>
+                            <div class="col-md-9">
+                                <select name="milestone_type" class="form-select" id="id_milestone_type">
+                                    {% for value, display in milestone_type %}
+                                        <option value="{{ value }}">{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_status">Status</label>
+                            <div class="col-md-9">
+                                <select name="status" class="form-select" id="id_status">
+                                    {% for value, display in status_choices %}
+                                        <option value="{{ value }}">{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_ticket">Tickets</label>
+                            <div class="col-md-6">
+                                <select name="tickets" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_ticket" data-width="100%">
+                                    {% for ticket in tickets %}
+                                        <option value="{{ ticket.id }}">{{ ticket.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'tickets:create_ticket' %}" class="btn btn-primary btn-sm" target="_blank">Create Ticket</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_phase">Phases</label>
+                            <div class="col-md-6">
+                                <select name="phases" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_phase" data-width="100%">
+                                    {% for phase in phases %}
+                                        <option value="{{ phase.id }}">{{ phase.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'phases:create_phase' %}" class="btn btn-primary btn-sm" target="_blank">Create Phase</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_sprint">Sprint</label>
+                            <div class="col-md-6">
+                                <select name="sprints" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_sprint" data-width="100%">
+                                    {% for sprint in sprints %}
+                                        <option value="{{ sprint.id }}">{{ sprint.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'sprints:create_sprint' %}" class="btn btn-primary btn-sm" target="_blank">Create Sprint</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_stage">Stages</label>
+                            <div class="col-md-6">
+                                <select name="stages" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_stage" data-max-options="3" data-width="100%">
+                                    {% for stage in stages %}
+                                        <option value="{{ stage.id }}">{{ stage.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'stages:create_stage' %}" class="btn btn-primary btn-sm" target="_blank">Create Stage</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_project">Project</label>
+                            <div class="col-md-6">
+                                <select name="project_id" class="form-select" id="id_project" required>
+                                    <option value="">Select Project</option>
+                                    {% for project in projects %}
+                                        <option value="{{ project.id }}">{{ project.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'projects:create_project' %}" class="btn btn-primary btn-sm" target="_blank">Create Project</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_segment">Segment</label>
+                            <div class="col-md-6">
+                                <select name="segment_id" class="form-select" id="id_segment" required>
+                                    <option value="">Select Segment</option>
+                                    {% for segment in segments %}
+                                        <option value="{{ segment.id }}">{{ segment.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'segments:create_segment' %}" class="btn btn-primary btn-sm" target="_blank">Create Segment</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-md-6 offset-md-4">
+                                <button type="submit" class="btn btn-primary">Create Milestone</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Display -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Milestone Preview</div>
+                <div class="card-body">
+                    <h5>Title: <span id="preview-title"></span></h5>
+                    <p>Completion Date: <span id="preview-completion-date"></span></p>
+                    <p>Milestone Type: <span id="preview-milestone-type"></span></p>
+                    <p>Status: <span id="preview-status"></span></p>
+                    <p>Tickets: <span id="preview-ticket"></span></p>
+                    <p>Phases: <span id="preview-phase"></span></p>
+                    <p>Sprints: <span id="preview-sprint"></span></p>
+                    <p>Stages: <span id="preview-stage"></span></p>
+                    <p>Project: <span id="preview-project"></span></p>
+                    <p>Segment: <span id="preview-segment"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block endscript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        function updatePreview() {
+            document.getElementById('preview-title').innerText = document.getElementById('id_title').value;
+            document.getElementById('preview-completion-date').innerText = document.getElementById('id_completion_date').value;
+            document.getElementById('preview-milestone-type').innerText = document.getElementById('id_milestone_type').options[document.getElementById('id_milestone_type').selectedIndex].text;
+            document.getElementById('preview-status').innerText = document.getElementById('id_status').options[document.getElementById('id_status').selectedIndex].text;
+            document.getElementById('preview-ticket').innerText = Array.from(document.getElementById('id_ticket').selectedOptions).map(option => option.text).join(', ');
+            document.getElementById('preview-phase').innerText = Array.from(document.getElementById('id_phase').selectedOptions).map(option => option.text).join(', ');
+            document.getElementById('preview-sprint').innerText = Array.from(document.getElementById('id_sprint').selectedOptions).map(option => option.text).join(', ');
+            document.getElementById('preview-stage').innerText = Array.from(document.getElementById('id_stage').selectedOptions).map(option => option.text).join(', ');
+            document.getElementById('preview-segment').innerText = Array.from(document.getElementById('id_segment').selectedOptions).map(option => option.text).join(', ');
+            document.getElementById('preview-project').innerText = Array.from(document.getElementById('id_project').selectedOptions).map(option => option.text).join(', ');
+        }
+
+        // Add event listeners to other form inputs
+        document.getElementById('id_title').addEventListener('input', updatePreview);
+        document.getElementById('id_completion_date').addEventListener('input', updatePreview);
+        document.getElementById('id_milestone_type').addEventListener('change', updatePreview);
+        document.getElementById('id_status').addEventListener('change', updatePreview);
+        document.getElementById('id_ticket').addEventListener('change', updatePreview);
+        document.getElementById('id_phase').addEventListener('change', updatePreview);
+        document.getElementById('id_sprint').addEventListener('change', updatePreview);
+        document.getElementById('id_stage').addEventListener('change', updatePreview);
+        document.getElementById('id_segment').addEventListener('change', updatePreview);
+        document.getElementById('id_project').addEventListener('change', updatePreview);
+
+        // Initial update
+        updatePreview();
+        {% comment %}
+            /*        
+                    function displayError(message) {
+                        // Display error message in error-messages div
+                        var errorDiv = document.getElementById('error-messages');
+                        errorDiv.classList.remove('d-none');
+                        var errorText = errorDiv.querySelector('.error-text');
+                        errorText.innerText = message;
+                    }
+
+                    function clearError() {
+                        // Clear error message in error-messages div
+                        var errorDiv = document.getElementById('error-messages');
+                        errorDiv.classList.add('d-none');
+                        var errorText = errorDiv.querySelector('.error-text');
+                        errorText.innerText = '';
+                    }
+
+                    function validateSegment(projectId, segmentId) {
+                        // Ajax call to validate segment belongs to project
+                        $.ajax({
+                            url: '{% url 'milestones:validate_segment_project' %}',
+                            type: 'GET',
+                            data: {
+                                'project_id': projectId,
+                                'segment_id': segmentId
+                            },
+                            success: function(response) {
+                                if (response.valid) {
+                                    // Segment is valid for the project, update preview if needed
+                                    updatePreview();
+                                    clearError();
+
+                                } else {
+                                    // Segment is not valid for the project, handle error
+                                    displayError('Selected segment does not belong to the selected project. Segment should be in the selected Project.');
+                                    // Clear segment selection
+                                    document.getElementById('id_segment').value = '';
+                                    // Clear project selection if needed
+                                    // document.getElementById('id_project').value = '';
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                                displayError('Error validating segment. Please try again.');
+                            }
+                        });
+                    }
+
+                    // Event listener for segment selection change
+                    document.getElementById('id_segment').addEventListener('change', function() {
+                        var projectId = document.getElementById('id_project').value;
+                        var segmentId = this.value;
+                        if (projectId && segmentId) {
+                            validateSegment(projectId, segmentId);
+                        } else if (segmentId) { // If project is not selected, still attempt to validate
+                            validateSegment('', segmentId);
+                        }
+                    });
+
+                    // Event listener for project selection change
+                    document.getElementById('id_project').addEventListener('change', function() {
+                        var projectId = this.value;
+                        var segmentId = document.getElementById('id_segment').value;
+                        if (projectId && segmentId) {
+                            validateSegment(projectId, segmentId);
+                        }
+                    });
+
+                    // Event listener for close button
+                // var closeButton = document.querySelector('.close-btn');
+                    //closeButton.addEventListener('click', function() {
+                    //  var errorDiv = document.getElementById('error-messages');
+                    //    errorDiv.classList.add('d-none');
+                // }); 
+                        // Functionality to close error messages
+                
+                $(document).on('click', '.close-btn', function() {
+                    $('#error-messages').addClass('d-none').html(''); // Hide error messages and clear content
+                });
+
+                document.getElementById('id_segment').addEventListener('change', function() {
+                    var projectId = document.getElementById('id_project').value;
+                    var segmentId = this.value;
+                    if (projectId && segmentId) {
+                        validateSegment(projectId, segmentId);
+                    } else if (segmentId) {
+                        validateSegment('', segmentId);
+                    }
+                });
+            */ 
+        {% endcomment %}
+
+
+        function getSegmentsByProject(projectId) {
+            $.ajax({
+                url: '{% url 'milestones:get_segments_by_project' %}',
+                type: 'GET',
+                data: {
+                    'project_id': projectId
+                },
+                success: function(response) {
+                    var segmentSelect = document.getElementById('id_segment');
+                    segmentSelect.innerHTML = '<option value="">Select Segment</option>';
+                    response.segments.forEach(function(segment) {
+                        var option = document.createElement('option');
+                        option.value = segment.id;
+                        option.text = segment.title;
+                        segmentSelect.appendChild(option);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    displayError('Error fetching segments. Please try again.');
+                }
+            });
+        }
+    
+        function getProjectBySegment(segmentId) {
+            $.ajax({
+                url: '{% url 'milestones:get_project_by_segment' %}',
+                type: 'GET',
+                data: {
+                    'segment_id': segmentId
+                },
+                success: function(response) {
+                    var projectSelect = document.getElementById('id_project');
+                    projectSelect.value = response.project.id;
+                    updatePreview();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    displayError('Error fetching project. Please try again.');
+                }
+            });
+        }
+    
+        document.getElementById('id_project').addEventListener('change', function() {
+            var projectId = this.value;
+            if (projectId) {
+                getSegmentsByProject(projectId);
+            }
+        });
+    
+        document.getElementById('id_segment').addEventListener('change', function() {
+            var segmentId = this.value;
+            if (segmentId) {
+                getProjectBySegment(segmentId);
+            }
+        });
+
+
+    });
+</script>
+{% endblock %}

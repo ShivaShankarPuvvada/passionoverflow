@@ -137,6 +137,32 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#SprintsSubMenu" role="button" aria-expanded="false" aria-controls="SprintsSubMenu">Sprints</a>
+                    <div class="collapse" id="SprintsSubMenu">
+                        <ul class="nav flex-column ml-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'sprints:create_sprint' %}">Create Sprint</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'sprints:sprint_list' %}">All Sprints</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#MilestonesSubMenu" role="button" aria-expanded="false" aria-controls="MilestonesSubMenu">Milestones</a>
+                    <div class="collapse" id="MilestonesSubMenu">
+                        <ul class="nav flex-column ml-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'milestones:create_milestone' %}">Create Milestone</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'milestones:milestone_list' %}">All Milestones</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
             </ul>
             <div class="mt-auto">
                 <ul class="nav flex-column">

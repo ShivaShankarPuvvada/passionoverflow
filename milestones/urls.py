@@ -21,6 +21,15 @@ For all list data table views, need to do bulk update option. Need to write get 
 """
 
 urlpatterns = [
+    path('create_milestone/', views.create_milestone, name="create_milestone"),
+    # path('milestone/<int:milestone_id>/', views.get_milestone, name="milestone"),
+    path('update_milestone/<int:milestone_id>/', views.update_milestone, name="update_milestone"),
+    # path('delete_milestone/<int:milestone_id>/', views.delete_milestone, name="delete_milestone"),
+    path('milestones/', views.get_all_milestones, name="milestone_list"),
+    path('validate-segment-project/', views.validate_segment_project, name='validate_segment_project'),
+    path('ajax/get-segments/', views.get_segments_by_project, name='get_segments_by_project'),
+    path('get-project-by-segment/', views.get_project_by_segment, name='get_project_by_segment'),
+
     # path('create_milestone/', views.CreateMilestoneView.as_view(), name="create_milestone"),
     # path('milestone/<int:milestone_id>/', views.MilestoneView.as_view(), name="milestone"),
     # path('get_milestones/<str:milestone_ids>/', views.GetMilestonesView.as_view(), name="get_milestones"),

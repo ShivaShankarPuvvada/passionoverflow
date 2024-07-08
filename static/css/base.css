@@ -89,6 +89,14 @@ body {
   display: block;
 }
 
+#SprintsSubMenu.show {
+  display: block;
+}
+
+#MilestonesSubMenu.show {
+  display: block;
+}
+
 .sidebar .nav .nav-item .collapse .nav {
   padding-left: 1rem; /* Adjust the left padding to increase or decrease indentation */
   transition: 0.5s;

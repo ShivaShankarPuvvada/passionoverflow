@@ -8,6 +8,14 @@ from segments.models import Segment
 User = get_user_model()
 
 
+OPEN = '1'
+CLOSED = '0'
+STATUS_CHOICES = [
+    (OPEN, 'Open'),
+    (CLOSED, 'Close'),
+]
+
+
 class Invitation(models.Model):
     """
     A Contributor/admin can invite the collaborators/employees to a project or segment with read or complete acess options.
@@ -16,7 +24,7 @@ class Invitation(models.Model):
     There should be no option for customer to delete any Invitations.
     The Contributor can add access two types: 
     one is by sending mail if he is not a current registered user. He will register by clicking link on the registration link.
-    Second one is by giving acess by selecting his mail id. assuming the user is already registered, he will get a mail notification. He can acesss the projects in my projects.
+    Second one is by giving access by selecting his mail id. assuming the user is already registered, he will get a mail notification. He can acesss the projects in my projects.
     The Contributor can add access to the user to a project or multiple projects.
     The Contributor can add access to the user to a segment or multiple segments.
     The Contributor can give read only access.
@@ -30,7 +38,7 @@ class Invitation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     segment = models.ForeignKey(Segment, on_delete=models.CASCADE, null=True, blank=True)
-    status = models.CharField(max_length=2, default="1")
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=OPEN)
     read_only = models.BooleanField(default=True)
     expiration_date = models.DateTimeField()
     created_by = models.ForeignKey(User, related_name='invitation_created_by', on_delete=models.SET_NULL, null=True, blank=True)

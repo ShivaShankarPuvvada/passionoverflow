@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Sprint{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Update Sprint</div>
+                <div class="card-body">
+                    <form method="post" id="update-sprint-form">
+                        {% csrf_token %}
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_title">Title</label>
+                            <div class="col-md-9">
+                                <input type="text" name="title" class="form-control" placeholder="Enter title" maxlength="200" required id="id_title" value="{{ sprint.title }}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_start_date">Start date</label>
+                            <div class="col-md-9">
+                                <input type="date" name="start_date" class="form-control" placeholder="Start date" id="id_start_date" value="{% if sprint.start_date %}{{ sprint.start_date|date:'Y-m-d' }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_end_date">End date</label>
+                            <div class="col-md-9">
+                                <input type="date" name="end_date" class="form-control" placeholder="End date" id="id_end_date" value="{% if sprint.end_date %}{{ sprint.end_date|date:'Y-m-d' }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_status">Status</label>
+                            <div class="col-md-9">
+                                <select name="status" class="form-select" id="id_status">
+                                    {% for value, display in status_choices %}
+                                        <option value="{{ value }}" {% if sprint.status == value %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_ticket">Tickets</label>
+                            <div class="col-md-6">
+                                <select name="tickets" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_ticket" data-width="100%">
+                                    {% for ticket in tickets %}
+                                        <option value="{{ ticket.id }}" {% if ticket in sprint.tickets.all %}selected{% endif %}>{{ ticket.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'tickets:create_ticket' %}" class="btn btn-primary btn-sm" target="_blank">Create Ticket</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_phase">Phases</label>
+                            <div class="col-md-6">
+                                <select name="phases" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_phase" data-width="100%">
+                                    {% for phase in phases %}
+                                        <option value="{{ phase.id }}" {% if phase in sprint.phases.all %}selected{% endif %}>{{ phase.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'phases:create_phase' %}" class="btn btn-primary btn-sm" target="_blank">Create Phase</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_segment">Segments</label>
+                            <div class="col-md-6">
+                                <select name="segments" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_segment" data-width="100%">
+                                    {% for segment in segments %}
+                                        <option value="{{ segment.id }}" {% if segment in sprint.segments.all %}selected{% endif %}>{{ segment.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'segments:create_segment' %}" class="btn btn-primary btn-sm" target="_blank">Create Segment</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-md-3 col-form-label" for="id_project">Projects</label>
+                            <div class="col-md-6">
+                                <select name="projects" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="id_project" data-width="100%">
+                                    {% for project in projects %}
+                                        <option value="{{ project.id }}" {% if project in sprint.projects.all %}selected{% endif %}>{{ project.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'projects:create_project' %}" class="btn btn-primary btn-sm" target="_blank">Create Project</a>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-md-6 offset-md-4">
+                                <button type="submit" class="btn btn-primary">Update Sprint</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side Display -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">Sprint Preview</div>
+                <div class="card-body">
+                    <h5>Title: <span id="preview-title">{{ sprint.title }}</span></h5>
+                    <p>Start Date: <span id="preview-start-date">{{ sprint.start_date }}</span></p>
+                    <p>End Date: <span id="preview-end-date">{{ sprint.end_date }}</span></p>
+                    <p>Status: <span id="preview-status">{{ sprint.get_status_display }}</span></p>
+                    <p>Tickets: <span id="preview-ticket">{% for ticket in sprint.tickets.all %}{{ ticket.title }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></p>
+                    <p>Phases: <span id="preview-phase">{% for phase in sprint.phases.all %}{{ phase.title }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></p>
+                    <p>Segments: <span id="preview-segment">{% for segment in sprint.segments.all %}{{ segment.title }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></p>
+                    <p>Projects: <span id="preview-project">{% for project in sprint.projects.all %}{{ project.title }}{% if not forloop.last %}, {% endif %}{% endfor %}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block endscript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        function updatePreview() {
+            document.getElementById('preview-title').innerText = document.getElementById('id_title').value;
+            document.getElementById('preview-start-date').innerText = document.getElementById('id_start_date').value;
+            document.getElementById('preview-end-date').innerText = document.getElementById('id_end_date').value;
+            document.getElementById('preview-status').innerText = document.getElementById('id_status').options[document.getElementById('id_status').selectedIndex].text;
+            document.getElementById('preview-ticket').innerText = Array.from(document.getElementById('id_ticket').selectedOptions).map(option => option.text).join(', ');
+            document.getElementById('preview-phase').innerText = Array.from(document.getElementById('id_phase').selectedOptions).map(option => option.text).join(', ');
+            document.getElementById('preview-segment').innerText = Array.from(document.getElementById('id_segment').selectedOptions).map(option => option.text).join(', ');
+            document.getElementById('preview-project').innerText = Array.from(document.getElementById('id_project').selectedOptions).map(option => option.text).join(', ');
+        }
+
+
+
+        // Add event listeners to other form inputs
+        document.getElementById('id_title').addEventListener('input', updatePreview);
+        document.getElementById('id_start_date').addEventListener('input', updatePreview);
+        document.getElementById('id_end_date').addEventListener('input', updatePreview);
+        document.getElementById('id_status').addEventListener('change', updatePreview);
+        document.getElementById('id_ticket').addEventListener('change', updatePreview);
+        document.getElementById('id_phase').addEventListener('change', updatePreview);
+        document.getElementById('id_segment').addEventListener('change', updatePreview);
+        document.getElementById('id_project').addEventListener('change', updatePreview);
+
+        // Initial update
+        updatePreview();
+
+    });
+</script>
+{% endblock %}
