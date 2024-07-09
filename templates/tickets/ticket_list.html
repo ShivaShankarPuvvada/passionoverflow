@@ -68,6 +68,8 @@
                     </td>
                     <td>
                         <a href="{% url 'tickets:update_ticket' ticket.id %}" class="btn btn-primary btn-sm">Edit</a>
+                        
+                        <a href="{% url 'posts:ticket_posts' ticket.id %}" class="btn btn-primary btn-sm">View Posts</a>
                     </td>
                 </tr>
             {% empty %}

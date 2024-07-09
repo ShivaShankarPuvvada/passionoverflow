@@ -1,8 +1,9 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from .models import Post, Vote
 from django.http import JsonResponse
 from http import HTTPStatus
 from django.contrib.auth.decorators import login_required
+from tickets.models import Ticket
 
 # Create your views here.
 @login_required
@@ -59,3 +60,13 @@ def downvote_post(request, post_id):
     else:
         return JsonResponse({"success": False, "error": "Invalid request."}, status=HTTPStatus.BAD_REQUEST)
 
+
+@login_required
+def ticket_posts(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+    posts = Post.objects.filter(ticket=ticket).order_by('created_at')  # Fetch posts related to the ticket
+
+    return render(request, 'posts/ticket_posts.html', {
+        'ticket': ticket,
+        'posts': posts,
+    })

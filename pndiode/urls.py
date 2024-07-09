@@ -33,4 +33,5 @@ urlpatterns = [
     path('tickets/', include('tickets.urls')),
     path('sprints/', include('sprints.urls')),
     path('milestones/', include('milestones.urls')),
+    path('posts/', include('posts.urls')),
 ]

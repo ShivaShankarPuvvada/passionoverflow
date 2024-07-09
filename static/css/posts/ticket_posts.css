@@ -1,0 +1,146 @@
+/* Ensure columns have borders */
+.col-md-6 {
+    border-left: 1px solid #ccc; /* Border between center and right column */
+    border-right: 1px solid #ccc; /* Border between center and right column */
+}
+
+/* Center column scrolling */
+.scrollable-column {
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Sticky sidebar */
+.sticky-column {
+    position: fixed;
+    z-index: 1; /* Ensure sidebar stays above content */
+    background-color: #fff; /* Optional: Add background color */
+    padding: 15px; /* Optional: Add padding for sidebar content */
+}
+
+/* Post styling */
+.post {
+    margin-bottom: 20px; /* Space between posts */
+    border-bottom: 1px solid #ccc; /* Optional: Bottom border for posts */
+    padding-bottom: 15px; /* Optional: Padding at bottom of each post */
+}
+
+.post:hover {
+    background-color: #f7f7f7; /* Grey background color */
+    transition: 0.5s;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+
+
+.user-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%; /* Make user icon round */
+    margin-right: 10px;
+}
+
+.post-content {
+    margin-bottom: .5rem;
+    margin-left: 3rem;
+}
+
+.post-footer {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+    margin-left: 3rem;
+    font-size: .9rem;
+    color: #888; /* Adjust text color for post footer */
+    display: flex;
+    align-items: center;
+}
+
+/* Additional inline styles can be added here if needed */
+.post-footer .options {
+    cursor: pointer;
+    color: #666; /* Adjust color as needed */
+    margin-left: auto;
+}
+
+.post-footer .options .dots-container {
+    width: 30px; /* Adjust width of the container */
+    height: 30px; /* Adjust height of the container */
+    text-align: center;
+}
+
+.post-footer .options .dots {
+    width: 20px; /* Adjust width of the ellipsis */
+    height: 20px; /* Adjust height of the ellipsis */
+    line-height: 20px; /* Center vertically */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 50%; /* Make it a circle */
+    transition: transform 0.3s ease; /* Smooth transition for transform */
+}
+
+.post-footer .options .dots:hover {
+    transform: rotate(-90deg); /* Rotate to horizontal on hover */
+}
+
+.post-footer .options .dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    z-index: 1000;
+    display: none;
+    min-width: 120px;
+    padding: .5rem 0;
+    margin: .125rem 0 0;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: .25rem;
+}
+
+.post-footer .options:hover .dropdown-menu {
+    display: block;
+}
+
+.post-footer .options .dropdown-menu a {
+    display: block;
+    padding: .25rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+}
+
+.post-footer .options .dropdown-menu a:hover {
+    background-color: #f8f9fa;
+}
+
+.post:last-child {
+    border-bottom: none; /* Remove border bottom from last post */
+}
+
+.full_name_and_username {
+    margin-left: 0.6rem;
+}
+.username {
+    font-size: 0.8rem;
+}
+
+.created_at_and_updated_at {
+    font-size: .75rem;
+}
+
+/* Main Content */
+.content {
+    padding-bottom: 0px !important;
+}
+

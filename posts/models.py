@@ -71,7 +71,7 @@ class Post(models.Model):
         NO = '2', _("This post was not deleted by user.")
         
     ticket = models.ForeignKey(Ticket, related_name='post_ticket', on_delete=models.CASCADE, null=True, blank=True)
-    content = models.TextField() # this is the actual field that will store the data. On React Js side, we have to use the CKEditor. We don't need to use the CKEditor in django. The text field is enough to save the CKEditor RichTextData from React JS.
+    content = models.TextField() # this is the actual field that will store the data.
     up_votes = models.IntegerField(default=0) # increase the count if up voted.
     down_votes = models.IntegerField(default=0) # increase the count if down voted.
     accepted_solution = models.BooleanField(default=False)  # creator of the ticket can check it as accepted solution.
