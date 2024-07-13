@@ -144,3 +144,23 @@
     padding-bottom: 0px !important;
 }
 
+.post-something {
+    margin-bottom: 20px;
+}
+.post-something {
+    display: none;
+}
+
+#simple-input {
+    margin-left: 0.5rem;
+    border-radius: 3rem;
+}
+
+.post-something-header, .post-something-body {
+    margin-left: 3rem;
+}
+
+#simple-input:hover {
+    box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+    transition: 0.5s;
+}

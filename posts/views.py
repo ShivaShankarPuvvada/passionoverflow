@@ -64,7 +64,7 @@ def downvote_post(request, post_id):
 @login_required
 def ticket_posts(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
-    posts = Post.objects.filter(ticket=ticket).order_by('created_at')  # Fetch posts related to the ticket
+    posts = Post.objects.filter(ticket=ticket).order_by('-created_at')  # Fetch posts related to the ticket
 
     return render(request, 'posts/ticket_posts.html', {
         'ticket': ticket,
