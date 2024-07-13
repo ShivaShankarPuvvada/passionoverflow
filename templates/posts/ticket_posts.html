@@ -30,26 +30,46 @@
             </div>
         </div>
         <div class="col-md-6 scrollable-column">
-            <div class="input-group">
+            <div class="input-group" id="input-group">
                 <img src="{{ user.icon.url }}" alt="User Icon" class="user-icon">
                 <input type="text" class="form-control" id="simple-input" placeholder="Post something...">
             </div>
-            <div class="post-something">
-                <div class="d-flex align-items-center mb-2">
-                    <img src="{% static 'path_to_user_icon.png' %}" alt="User Icon" class="user-icon me-2">
-                    <div class="flex-grow-1 full_name_and_username">
-                        <span class="fw-bold">{{ request.user.full_name }}</span>
-                        <br>
-                        <span class="username">@{{ request.user.username }}</span>
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="postModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Create Post:</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="text-end flex-grow-1 created_at_and_updated_at">
-                        <span class="text-muted">Creating Post now</span>
+                    <div class="modal-body">
+                        <div class="post-something">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="{% static 'path_to_user_icon.png' %}" alt="User Icon" class="user-icon me-2">
+                                <div class="flex-grow-1 full_name_and_username">
+                                    <span class="fw-bold">{{ request.user.full_name }}</span>
+                                    <br>
+                                    <span class="username">@{{ request.user.username }}</span>
+                                </div>
+                                <div class="text-end flex-grow-1 created_at_and_updated_at">
+                                    <span class="text-muted">Creating Post now</span>
+                                </div>
+                            </div>
+                            <div class="post-something-body">
+                                <textarea name="post" class="form-control" placeholder="Post something" id="summernote"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Post later</button>
+                    <button type="button" class="btn btn-primary">Post now</button>
                     </div>
                 </div>
-                <div class="post-something-body">
-                    <textarea name="post" class="form-control" placeholder="Post something" id="summernote"></textarea>
                 </div>
             </div>
+
             <br>
             <hr>
             <!-- Center Column: Posts -->
@@ -149,17 +169,36 @@
                 },
             });
 
-            // Toggle Summernote on input click
-            $('#simple-input').on('click', function() {
-                $(this).closest('.input-group').hide();  // Hide the entire input-group
-                $('.post-something').slideDown('medium');
-
-                // this is for fade in slideDown and extra animations on how create post text area should appear.
-                {% comment %} $(this).closest('.input-group').fadeOut('slow', function() {
-                    $('.post-something').slideDown('slow');
-                }); {% endcomment %}
-                $('#summernote').summernote('focus');
+            var stickyInputGroup = $('#input-group');
+            var windowHeight = $(window).height();
+            var stickyTop = windowHeight * 0.018;
+            //var stickyTop = stickyInputGroup.offset().top;
+            
+            $(window).scroll(function() {
+                var windowTop = $(window).scrollTop();
+                if (windowTop > stickyTop) {
+                    stickyInputGroup.addClass('fixed');
+                } else {
+                    stickyInputGroup.removeClass('fixed');
+                }
             });
+
+            // Function to hide input-group when clicking #simple-input
+            $('#simple-input').on('click', function() {
+                stickyInputGroup.hide(); // Hide the input-group
+            });
+
+            $('#simple-input').on('click', function() {
+                $('#postModal').modal('show'); // Show the modal
+            });
+
+            // Show input-group when modal is closed
+            $('#postModal').on('hidden.bs.modal', function () {
+                stickyInputGroup.show(); // Show the input-group
+            });
+
+            // Show input-group initially
+            stickyInputGroup.show();
 
         });
     </script>
