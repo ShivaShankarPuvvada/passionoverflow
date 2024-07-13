@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load posts_custom_filters %}
+
 {% load static %}
 
 {% block title %}Ticket Posts{% endblock %}
@@ -103,10 +105,23 @@
                         </div>
                         <div class="post-footer mt-2 d-flex justify-content-between align-items-center">
                             <div class="flex-grow-1">
-                                <span class="text-muted me-3">{{ post.up_votes }} Upvotes</span>
-                                <span class="text-muted me-3">{{ post.down_votes }} Downvotes</span>
+                                <button class="btn btn-link upvote-btn" data-post-id="{{ post.id }}">
+                                    {% if post|is_up_voted_by_user:request.user %}
+                                        <i class="bi bi-arrow-up-circle-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-circle"></i>
+                                    {% endif %}
+                                </button>
+                                <span class="text-muted me-3" id="upvotes_count_{{ post.id }}">{{ post.up_votes }} Upvotes</span>
+                                <button class="btn btn-link downvote-btn" data-post-id="{{ post.id }}">
+                                    {% if post|is_down_voted_by_user:request.user %}
+                                        <i class="bi bi-arrow-down-circle-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-arrow-down-circle"></i>
+                                    {% endif %}
+                                </button>
+                                <span class="text-muted me-3" id="downvotes_count_{{ post.id }}">{{ post.down_votes }} Downvotes</span>
                             </div>
-                            
                             {% if post.parent_post %}
                                 <div class="flex-grow-1">
                                     <span class="text-muted me-3">This is a replied post. <a href="#post_id_{{post.parent_post.id}}">See the original post</a></span>
@@ -237,6 +252,44 @@
                         target.classList.remove('highlighted-post'); // Remove the highlight after a delay
                     }, 2000);
                 }
+            });
+
+            // Function to handle upvote and downvote actions
+            function handleVote(postId, voteType) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "posts:vote_post" %}',
+                    data: {
+                        post_id: postId,
+                        vote_type: voteType,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update the UI with new vote counts
+                            console.log(response.data)
+                            $('#upvotes_count_' + postId).text(response.data.up_votes + ' Upvotes');
+                            $('#downvotes_count_' + postId).text(response.data.down_votes + ' Downvotes');
+                        } else {
+                            console.error('Failed to update votes:', response.message);
+                        }
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.error('Failed to vote:', errmsg);
+                    }
+                });
+            }
+
+            // Event listener for upvote button click
+            $('.upvote-btn').on('click', function() {
+                var postId = $(this).data('post-id');
+                handleVote(postId, "1");  // 1 represents upvote
+            });
+
+            // Event listener for downvote button click
+            $('.downvote-btn').on('click', function() {
+                var postId = $(this).data('post-id');
+                handleVote(postId, '-1');  // -1 represents downvote
             });
 
         });
