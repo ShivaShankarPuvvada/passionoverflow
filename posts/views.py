@@ -13,13 +13,20 @@ from django.urls import reverse
 @login_required
 def ticket_posts(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
-    posts = Post.objects.filter(ticket=ticket).order_by('-created_at')  # Fetch posts related to the ticket
+    posts = Post.objects.filter(ticket=ticket, deleted=Post.Deleted.NO).order_by('-created_at')  # Fetch posts related to the ticket
 
     return render(request, 'posts/ticket_posts.html', {
         'ticket': ticket,
         'posts': posts,
     })
 
+@login_required 
+def delete_post(request, post_id): # we will make only soft deletions.
+    post = get_object_or_404(Post, pk=post_id)
+    post.deleted = Post.Deleted.YES
+    post.save(user=request.user)
+    url = reverse('posts:ticket_posts', kwargs={'ticket_id': post.ticket.id})
+    return redirect(url)
 
 @login_required
 def create_post(request):

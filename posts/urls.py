@@ -26,6 +26,7 @@ urlpatterns = [
     path('tickets/<int:ticket_id>/posts/', views.ticket_posts, name='ticket_posts'),
     path('create_post/', views.create_post, name="create_post"),
     path('vote_post/', views.vote_post, name="vote_post"),
+    path('delete_post/<int:post_id>/', views.delete_post, name='delete_post'),
     # path('post/<int:post_id>/', views.PostView.as_view(), name="post"),
     # path('get_posts/<str:post_ids>/', views.GetPostsView.as_view(), name="get_posts"),
     # path('activate_posts/<str:post_ids>/', views.ActivatePosts.as_view(), name="activate_posts"),

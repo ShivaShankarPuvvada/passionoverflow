@@ -138,7 +138,7 @@
                                         <li><a class="dropdown-item" href="#">Pin Post</a></li>
                                         <li><a class="dropdown-item" href="#">Save Post</a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="#">Delete Post</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'posts:delete_post' post.id %}">Delete Post</a></li>
                                     </ul>
                                 </div>
                             </div>
