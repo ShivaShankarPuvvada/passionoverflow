@@ -46,3 +46,9 @@ Assignees: Sam, Adam, Tom
 ## NOTES
 
 - Even if customer deletes anything, we will not delete in our database. We will have deleted field in everymodel and make it true. We will keep the records until a year (decide this time period later).
+
+
+1. Have to add width for summernote. If we paste long line, currently it is extending.
+2. Have to add kanban board for tickets.
+3. Have to add filters for all list tables.
+
