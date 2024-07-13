@@ -252,6 +252,16 @@
                         target.classList.remove('highlighted-post'); // Remove the highlight after a delay
                     }, 2000);
                 }
+                else {
+                    // Display a SweetAlert
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Original Post Deleted',
+                        text: 'The post you are looking for has been deleted by the user who created it.',
+                        showConfirmButton: true,
+                        timer: 5000 // Automatically close the alert after 5 seconds
+                    });
+                }
             });
 
             // Function to handle upvote and downvote actions
