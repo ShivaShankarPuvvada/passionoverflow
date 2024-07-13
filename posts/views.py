@@ -1,9 +1,13 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from .models import Post, Vote
 from django.http import JsonResponse
 from http import HTTPStatus
 from django.contrib.auth.decorators import login_required
 from tickets.models import Ticket
+from django.db import transaction, IntegrityError
+import json
+from accounts.models import CustomerCompanyDetails
+from django.urls import reverse
 
 # Create your views here.
 @login_required
@@ -70,3 +74,66 @@ def ticket_posts(request, ticket_id):
         'ticket': ticket,
         'posts': posts,
     })
+
+
+@login_required
+def create_post(request):
+    if request.method == 'POST':
+        old_post = ''
+        try:
+            data = request.POST
+            # required_fields = ['content', 'ticket_id', 'post_id']
+            required_fields = ['content', 'ticket_id']
+            # Check for missing required fields
+            missing_fields = [field for field in required_fields if field not in data]
+            if missing_fields:
+                return JsonResponse({'success': False, 'errors': f'Missing fields: {", ".join(missing_fields)}'}, status=HTTPStatus.BAD_REQUEST)
+
+            if 'content' in data:
+                content = data.get('content')
+
+            if 'ticket_id' in data:
+                ticket_id = data.get('ticket_id')
+
+            if 'post_id' in data:
+                post_id = data.get('post_id')
+
+            # Basic validation
+            errors = []
+            if not content:
+                errors.append("content is required.")
+            if not ticket_id:
+                errors.append("ticket_id is required.")
+            # if not post_id:
+            #     errors.append("post_id is required.")
+
+            if errors:
+                return JsonResponse({'success': False, 'errors': errors}, status=HTTPStatus.BAD_REQUEST)
+
+            with transaction.atomic():
+                tickets = Ticket.objects.filter(id=ticket_id)
+                if tickets.exists():
+                    ticket = tickets.first()
+                if post_id:
+                    posts = Post.objects.filter(id=post_id)
+                    if posts.exists():
+                        old_post = posts.first()
+                post = Post()
+                post.content=content
+                post.ticket=ticket
+                if old_post:
+                    post.parent_post = old_post
+                post.save(user=request.user)
+
+            url = reverse('posts:ticket_posts', kwargs={'ticket_id': ticket_id})
+            return redirect(url)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'errors': ["Invalid JSON data."]}, status=HTTPStatus.BAD_REQUEST)
+
+        except IntegrityError as integrity_error:
+            return JsonResponse({'success': False, 'errors': ["Integrity Error: " + str(integrity_error)]}, status=HTTPStatus.BAD_REQUEST)
+
+        except Exception as error:
+            print(error)
+            return JsonResponse({'success': False, 'errors': ["An unexpected error occurred. Please try again."]}, status=HTTPStatus.INTERNAL_SERVER_ERROR)

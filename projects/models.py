@@ -45,7 +45,7 @@ class Project(models.Model):
         super(Project, self).save(*args, **kwargs)
 
         if user:
-            self.updated_by.add(user)
+            # self.updated_by.add(user)
             if is_new:
                 self.created_by = user
                 super(Project, self).save()

@@ -70,6 +70,11 @@
     width: 30px; /* Adjust width of the container */
     height: 30px; /* Adjust height of the container */
     text-align: center;
+    text-decoration: none;
+}
+
+.dots_circle {
+    margin-right: 1rem;
 }
 
 .post-footer .options .dots {
@@ -81,16 +86,11 @@
     transition: transform 0.3s ease; /* Smooth transition for transform */
 }
 
-.post-footer .options .dots:hover {
-    transform: rotate(-90deg); /* Rotate to horizontal on hover */
-}
-
 .post-footer .options .dropdown-menu {
     position: absolute;
     right: 0;
     top: 100%;
     z-index: 1000;
-    display: none;
     min-width: 120px;
     padding: .5rem 0;
     margin: .125rem 0 0;
@@ -102,10 +102,6 @@
     background-clip: padding-box;
     border: 1px solid rgba(0,0,0,.15);
     border-radius: .25rem;
-}
-
-.post-footer .options:hover .dropdown-menu {
-    display: block;
 }
 
 .post-footer .options .dropdown-menu a {
@@ -172,4 +168,9 @@
     position: fixed;
     top: 1.8%; /* Adjust as needed */
     width: 41%;
+}
+
+.highlighted-post {
+    background-color: #ffffcc;
+    transition: background-color 0.5s ease;
 }

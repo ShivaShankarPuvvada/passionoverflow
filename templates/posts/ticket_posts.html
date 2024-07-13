@@ -62,13 +62,18 @@
                                 </div>
                             </div>
                             <div class="post-something-body">
-                                <textarea name="post" class="form-control" placeholder="Post something" id="summernote"></textarea>
+                                <form method="POST" id="create-post-form" action="{% url 'posts:create_post' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                                    <input type="hidden" name="post_id" value="">
+                                    <textarea name="content" class="form-control" placeholder="Post something" id="summernote"></textarea>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Post later</button>
-                    <button type="button" class="btn btn-primary">Post now</button>
+                    <button type="submit" class="btn btn-primary">Post now</button>
+                    </form>
                     </div>
                 </div>
                 </div>
@@ -79,7 +84,7 @@
             <div class="post-list">
                 <!-- Center Column: Post something -->
                 {% for post in posts %}
-                    <div class="post">
+                    <div class="post" id="post_id_{{post.id}}">
                         <div class="d-flex align-items-center mb-2">
                             <div class="user-icon-container">
                                 <div class="user-initial">{{ post.created_by.username|slice:":2" }}</div>
@@ -94,20 +99,27 @@
                             </div>
                         </div>
                         <div class="post-content">
-                            <p>{{ post.content }}</p>
+                            <p>{{ post.content|safe }}</p>
                         </div>
                         <div class="post-footer mt-2 d-flex justify-content-between align-items-center">
                             <div class="flex-grow-1">
                                 <span class="text-muted me-3">{{ post.up_votes }} Upvotes</span>
                                 <span class="text-muted me-3">{{ post.down_votes }} Downvotes</span>
                             </div>
-                            <div class="text-end">
+                            
+                            {% if post.parent_post %}
+                                <div class="flex-grow-1">
+                                    <span class="text-muted me-3">This is a replied post. <a href="#post_id_{{post.parent_post.id}}">See the original post</a></span>
+                                </div>
+                            {% endif %}
+
+                            <div class="text-end dots_circle">
                                 <div class="options dropdown">
-                                    <div class="dots-container" role="button" aria-expanded="false">
-                                        <div class="dots">&bull;&bull;&bull;</div>
-                                    </div>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" href="#">Reply</a></li>
+                                    <a class="dots-container" href="#" id="postReplyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="dots">&bull;&bull;&bull;</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="postReplyDropdown">
+                                        <li><a class="dropdown-item reply-post-link" href="#" data-post-id="{{post.id}}">Reply</a></li>
                                         <li><a class="dropdown-item" href="#">Pin Post</a></li>
                                         <li><a class="dropdown-item" href="#">Save Post</a></li>
                                         <li><hr class="dropdown-divider"></li>
@@ -194,6 +206,7 @@
             });
 
             $('#simple-input').on('click', function() {
+                $('input[name="post_id"]').val("");
                 $('#postModal').modal('show'); // Show the modal
             });
 
@@ -202,8 +215,29 @@
                 stickyInputGroup.show(); // Show the input-group
             });
 
-            // Show input-group initially
-            stickyInputGroup.show();
+            // Event listener for clicking on "Reply" link
+            $('.reply-post-link').on('click', function(event) {
+                event.preventDefault();
+                var postId = $(this).data('post-id');
+                $('#postModal').modal('show');
+                stickyInputGroup.hide(); // Hide the input-group
+                $('input[name="post_id"]').val(postId);
+            });
+
+
+            // Highlight the original post when clicking "See the original post"
+            $('.post-list').on('click', 'a[href^="#post_id_"]', function(event) {
+                event.preventDefault();
+                var target = document.querySelector(this.hash);
+                if (target) {
+                    $('.highlighted-post').removeClass('highlighted-post'); // Remove highlight from any previously highlighted post
+                    target.classList.add('highlighted-post'); // Add highlight to the target post
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Scroll to the target post
+                    setTimeout(function() {
+                        target.classList.remove('highlighted-post'); // Remove the highlight after a delay
+                    }, 2000);
+                }
+            });
 
         });
     </script>

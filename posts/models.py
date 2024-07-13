@@ -69,7 +69,7 @@ class Post(models.Model):
     class Deleted(models.TextChoices):
         YES = '1', _("This post was deleted by user.")
         NO = '2', _("This post was not deleted by user.")
-        
+
     ticket = models.ForeignKey(Ticket, related_name='post_ticket', on_delete=models.CASCADE, null=True, blank=True)
     content = models.TextField() # this is the actual field that will store the data.
     up_votes = models.IntegerField(default=0) # increase the count if up voted.
@@ -79,12 +79,26 @@ class Post(models.Model):
     history = HistoricalRecords() # this field will store all the updates done to this model so far.
     deleted = models.CharField(max_length=1, choices=Deleted.choices, default=Deleted.NO) # we will keep the user deleted tickets as well.
     created_by = models.ForeignKey(User, related_name='post_created_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='post_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f'Post by @{self.created_by.username} on Ticket #{self.ticket.id}'
     
+
+    def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
+        super(Post, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user
+                super(Post, self).save()
+
 
 class SavedPost(models.Model):
     """
