@@ -38,21 +38,29 @@
             <img src="{% static 'images/logos/navlogotext.png' %}" width="213.3" height="26.7" alt="home page logo">
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <!-- Add your links here if needed -->
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link 1</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link 2</a>
-                </li>
+            <ul class="navbar-nav ms-auto">
+                <!-- Replace Link 1 and Link 2 with a dropdown -->
                 <li class="nav-item dropdown">
-                    <!-- Add your profile picture here if needed -->
+                    <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-icon-container">
+                            <div class="user-initial">{{ request.user.username|slice:":2" }}</div>
+                        </div>
+                    </a>
+                    <!-- Dropdown menu -->
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="dropdown-item">
+                            <form action="{% url 'accounts:logout' %}" method="POST">
+                                {% csrf_token %}
+                                <button class="nav-link btn btn-link" type="submit">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
                 </li>
             </ul>
-        </div>
+        </div>    
     </nav>
 
     <!-- Sidebar -->
@@ -164,16 +172,6 @@
                     </div>
                 </li>
             </ul>
-            <div class="mt-auto">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <form action="{% url 'accounts:logout' %}" method="POST">
-                            {% csrf_token %}
-                            <button class="nav-link btn btn-link" type="submit">Logout</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
         </div>
         
         <!-- Main Content -->

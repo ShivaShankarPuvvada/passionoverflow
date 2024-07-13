@@ -32,7 +32,7 @@
         <div class="col-md-6 scrollable-column">
             <div class="input-group" id="input-group">
                 <div class="user-icon-container">
-                    <div class="user-initial">{{ request.user.username|slice:":1" }}</div>
+                    <div class="user-initial">{{ request.user.username|slice:":2" }}</div>
                 </div>
                 <input type="text" class="form-control" id="simple-input" placeholder="Post something...">
             </div>
@@ -50,7 +50,7 @@
                         <div class="post-something">
                             <div class="d-flex align-items-center mb-2">
                                 <div class="user-icon-container">
-                                    <div class="user-initial">{{ request.user.username|slice:":1" }}</div>
+                                    <div class="user-initial">{{ request.user.username|slice:":2" }}</div>
                                 </div>                                
                                 <div class="flex-grow-1 full_name_and_username">
                                     <span class="fw-bold">{{ request.user.full_name }}</span>
@@ -82,7 +82,7 @@
                     <div class="post">
                         <div class="d-flex align-items-center mb-2">
                             <div class="user-icon-container">
-                                <div class="user-initial">{{ post.created_by.username|slice:":1" }}</div>
+                                <div class="user-initial">{{ post.created_by.username|slice:":2" }}</div>
                             </div>
                             <div class="flex-grow-1 full_name_and_username">
                                 <span class="fw-bold">{{ post.created_by.full_name }}</span>
