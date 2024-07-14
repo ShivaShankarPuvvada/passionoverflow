@@ -73,6 +73,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <i class="bi bi-info-circle"></i>
+                        <p>Don't paste the generated url for video. Directly paste url in video or in link.</p>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Post later</button>
                     <button type="submit" class="btn btn-primary">Post now</button>
                     </form>
@@ -182,12 +184,13 @@
                         <option value="oldest">Oldest</option>
                     </select>
                 </div>
-                <div class="filter  mb-3">
+                <div class="filter mb-3">
                     <label for="filterByUser">Filter by User:</label>
-                    <select id="filterByUser" class="form-select">
-                        <option value="all">All Users</option>
-                        <!-- Add options dynamically based on your users -->
-                    </select>
+                    <div class="col-md-12">
+                        <select name="assigned_to" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="filterByUser" data-width="100%">
+                            <option value="all">All Users</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="filter  mb-3">
                     <label for="startDate">Start Date (Posts later than):</label>
