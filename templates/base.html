@@ -222,5 +222,20 @@
             });
         });
     </script>
+    <!-- Save scroll position before page unload -->
+    <script>
+        window.onbeforeunload = function() {
+            localStorage.setItem('scrollPosition', window.scrollY);
+        };  
+    </script>
+
+    <!-- Restore scroll position after page load -->
+    <script>
+        window.onload = function() {
+            if (localStorage.getItem('scrollPosition') !== null) {
+            window.scrollTo(0, localStorage.getItem('scrollPosition'));
+            }
+        };
+    </script>
 </body>
 </html>
