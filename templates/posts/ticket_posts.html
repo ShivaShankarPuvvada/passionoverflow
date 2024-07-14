@@ -296,6 +296,9 @@
                             console.log(response.data)
                             $('#upvotes_count_' + postId).text(response.data.up_votes + ' Upvotes');
                             $('#downvotes_count_' + postId).text(response.data.down_votes + ' Downvotes');
+                            sessionStorage.setItem('scrollPosition', window.scrollY); // to load the page where it left of, but currently it is not working.
+                            var successUrl = "{% url 'posts:ticket_posts' ticket.id %}";
+                            window.location.href = successUrl;
                         } else {
                             console.error('Failed to update votes:', response.message);
                         }
