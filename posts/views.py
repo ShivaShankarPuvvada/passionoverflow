@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Post, Vote
+from .models import Post, Vote, PinnedPost
 from django.http import JsonResponse
 from http import HTTPStatus
 from django.contrib.auth.decorators import login_required
@@ -125,3 +125,39 @@ def vote_post(request):
             post.down_votes += 1
         post.save(user=request.user)
         return JsonResponse({"success": True, "data": {'up_votes': post.up_votes, 'down_votes': post.down_votes}})
+
+
+
+
+@login_required
+def pin_post(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    # Check if the post is already pinned
+    existing_pin = PinnedPost.objects.filter(post=post, deleted=False).first()
+    
+    if existing_pin:
+        return JsonResponse({'success': False, 'message': 'Post is already pinned.'})
+    
+    # Create a new pinned post record
+    pinned_post = PinnedPost(post=post, pinned_by=request.user, deleted=False)
+    pinned_post.save()
+    
+    url = reverse('posts:ticket_posts', kwargs={'ticket_id': post.ticket.id})
+    return redirect(url)
+
+@login_required
+def unpin_post(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    
+    # Check if the post is pinned by the current user
+    pinned_post = PinnedPost.objects.filter(post=post, pinned_by=request.user, deleted=False).first()
+    
+    if not pinned_post:
+        return JsonResponse({'success': False, 'message': 'Post is not pinned by current user. You can not un pin this.'})
+    
+    # Soft delete the pinned post record
+    pinned_post.deleted = True
+    pinned_post.save()
+    
+    url = reverse('posts:ticket_posts', kwargs={'ticket_id': post.ticket.id})
+    return redirect(url)

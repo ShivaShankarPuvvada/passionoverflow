@@ -111,6 +111,8 @@ class SavedPost(models.Model):
     saved_by = models.ForeignKey(User, related_name='post_saved_by', on_delete=models.SET_NULL, null=True, blank=True)
     saved = models.CharField(max_length=1, choices=Saved.choices, default=Saved.YES) # we will keep the user saved and unsaved posts as well.
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
+    created_by = models.ForeignKey(User, related_name='saved_post_created_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='saved_post_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
@@ -118,10 +120,24 @@ class SavedPost(models.Model):
         return f'post - {self.post.id} saved by @{self.saved_by.username}'
 
 
+    def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
+        super(SavedPost, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user
+                super(SavedPost, self).save()
+
+
+
 
 class PinnedPost(models.Model):
     """
-    User can pin the post.
+    User can pin the post. Pinned posts are public, everybody can pin the posts.
     All the pinned posts will be shown in top in an order. 
     At the bottom of that, normal posts will be shown in order.
     When user un pin the post, we need to change the 'saved' field to Pinned.NO
@@ -134,11 +150,26 @@ class PinnedPost(models.Model):
     pinned_by = models.ForeignKey(User, related_name='post_pinned_by', on_delete=models.SET_NULL, null=True, blank=True)
     saved = models.CharField(max_length=1, choices=Pinned.choices, default=Pinned.YES) # we will keep the user pinned and unpinned posts as well. i.e, if he un pins, we will change this to NO.
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records. this is for developers. When customers delete the record, we don't delete it in our database.
+    created_by = models.ForeignKey(User, related_name='pinned_post_created_by', on_delete=models.SET_NULL, null=True, blank=True)
+    updated_by = models.ManyToManyField(User, related_name='pinned_post_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __str__(self):
         return f'post - {self.post.id} pinned by @{self.saved_by.username}'
+
+
+    def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        is_new = not self.pk  # Check if it's a new object creation
+
+        super(PinnedPost, self).save(*args, **kwargs)
+
+        if user:
+            self.updated_by.add(user)
+            if is_new:
+                self.created_by = user
+                super(PinnedPost, self).save()
 
 
 

@@ -96,6 +96,11 @@
                                 <br>
                                 <span class="username">@{{ post.created_by.username }}</span>
                             </div>
+                            <div class="flex-grow-1 text-center">
+                                {% if post.pinned_posts|are_pinned_posts_exists %}
+                                    <i class="bi bi-pin-fill" data-toggle="tooltip" title="Pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
+                                {% endif %} 
+                            </div>
                             <div class="text-end flex-grow-1 created_at_and_updated_at">
                                 <span class="text-muted">Posted on {{ post.created_at|date:"F j, Y" }} at {{ post.created_at|time:"P" }}</span>
                             </div>
@@ -135,7 +140,11 @@
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="postReplyDropdown">
                                         <li><a class="dropdown-item reply-post-link" href="#" data-post-id="{{post.id}}">Reply</a></li>
-                                        <li><a class="dropdown-item" href="#">Pin Post</a></li>
+                                        {% if not post.pinned_posts|are_pinned_posts_exists %}
+                                            <li><a class="dropdown-item" href="{% url 'posts:pin_post' post.id %}">Pin Post</a></li>
+                                        {% else %}
+                                            <li><a class="dropdown-item" href="{% url 'posts:unpin_post' post.id %}">Unpin Post</a></li>
+                                        {% endif %}
                                         <li><a class="dropdown-item" href="#">Save Post</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" href="{% url 'posts:delete_post' post.id %}">Delete Post</a></li>
