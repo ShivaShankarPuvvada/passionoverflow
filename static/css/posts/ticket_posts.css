@@ -47,6 +47,7 @@
 .post-content {
     margin-bottom: .5rem;
     margin-left: 3rem;
+    margin-right: 3rem;
 }
 
 .post-footer {
@@ -74,7 +75,7 @@
 }
 
 .dots_circle {
-    margin-right: 1rem;
+    margin-right: 3rem;
 }
 
 .post-footer .options .dots {
@@ -127,13 +128,12 @@
 .full_name_and_username {
     margin-left: 0.6rem;
 }
-.username {
+.username, .created_at_and_updated_at {
     font-size: 0.8rem;
 }
 
-.created_at_and_updated_at {
-    font-size: .75rem;
-    margin-right: 1rem;
+.save_and_pin {
+    margin-right: 3rem;
 }
 
 /* Main Content */

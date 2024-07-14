@@ -42,7 +42,7 @@
 
             <!-- Modal -->
             <div class="modal fade" id="postModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">Create Post:</h5>
@@ -95,17 +95,18 @@
                                 <span class="fw-bold">{{ post.created_by.full_name }}</span>
                                 <br>
                                 <span class="username">@{{ post.created_by.username }}</span>
+                                <span class="text-muted created_at_and_updated_at">&bull; Posted on {{ post.created_at|date:"F j, Y" }} at {{ post.created_at|time:"P" }}</span>
                             </div>
                             <div class="flex-grow-1 text-center">
+                                {% comment %} If you want to place in the top center of the post. {% endcomment %}
+                            </div>
+                            <div class="text-end flex-grow-1 save_and_pin">
                                 {% if post.saved_posts|are_saved_posts_exists %}
-                                    <i class="bi bi-save-fill" data-toggle="tooltip" title="You saved this post, {{ post.saved_posts|get_saved_by_username }}"></i>
+                                    <i class="bi bi-save" data-toggle="tooltip" title="You saved this post, {{ post.saved_posts|get_saved_by_username }}"></i>
                                 {% endif %} 
                                 {% if post.pinned_posts|are_pinned_posts_exists %}
-                                    <i class="bi bi-pin-fill rotate-40" data-toggle="tooltip" title="Pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
+                                    <i class="bi bi-pin rotate-40" data-toggle="tooltip" title="Pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
                                 {% endif %}
-                            </div>
-                            <div class="text-end flex-grow-1 created_at_and_updated_at">
-                                <span class="text-muted">Posted on {{ post.created_at|date:"F j, Y" }} at {{ post.created_at|time:"P" }}</span>
                             </div>
                         </div>
                         <div class="post-content">
@@ -166,7 +167,89 @@
         <div class="col-md-3">
             <!-- Right Column: Static Content -->
             <div class="sticky-column">
-                <p>Static Content Here</p>
+                <h4>Filters:</h4>
+                <!-- Add your filter options here -->
+                <div class="input-group mb-3">
+                    <input type="text" id="search" class="form-control" name="search" placeholder="Search posts...">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+                <div class="filter  mb-3">
+                    <label for="filterByDate">Sort by Date:</label>
+                    <select id="filterByDate" class="form-select">
+                        <option value="latest">Latest</option>
+                        <option value="oldest">Oldest</option>
+                    </select>
+                </div>
+                <div class="filter  mb-3">
+                    <label for="filterByUser">Filter by User:</label>
+                    <select id="filterByUser" class="form-select">
+                        <option value="all">All Users</option>
+                        <!-- Add options dynamically based on your users -->
+                    </select>
+                </div>
+                <div class="filter  mb-3">
+                    <label for="startDate">Start Date (Posts later than):</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+                <div class="filter  mb-3">
+                    <label for="endDate">End Date (Posts older than):</label>
+                    <input type="date" id="endDate" class="form-control">
+                </div>
+                <div class="filter mb-3">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterAcceptedAnswerPosts">
+                        <span class="form-check-label">Accepted Answer</span>
+                    </label>
+                </div>
+                <div class="filter  mb-3">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterSavedPosts">
+                        <span class="form-check-label">Posts I saved</span>
+                    </label>
+                </div>
+                <!-- Checkbox for Posts by Current User -->
+                <div class="filter mb-3">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterMyPosts">
+                        <span class="form-check-label">Posts I created</span>
+                    </label>
+                </div>
+                <!-- Checkbox for Posts from Admins -->
+                <div class="filter mb-3">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterAdminPosts">
+                        <span class="form-check-label">Posts by contributors</span>
+                    </label>
+                </div>
+                <div class="filter mb-3">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterPinnedPosts">
+                        <span class="form-check-label">Posts pinned by others</span>
+                    </label>
+                </div>
+                <div class="filter mb-3">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterTopVotedPosts">
+                        <span class="form-check-label">Posts voted mostly</span>
+                    </label>
+                </div>
+                <div class="filter mb-3">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterMostSavedPosts">
+                        <span class="form-check-label">Posts saved mostly</span>
+                    </label>
+                </div>
+                <div class="filter mb-3">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterPostsWithAttachments">
+                        <span class="form-check-label">Posts with Attachments</span>
+                    </label>
+                </div>
+                <div class="text">
+                    <button type="button" class="btn btn-primary">Apply filters</button>
+                </div>
             </div>
         </div>
     </div>
@@ -296,7 +379,6 @@
                             console.log(response.data)
                             $('#upvotes_count_' + postId).text(response.data.up_votes + ' Upvotes');
                             $('#downvotes_count_' + postId).text(response.data.down_votes + ' Downvotes');
-                            sessionStorage.setItem('scrollPosition', window.scrollY); // to load the page where it left of, but currently it is not working.
                             var successUrl = "{% url 'posts:ticket_posts' ticket.id %}";
                             window.location.href = successUrl;
                         } else {
