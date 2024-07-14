@@ -141,7 +141,7 @@ class PinnedPost(models.Model):
     All the pinned posts will be shown in top in an order. 
     At the bottom of that, normal posts will be shown in order.
     When user un pin the post, we need to change the 'saved' field to Pinned.NO
-    While filtering the Pinned posts we need to inclued saved = YES in the filter.
+    While filtering the Pinned posts we need to include saved = YES in the filter.
     """
     class Pinned(models.TextChoices):
         YES = '1', _("This post was pinned by user.")

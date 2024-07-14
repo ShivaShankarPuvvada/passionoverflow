@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import Post, Vote, PinnedPost
+from .models import Post, Vote, PinnedPost, SavedPost
 from django.http import JsonResponse
 from http import HTTPStatus
 from django.contrib.auth.decorators import login_required
@@ -159,5 +159,29 @@ def unpin_post(request, post_id):
     pinned_post.deleted = True
     pinned_post.save()
     
+    url = reverse('posts:ticket_posts', kwargs={'ticket_id': post.ticket.id})
+    return redirect(url)
+
+
+@login_required
+def save_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    saved_post, created = SavedPost.objects.get_or_create(post=post, saved_by=request.user, defaults={'saved': SavedPost.Saved.YES})
+
+    if not created:
+        # If the post was already saved, mark it as saved again if it was unsaved
+        saved_post.saved = SavedPost.Saved.YES
+        saved_post.save(user=request.user)
+
+    url = reverse('posts:ticket_posts', kwargs={'ticket_id': post.ticket.id})
+    return redirect(url)
+
+@login_required
+def un_save_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    saved_post = get_object_or_404(SavedPost, post=post, saved_by=request.user)
+    saved_post.saved = SavedPost.Saved.NO
+    saved_post.save(user=request.user)
+
     url = reverse('posts:ticket_posts', kwargs={'ticket_id': post.ticket.id})
     return redirect(url)

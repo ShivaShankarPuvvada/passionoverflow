@@ -99,6 +99,9 @@
                             <div class="flex-grow-1 text-center">
                                 {% if post.pinned_posts|are_pinned_posts_exists %}
                                     <i class="bi bi-pin-fill" data-toggle="tooltip" title="Pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
+                                {% endif %}
+                                {% if post.saved_posts|are_saved_posts_exists %}
+                                    <i class="bi bi-save-fill" data-toggle="tooltip" title="You saved this post, {{ post.saved_posts|get_saved_by_username }}"></i>
                                 {% endif %} 
                             </div>
                             <div class="text-end flex-grow-1 created_at_and_updated_at">
@@ -145,7 +148,11 @@
                                         {% else %}
                                             <li><a class="dropdown-item" href="{% url 'posts:unpin_post' post.id %}">Unpin Post</a></li>
                                         {% endif %}
-                                        <li><a class="dropdown-item" href="#">Save Post</a></li>
+                                        {% if not post.saved_posts|are_saved_posts_exists %}
+                                            <li><a class="dropdown-item" href="{% url 'posts:save_post' post.id %}">Save Post</a></li>
+                                        {% else %}
+                                            <li><a class="dropdown-item" href="{% url 'posts:un_save_post' post.id %}">Un save Post</a></li>
+                                        {% endif %}
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" href="{% url 'posts:delete_post' post.id %}">Delete Post</a></li>
                                     </ul>
