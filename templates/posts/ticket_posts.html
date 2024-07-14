@@ -104,10 +104,25 @@
                             </div>
                             <div class="text-end flex-grow-1 save_and_pin">
                                 {% if post.saved_posts|are_saved_posts_exists %}
-                                    <i class="bi bi-save" data-toggle="tooltip" title="You saved this post, {{ post.saved_posts|get_saved_by_username }}"></i>
+                                    <i class="bi bi-file-earmark-check" data-toggle="tooltip" title="You saved this post, {{ post.saved_posts|get_saved_by_username }}"></i>
                                 {% endif %} 
                                 {% if post.pinned_posts|are_pinned_posts_exists %}
-                                    <i class="bi bi-pin rotate-40" data-toggle="tooltip" title="Pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
+                                    <i class="bi bi-pin rotate-40" data-toggle="tooltip" title="This post was pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
+                                {% endif %}
+                                {% if post.has_mentions %}
+                                    <i class="bi bi-at" data-toggle="tooltip" title="This post has user mentions."></i>
+                                {% endif %}
+                                {% if post.has_previews %}
+                                    <i class="bi bi-image" data-toggle="tooltip" title="This post has link previews."></i>
+                                {% endif %}
+                                {% if post.has_links %}
+                                    <i class="bi bi-link" data-toggle="tooltip" title="This post has links."></i>
+                                {% endif %}
+                                {% if post.has_images %}
+                                    <i class="bi bi-paperclip" data-toggle="tooltip" title="This post has attachments."></i>
+                                {% endif %}
+                                {% if post.has_tables %}
+                                    <i class="bi bi-table" data-toggle="tooltip" title="This post has tables."></i>
                                 {% endif %}
                             </div>
                         </div>
@@ -185,7 +200,7 @@
                     </select>
                 </div>
                 <div class="filter mb-3">
-                    <label for="filterByUser">Filter by User:</label>
+                    <label for="filterByUser">Posted by User:</label>
                     <div class="col-md-12">
                         <select name="assigned_to" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="filterByUser" data-width="100%">
                             <option value="all">All Users</option>
@@ -200,54 +215,78 @@
                     <label for="endDate">End Date (Posts older than):</label>
                     <input type="date" id="endDate" class="form-control">
                 </div>
-                <div class="filter mb-3">
+                <div class="filter mb-1">
                     <label class="form-check">
                         <input class="form-check-input" type="checkbox" id="filterAcceptedAnswerPosts">
                         <span class="form-check-label">Accepted Answer</span>
                     </label>
                 </div>
-                <div class="filter  mb-3">
+                <div class="filter  mb-1">
                     <label class="form-check">
                         <input class="form-check-input" type="checkbox" id="filterSavedPosts">
                         <span class="form-check-label">Posts I saved</span>
                     </label>
                 </div>
                 <!-- Checkbox for Posts by Current User -->
-                <div class="filter mb-3">
+                <div class="filter mb-1">
                     <label class="form-check">
                         <input class="form-check-input" type="checkbox" id="filterMyPosts">
                         <span class="form-check-label">Posts I created</span>
                     </label>
                 </div>
                 <!-- Checkbox for Posts from Admins -->
-                <div class="filter mb-3">
+                <div class="filter mb-1">
                     <label class="form-check">
                         <input class="form-check-input" type="checkbox" id="filterAdminPosts">
                         <span class="form-check-label">Posts by contributors</span>
                     </label>
                 </div>
-                <div class="filter mb-3">
+                <div class="filter mb-1">
                     <label class="form-check">
                         <input class="form-check-input" type="checkbox" id="filterPinnedPosts">
                         <span class="form-check-label">Posts pinned by others</span>
                     </label>
                 </div>
-                <div class="filter mb-3">
+                <div class="filter mb-1">
                     <label class="form-check">
                         <input class="form-check-input" type="checkbox" id="filterTopVotedPosts">
                         <span class="form-check-label">Posts voted mostly</span>
                     </label>
                 </div>
-                <div class="filter mb-3">
+                <div class="filter mb-1">
                     <label class="form-check">
                         <input class="form-check-input" type="checkbox" id="filterMostSavedPosts">
                         <span class="form-check-label">Posts saved mostly</span>
                     </label>
                 </div>
-                <div class="filter mb-3">
+                <div class="filter mb-1">
                     <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterPostsWithAttachments">
-                        <span class="form-check-label">Posts with Attachments</span>
+                        <input class="form-check-input" type="checkbox" id="filterHasMentions">
+                        <span class="form-check-label">Posts with Mentions</span>
+                    </label>
+                </div>
+                <div class="filter mb-1">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterHasPreviews">
+                        <span class="form-check-label">Posts with Previews</span>
+                    </label>
+                </div>
+                <div class="filter mb-1">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterHasLinks">
+                        <span class="form-check-label">Posts with Links</span>
+                    </label>
+                </div>
+                <div class="filter mb-1">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterHasAttachments">
+                        <span class="form-check-label">Posts with Image Attachments</span>
+                    </label>
+                </div>
+                <div class="filter mb-1">
+                    <label class="form-check">
+                        <input class="form-check-input" type="checkbox" id="filterHasTables">
+                        <span class="form-check-label">Posts with Tables</span>
                     </label>
                 </div>
                 <div class="text">

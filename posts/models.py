@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-
+import re
 from django.db import models
 from simple_history.models import HistoricalRecords
 from django.contrib.auth import get_user_model
@@ -93,6 +93,41 @@ class Post(models.Model):
     updated_by = models.ManyToManyField(User, related_name='post_updated_by', blank=True) # anybody can update the ticket. updated message has to be shown in the posts of ticket.
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    @property
+    def has_images(self):
+        # Check for image tags
+        if re.search(r'<img[^>]+src="([^">]+)"', self.content):
+            return True
+        return False
+
+    @property
+    def has_links(self):
+        # Check for link tags
+        if re.search(r'<a[^>]+href="([^">]+)"', self.content):
+            return True
+        return False
+    
+    @property
+    def has_previews(self):
+        # Check for iframe tags (e.g., YouTube embeds)
+        if re.search(r'<iframe[^>]+src="([^">]+)"', self.content):
+            return True
+        return False
+    
+    @property
+    def has_tables(self):
+        # Check for table tags
+        if re.search(r'<table[^>]*>', self.content):
+            return True
+        return False
+    
+    @property
+    def has_mentions(self):
+        # Check for user mentions using '@' symbol
+        if re.search(r'@\w+', self.content):
+            return True
+        return False
 
     def __str__(self):
         return f'Post by @{self.created_by.username} on Ticket #{self.ticket.id}'

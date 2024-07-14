@@ -51,4 +51,5 @@ Assignees: Sam, Adam, Tom
 1. Have to add width for summernote. If we paste long line, currently it is extending.
 2. Have to add kanban board for tickets.
 3. Have to add filters for all list tables.
+4. Need to add @ and # for username and tickets in content in posts in ticket_posts page.
 
