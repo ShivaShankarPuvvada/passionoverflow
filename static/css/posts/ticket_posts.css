@@ -175,3 +175,12 @@
     background-color: #ffffcc;
     transition: background-color 0.5s ease;
 }
+
+.rotate-40 {
+    -webkit-transform: rotate(35deg);
+    -moz-transform: rotate(35deg);
+    -ms-transform: rotate(35deg);
+    -o-transform: rotate(35deg);
+    transform: rotate(35deg);
+    display: inline-block;
+}
