@@ -15,173 +15,6 @@
 {% block content %}
     <div class="row">
         <div class="col-md-3">
-            <!-- Left Column: Sub Tickets -->
-            <div class="sticky-column">
-                <h4>Sub Tickets</h4>
-                <ul>
-                    {% for sub_ticket in ticket.sub_tickets.all %}
-                    <li>#{{ sub_ticket.company_ticket_counter }} - {{ sub_ticket.title }}</li>
-                    {% endfor %}
-                </ul>
-                <h4>Super Tickets</h4>
-                <ul>
-                    {% for super_ticket in ticket.super_tickets.all %}
-                    <li>#{{ super_ticket.company_ticket_counter }} - {{ super_ticket.title }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        <div class="col-md-6 scrollable-column">
-            <div class="input-group" id="input-group">
-                <div class="user-icon-container">
-                    <div class="user-initial">{{ request.user.username|slice:":2" }}</div>
-                </div>
-                <input type="text" class="form-control" id="simple-input" placeholder="Post something...">
-            </div>
-
-
-            <!-- Modal -->
-            <div class="modal fade" id="postModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Create Post:</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="post-something">
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="user-icon-container">
-                                    <div class="user-initial">{{ request.user.username|slice:":2" }}</div>
-                                </div>                                
-                                <div class="flex-grow-1 full_name_and_username">
-                                    <span class="fw-bold">{{ request.user.full_name }}</span>
-                                    <br>
-                                    <span class="username">@{{ request.user.username }}</span>
-                                </div>
-                                <div class="text-end flex-grow-1 created_at_and_updated_at">
-                                    <span class="text-muted">Creating Post now</span>
-                                </div>
-                            </div>
-                            <div class="post-something-body">
-                                <form method="POST" id="create-post-form" action="{% url 'posts:create_post' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
-                                    <input type="hidden" name="post_id" value="">
-                                    <textarea name="content" class="form-control" placeholder="Post something" id="summernote"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <i class="bi bi-info-circle"></i>
-                        <p>Don't paste the generated url for video. Directly paste url in video or in link.</p>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Post later</button>
-                    <button type="submit" class="btn btn-primary">Post now</button>
-                    </form>
-                    </div>
-                </div>
-                </div>
-            </div>
-
-            <hr>
-            <!-- Center Column: Posts -->
-            <div class="post-list">
-                <!-- Center Column: Post something -->
-                {% for post in posts %}
-                    <div class="post" id="post_id_{{post.id}}">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="user-icon-container">
-                                <div class="user-initial">{{ post.created_by.username|slice:":2" }}</div>
-                            </div>
-                            <div class="flex-grow-1 full_name_and_username">
-                                <span class="fw-bold">{{ post.created_by.full_name }}</span>
-                                <br>
-                                <span class="username">@{{ post.created_by.username }}</span>
-                                <span class="text-muted created_at_and_updated_at">&bull; Posted on {{ post.created_at|date:"F j, Y" }} at {{ post.created_at|time:"P" }}</span>
-                            </div>
-                            <div class="flex-grow-1 text-center">
-                                {% comment %} If you want to place in the top center of the post. {% endcomment %}
-                            </div>
-                            <div class="text-end flex-grow-1 save_and_pin">
-                                {% if post.saved_posts|are_saved_posts_exists %}
-                                    <i class="bi bi-file-earmark-check" data-toggle="tooltip" title="You saved this post, {{ post.saved_posts|get_saved_by_username }}"></i>
-                                {% endif %} 
-                                {% if post.pinned_posts|are_pinned_posts_exists %}
-                                    <i class="bi bi-pin rotate-40" data-toggle="tooltip" title="This post was pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
-                                {% endif %}
-                                {% if post.has_mentions %}
-                                    <i class="bi bi-at" data-toggle="tooltip" title="This post has user mentions."></i>
-                                {% endif %}
-                                {% if post.has_previews %}
-                                    <i class="bi bi-image" data-toggle="tooltip" title="This post has link previews."></i>
-                                {% endif %}
-                                {% if post.has_links %}
-                                    <i class="bi bi-link" data-toggle="tooltip" title="This post has links."></i>
-                                {% endif %}
-                                {% if post.has_images %}
-                                    <i class="bi bi-paperclip" data-toggle="tooltip" title="This post has attachments."></i>
-                                {% endif %}
-                                {% if post.has_tables %}
-                                    <i class="bi bi-table" data-toggle="tooltip" title="This post has tables."></i>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="post-content">
-                            <p>{{ post.content|safe }}</p>
-                        </div>
-                        <div class="post-footer mt-2 d-flex justify-content-between align-items-center">
-                            <div class="flex-grow-1">
-                                <button class="btn btn-link upvote-btn" data-post-id="{{ post.id }}">
-                                    {% if post|is_up_voted_by_user:request.user %}
-                                        <i class="bi bi-arrow-up-circle-fill"></i>
-                                    {% else %}
-                                        <i class="bi bi-arrow-up-circle"></i>
-                                    {% endif %}
-                                </button>
-                                <span class="text-muted me-3" id="upvotes_count_{{ post.id }}">{{ post.up_votes }} Upvotes</span>
-                                <button class="btn btn-link downvote-btn" data-post-id="{{ post.id }}">
-                                    {% if post|is_down_voted_by_user:request.user %}
-                                        <i class="bi bi-arrow-down-circle-fill"></i>
-                                    {% else %}
-                                        <i class="bi bi-arrow-down-circle"></i>
-                                    {% endif %}
-                                </button>
-                                <span class="text-muted me-3" id="downvotes_count_{{ post.id }}">{{ post.down_votes }} Downvotes</span>
-                            </div>
-                            {% if post.parent_post %}
-                                <div class="flex-grow-1">
-                                    <span class="text-muted me-3">This is a replied post. <a href="#post_id_{{post.parent_post.id}}">See the original post</a></span>
-                                </div>
-                            {% endif %}
-
-                            <div class="text-end dots_circle">
-                                <div class="options dropdown">
-                                    <a class="dots-container" href="#" id="postReplyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="dots">&bull;&bull;&bull;</span>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="postReplyDropdown">
-                                        <li><a class="dropdown-item reply-post-link" href="#" data-post-id="{{post.id}}">Reply</a></li>
-                                        {% if not post.pinned_posts|are_pinned_posts_exists %}
-                                            <li><a class="dropdown-item" href="{% url 'posts:pin_post' post.id %}">Pin Post</a></li>
-                                        {% else %}
-                                            <li><a class="dropdown-item" href="{% url 'posts:unpin_post' post.id %}">Unpin Post</a></li>
-                                        {% endif %}
-                                        {% if not post.saved_posts|are_saved_posts_exists %}
-                                            <li><a class="dropdown-item" href="{% url 'posts:save_post' post.id %}">Save Post</a></li>
-                                        {% else %}
-                                            <li><a class="dropdown-item" href="{% url 'posts:un_save_post' post.id %}">Un save Post</a></li>
-                                        {% endif %}
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="{% url 'posts:delete_post' post.id %}">Delete Post</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="col-md-3">
             <!-- Right Column: Static Content -->
             <div class="sticky-column">
                 <h4>Filters:</h4>
@@ -291,6 +124,200 @@
                 </div>
                 <div class="text">
                     <button type="button" class="btn btn-primary">Apply filters</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 scrollable-column">
+            <div class="input-group" id="input-group">
+                <div class="user-icon-container">
+                    <div class="user-initial">{{ request.user.username|slice:":2" }}</div>
+                </div>
+                <input type="text" class="form-control" id="simple-input" placeholder="Post something...">
+            </div>
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="postModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Create Post:</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="post-something">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="user-icon-container">
+                                    <div class="user-initial">{{ request.user.username|slice:":2" }}</div>
+                                </div>                                
+                                <div class="flex-grow-1 full_name_and_username">
+                                    <span class="fw-bold">{{ request.user.full_name }}</span>
+                                    <br>
+                                    <span class="username">@{{ request.user.username }}</span>
+                                </div>
+                                <div class="text-end flex-grow-1 created_at_and_updated_at">
+                                    <span class="text-muted">Creating Post now</span>
+                                </div>
+                            </div>
+                            <div class="post-something-body">
+                                <form method="POST" id="create-post-form" action="{% url 'posts:create_post' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                                    <input type="hidden" name="post_id" value="">
+                                    <textarea name="content" class="form-control" placeholder="Post something" id="summernote"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <i class="bi bi-info-circle"></i>
+                        <p>Don't paste the generated url. Directly paste browser url in video or in link.</p>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Post later</button>
+                    <button type="submit" class="btn btn-primary">Post now</button>
+                    </form>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <hr>
+            <!-- Center Column: Posts -->
+            <div class="post-list">
+                <!-- Center Column: Post something -->
+                {% for post in posts %}
+                    <div class="post" id="post_id_{{post.id}}">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="user-icon-container">
+                                <div class="user-initial">{{ post.created_by.username|slice:":2" }}</div>
+                            </div>
+                            <div class="flex-grow-1 full_name_and_username">
+                                <span class="fw-bold">{{ post.created_by.full_name }}</span>
+                                <br>
+                                <span class="username">@{{ post.created_by.username }}</span>
+                                <span class="text-muted created_at_and_updated_at">&bull; Posted on {{ post.created_at|date:"F j, Y" }} at {{ post.created_at|time:"P" }}</span>
+                            </div>
+                            <div class="flex-grow-1 text-center">
+                                {% comment %} If you want to place in the top center of the post. {% endcomment %}
+                            </div>
+                            <div class="text-end flex-grow-1 save_and_pin">
+                                {% if post.saved_posts|are_saved_posts_exists %}
+                                    <i class="bi bi-file-earmark-check" data-toggle="tooltip" title="You saved this post, {{ post.saved_posts|get_saved_by_username }}"></i>
+                                {% endif %} 
+                                {% if post.pinned_posts|are_pinned_posts_exists %}
+                                    <i class="bi bi-pin rotate-40" data-toggle="tooltip" title="This post was pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
+                                {% endif %}
+                                {% if post.has_mentions %}
+                                    <i class="bi bi-at" data-toggle="tooltip" title="This post has user mentions."></i>
+                                {% endif %}
+                                {% if post.has_previews %}
+                                    <i class="bi bi-image" data-toggle="tooltip" title="This post has link previews."></i>
+                                {% endif %}
+                                {% if post.has_links %}
+                                    <i class="bi bi-link" data-toggle="tooltip" title="This post has links."></i>
+                                {% endif %}
+                                {% if post.has_images %}
+                                    <i class="bi bi-paperclip" data-toggle="tooltip" title="This post has attachments."></i>
+                                {% endif %}
+                                {% if post.has_tables %}
+                                    <i class="bi bi-table" data-toggle="tooltip" title="This post has tables."></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>{{ post.content|safe }}</p>
+                        </div>
+                        <div class="post-footer mt-2 d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <button class="btn btn-link upvote-btn" data-post-id="{{ post.id }}">
+                                    {% if post|is_up_voted_by_user:request.user %}
+                                        <i class="bi bi-arrow-up-circle-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-arrow-up-circle"></i>
+                                    {% endif %}
+                                </button>
+                                <span class="text-muted me-3" id="upvotes_count_{{ post.id }}">{{ post.up_votes }} Upvotes</span>
+                                <button class="btn btn-link downvote-btn" data-post-id="{{ post.id }}">
+                                    {% if post|is_down_voted_by_user:request.user %}
+                                        <i class="bi bi-arrow-down-circle-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-arrow-down-circle"></i>
+                                    {% endif %}
+                                </button>
+                                <span class="text-muted me-3" id="downvotes_count_{{ post.id }}">{{ post.down_votes }} Downvotes</span>
+                            </div>
+                            {% if post.parent_post %}
+                                <div class="flex-grow-1">
+                                    <span class="text-muted me-3">This is a replied post. <a href="#post_id_{{post.parent_post.id}}">See the original post</a></span>
+                                </div>
+                            {% endif %}
+
+                            <div class="text-end dots_circle">
+                                <div class="options dropdown">
+                                    <a class="dots-container" href="#" id="postReplyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="dots">&bull;&bull;&bull;</span>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="postReplyDropdown">
+                                        <li><a class="dropdown-item reply-post-link" href="#" data-post-id="{{post.id}}">Reply</a></li>
+                                        {% if not post.pinned_posts|are_pinned_posts_exists %}
+                                            <li><a class="dropdown-item" href="{% url 'posts:pin_post' post.id %}">Pin Post</a></li>
+                                        {% else %}
+                                            <li><a class="dropdown-item" href="{% url 'posts:unpin_post' post.id %}">Unpin Post</a></li>
+                                        {% endif %}
+                                        {% if not post.saved_posts|are_saved_posts_exists %}
+                                            <li><a class="dropdown-item" href="{% url 'posts:save_post' post.id %}">Save Post</a></li>
+                                        {% else %}
+                                            <li><a class="dropdown-item" href="{% url 'posts:un_save_post' post.id %}">Un save Post</a></li>
+                                        {% endif %}
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{% url 'posts:delete_post' post.id %}">Delete Post</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <!-- Left Column: Sub Tickets -->
+            <div class="sticky-column sub_column_in_left_side_column">
+                <div class="ticket_data">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="ticket_number">
+                            Ticket: 
+                            <a href="{% url 'posts:ticket_posts' ticket.id %}">#{{ ticket.company_ticket_counter }}</a>
+                        </p>
+                        <a href="{% url 'tickets:update_ticket' ticket.id %}" target="_blank" class="edit-ticket-link" title="Edit this ticket" data-toggle="tooltip">
+                            <i class="bi bi-pencil-square" data-toggle="tooltip" data-placement="top" title="Edit this ticket"></i>
+                        </a>
+                    </div>
+                    <p>
+                        Title: {{ticket.title}}  
+                    </p>
+                </div>
+                <div class="super_and_sub_tickets">
+                    <div class="sub_tickets mt-3 mb-3">
+                        <h5>Branch tickets:</h5>
+                        <div class="sub_tickets_list">
+                            <div class="sub_tickets_div m-2">
+                                {% for sub_ticket in ticket.sub_tickets.all %}
+                                    <a href="{% url 'posts:ticket_posts' sub_ticket.id %}" target="_blank" rel="noopener noreferrer">#{{ sub_ticket.company_ticket_counter }}</a>{% if not forloop.last %},&nbsp;{% endif %}
+                                {% endfor %}
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="super_tickets mt-3 mb-3">
+                        <h5>Root tickets:</h5>
+                        <div class="super_tickets_list">
+                            <div class="super_tickets_div m-2">
+                                {% for super_ticket in ticket.super_tickets.all %}
+                                    <a href="{% url 'posts:ticket_posts' super_ticket.id %}" target="_blank" rel="noopener noreferrer">#{{super_ticket.company_ticket_counter}}</a>{% if not forloop.last %},&nbsp;{% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
