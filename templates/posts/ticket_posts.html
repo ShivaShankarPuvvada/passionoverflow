@@ -319,6 +319,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="tags mt-2">
+                    <div class="tags_heading">
+                        <h5>Tags:</h5>
+                    </div>
+                    <div class="tag-list">
+                        {% for tag in ticket.tags.all %}
+                            <span class="tag badge bg-primary">{{ tag.title }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
