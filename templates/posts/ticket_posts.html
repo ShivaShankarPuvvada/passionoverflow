@@ -200,27 +200,32 @@
                                 {% comment %} If you want to place in the top center of the post. {% endcomment %}
                             </div>
                             <div class="text-end flex-grow-1 save_and_pin">
-                                {% if post.saved_posts|are_saved_posts_exists %}
-                                    <i class="bi bi-file-earmark-check" data-toggle="tooltip" title="You saved this post, {{ post.saved_posts|get_saved_by_username }}"></i>
-                                {% endif %} 
-                                {% if post.pinned_posts|are_pinned_posts_exists %}
-                                    <i class="bi bi-pin rotate-40" data-toggle="tooltip" title="This post was pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
-                                {% endif %}
-                                {% if post.has_mentions %}
-                                    <i class="bi bi-at" data-toggle="tooltip" title="This post has user mentions."></i>
-                                {% endif %}
-                                {% if post.has_previews %}
-                                    <i class="bi bi-image" data-toggle="tooltip" title="This post has link previews."></i>
-                                {% endif %}
-                                {% if post.has_links %}
-                                    <i class="bi bi-link" data-toggle="tooltip" title="This post has links."></i>
-                                {% endif %}
-                                {% if post.has_images %}
-                                    <i class="bi bi-paperclip" data-toggle="tooltip" title="This post has attachments."></i>
-                                {% endif %}
-                                {% if post.has_tables %}
-                                    <i class="bi bi-table" data-toggle="tooltip" title="This post has tables."></i>
-                                {% endif %}
+                                <div class="info-icon-wrapper">
+                                    <i class="bi bi-info-circle info-icon" data-toggle="tooltip" title="More information"></i>
+                                    <div class="additional-icons">
+                                        {% if post.saved_posts|are_saved_posts_exists %}
+                                            <i class="bi bi-file-earmark-check" data-toggle="tooltip" title="You saved this post, {{ post.saved_posts|get_saved_by_username }}"></i>
+                                        {% endif %} 
+                                        {% if post.pinned_posts|are_pinned_posts_exists %}
+                                            <i class="bi bi-pin rotate-40" data-toggle="tooltip" title="This post was pinned by {{ post.pinned_posts|get_pinned_by_username }}"></i>
+                                        {% endif %}
+                                        {% if post.has_mentions %}
+                                            <i class="bi bi-at" data-toggle="tooltip" title="This post has user mentions."></i>
+                                        {% endif %}
+                                        {% if post.has_previews %}
+                                            <i class="bi bi-image" data-toggle="tooltip" title="This post has link previews."></i>
+                                        {% endif %}
+                                        {% if post.has_links %}
+                                            <i class="bi bi-link" data-toggle="tooltip" title="This post has links."></i>
+                                        {% endif %}
+                                        {% if post.has_images %}
+                                            <i class="bi bi-paperclip" data-toggle="tooltip" title="This post has attachments."></i>
+                                        {% endif %}
+                                        {% if post.has_tables %}
+                                            <i class="bi bi-table" data-toggle="tooltip" title="This post has tables."></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="post-content">
@@ -297,23 +302,22 @@
                     </p>
                 </div>
                 <div class="super_and_sub_tickets">
-                    <div class="sub_tickets mt-3 mb-3">
-                        <h5>Branch tickets:</h5>
-                        <div class="sub_tickets_list">
-                            <div class="sub_tickets_div m-2">
-                                {% for sub_ticket in ticket.sub_tickets.all %}
-                                    <a href="{% url 'posts:ticket_posts' sub_ticket.id %}" target="_blank" rel="noopener noreferrer">#{{ sub_ticket.company_ticket_counter }}</a>{% if not forloop.last %},&nbsp;{% endif %}
-                                {% endfor %}
-                            </div>
-                            
-                        </div>
-                    </div>
                     <div class="super_tickets mt-3 mb-3">
                         <h5>Root tickets:</h5>
                         <div class="super_tickets_list">
                             <div class="super_tickets_div m-2">
                                 {% for super_ticket in ticket.super_tickets.all %}
                                     <a href="{% url 'posts:ticket_posts' super_ticket.id %}" target="_blank" rel="noopener noreferrer">#{{super_ticket.company_ticket_counter}}</a>{% if not forloop.last %},&nbsp;{% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sub_tickets mt-3 mb-3">
+                        <h5>Branch tickets:</h5>
+                        <div class="sub_tickets_list">
+                            <div class="sub_tickets_div m-2">
+                                {% for sub_ticket in ticket.sub_tickets.all %}
+                                    <a href="{% url 'posts:ticket_posts' sub_ticket.id %}" target="_blank" rel="noopener noreferrer">#{{ sub_ticket.company_ticket_counter }}</a>{% if not forloop.last %},&nbsp;{% endif %}
                                 {% endfor %}
                             </div>
                         </div>
@@ -337,6 +341,7 @@
 {% block endscript %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            $('[data-toggle="tooltip"]').tooltip();
 
             // Function to add custom 'code' button to toolbar
             function addCodeButton() {
