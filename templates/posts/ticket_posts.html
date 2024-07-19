@@ -13,7 +13,12 @@
 {% endblock %}
 
 {% block content %}
-<p class="url_path">{{ ticket.segment.project.title }} > {{ ticket.segment.title }} > Ticket: #{{ ticket.company_ticket_counter }} > All posts</p>
+<p class="url_path">
+    <i class="bi bi-house-door" data-toggle="tooltip" data-placement="top" title="Project: {{ ticket.segment.project.title }}">></i>
+    <i class="bi bi-folder" data-toggle="tooltip" data-placement="top" title="Segment: {{ ticket.segment.title }}">></i>
+    <i class="bi bi-clipboard" data-toggle="tooltip" data-placement="top" title="Ticket: #{{ ticket.company_ticket_counter }}">></i>
+    <i class="bi bi-chat-text" data-toggle="tooltip" data-placement="top" title="All posts"></i>
+</p>
     <div class="row">
         <div class="col-md-3">
             <!-- Right Column: Static Content -->
@@ -128,8 +133,8 @@
                         </label>
                     </div>
                     <div class="text">
-                        <button type="submit" class="btn btn-primary">Apply filters</button>
-                        <a href="{% url 'posts:ticket_posts' ticket.id %}" class="btn btn-secondary">Clear filters</a>
+                        <button type="submit" class="btn btn-primary btn-sm">Apply filters</button>
+                        <a href="{% url 'posts:ticket_posts' ticket.id %}" class="btn btn-secondary btn-sm">Clear filters</a>
                     </div>                    
                 </form>
             </div>
