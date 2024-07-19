@@ -189,3 +189,22 @@ body {
   overflow: hidden;    /* Hide overflowed text */
   text-overflow: ellipsis; /* Show ellipsis for overflowed text */
 }
+
+
+/* Ensure the sidebar takes the full height of the viewport */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+}
+
+/* Flex-grow to take available space for the main nav items */
+.sidebar .nav.flex-grow-1 {
+  flex: 1;
+}
+
+/* Ensure the bottom links are pushed to the bottom */
+.sidebar .nav.flex-column.mt-auto {
+  margin-top: auto;
+  margin-bottom: 30%; /* Adjust this value to move up or down */
+}
