@@ -295,7 +295,7 @@
                                             {% endif %}
                                         {% endif %}
                                         <li><hr class="dropdown-divider"></li>                                        
-                                        <li><a class="dropdown-item" href="{% url 'posts:delete_post' post.id %}"><i class="bi bi-trash text-danger"></i> Delete Post</a></li>
+                                        <li><a class="dropdown-item delete-post" href="{% url 'posts:delete_post' post.id %}"><i class="bi bi-trash text-danger"></i> Delete Post</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -362,6 +362,32 @@
 {% block endscript %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
+            // Add event listener to all delete links
+            document.querySelectorAll('.delete-post').forEach(function (deleteLink) {
+                deleteLink.addEventListener('click', function (event) {
+                    event.preventDefault(); // Prevent the default action
+        
+                    const url = this.getAttribute('href'); // Get the URL from the link
+        
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirect to the delete URL if confirmed
+                            window.location.href = url;
+                        }
+                    });
+                });
+            });
+            
             $('[data-toggle="tooltip"]').tooltip();
 
             // Function to add custom 'code' button to toolbar
