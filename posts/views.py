@@ -312,8 +312,26 @@ def filter_posts(request, ticket_id):
         for post in posts:
             posted_users.append(post.created_by)
         posted_users = list(set(posted_users))
+        
         return render(request, 'posts/ticket_posts.html', {
             'ticket': ticket,
             'posts': posts,
             'posted_users': posted_users,
+            'search': search,
+            'sort_by_date': sort_by_date,
+            'posted_by': posted_by,
+            'start_date': start_date,
+            'end_date': end_date,
+            'accepted_answer': accepted_answer,
+            'saved_posts': saved_posts,
+            'my_posts': my_posts,
+            'admin_posts': admin_posts,
+            'pinned_posts': pinned_posts,
+            'top_voted_posts': top_voted_posts,
+            'top_saved_posts': top_saved_posts,
+            'has_mentions': has_mentions,
+            'has_previews': has_previews,
+            'has_links': has_links,
+            'has_attachments': has_attachments,
+            'has_tables': has_tables,
         })

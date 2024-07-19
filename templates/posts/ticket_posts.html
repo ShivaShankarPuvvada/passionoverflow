@@ -23,7 +23,7 @@
                 <form method="POST" action="{% url 'posts:filter_posts' ticket.id %}">
                     {% csrf_token %}
                     <div class="input-group mb-3">
-                        <input type="text" id="search" class="form-control" name="search" placeholder="Search posts...">
+                        <input type="text" id="search" class="form-control" name="search" value={{search}}>
                         <button class="btn btn-outline-secondary" type="submit">
                             <i class="bi bi-search"></i>
                         </button>
@@ -31,8 +31,8 @@
                     <div class="filter  mb-3">
                         <label for="sortByDate">Sort by Date:</label>
                         <select name="sort_by_date" id="sortByDate" class="form-select">
-                            <option value="latest">Latest</option>
-                            <option value="oldest">Oldest</option>
+                            <option value="oldest" {% if sort_by_date == "oldest" %}selected{% endif %}>Oldest</option>
+                            <option value="newest" {% if sort_by_date == "newest" %}selected{% endif %}>Newest</option>
                         </select>
                     </div>
                     <div class="filter mb-3">
@@ -40,90 +40,90 @@
                         <div class="col-md-12">
                             <select name="posted_by" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="filterByUser" data-width="100%">
                                 {% for each_user in posted_users %}
-                                    <option value="{{each_user.id}}">{{each_user.username}}</option>
+                                    <option value="{{ each_user.id }}" {% if posted_by == each_user.id|stringformat:"s" %}selected{% endif %}>{{ each_user.username }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                     </div>
                     <div class="filter  mb-3">
                         <label for="startDate">Start Date (Posts later than):</label>
-                        <input name="start_date" type="date" id="startDate" class="form-control">
+                        <input name="start_date" type="date" id="startDate" value="{{ start_date }}" class="form-control">
                     </div>
                     <div class="filter  mb-3">
                         <label for="endDate">End Date (Posts older than):</label>
-                        <input name="end_date" type="date" id="endDate" class="form-control">
+                        <input name="end_date" type="date" id="endDate" value="{{ end_date }}" class="form-control">
                     </div>
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="accepted_answer" class="form-check-input" value="on" type="checkbox" id="filterAcceptedAnswerPosts">
+                            <input name="accepted_answer" class="form-check-input" value="on" type="checkbox" id="filterAcceptedAnswerPosts" {% if accepted_answer == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Accepted Answer</span>
                         </label>
                     </div>
                     <div class="filter  mb-1">
                         <label class="form-check">
-                            <input name="saved_posts" class="form-check-input" value="on" type="checkbox" id="filterSavedPosts">
+                            <input name="saved_posts" class="form-check-input" value="on" type="checkbox" id="filterSavedPosts" {% if saved_posts == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts I saved</span>
                         </label>
                     </div>
                     <!-- Checkbox for Posts by Current User -->
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="my_posts" class="form-check-input" value="on" type="checkbox" id="filterMyPosts">
+                            <input name="my_posts" class="form-check-input" value="on" type="checkbox" id="filterMyPosts" {% if my_posts == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts I created</span>
                         </label>
                     </div>
                     <!-- Checkbox for Posts from Admins -->
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="admin_posts" class="form-check-input" value="on" type="checkbox" id="filterAdminPosts">
+                            <input name="admin_posts" class="form-check-input" value="on" type="checkbox" id="filterAdminPosts" {% if admin_posts == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts by contributors</span>
                         </label>
                     </div>
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="pinned_posts" class="form-check-input" value="on" type="checkbox" id="filterPinnedPosts">
+                            <input name="pinned_posts" class="form-check-input" value="on" type="checkbox" id="filterPinnedPosts" {% if pinned_posts == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts pinned by others</span>
                         </label>
                     </div>
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="top_voted_posts" class="form-check-input" value="on" type="checkbox" id="filterTopVotedPosts">
+                            <input name="top_voted_posts" class="form-check-input" value="on" type="checkbox" id="filterTopVotedPosts" {% if top_voted_posts == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts voted mostly</span>
                         </label>
                     </div>
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="top_saved_posts" class="form-check-input" value="on" type="checkbox" id="filterMostSavedPosts">
+                            <input name="top_saved_posts" class="form-check-input" value="on" type="checkbox" id="filterMostSavedPosts" {% if top_saved_posts == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts saved mostly</span>
                         </label>
                     </div>
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="has_mentions" class="form-check-input" value="on" type="checkbox" id="filterHasMentions">
+                            <input name="has_mentions" class="form-check-input" value="on" type="checkbox" id="filterHasMentions" {% if has_mentions == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts with Mentions</span>
                         </label>
                     </div>
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="has_previews" class="form-check-input" value="on" type="checkbox" id="filterHasPreviews">
+                            <input name="has_previews" class="form-check-input" value="on" type="checkbox" id="filterHasPreviews" {% if has_previews == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts with Previews</span>
                         </label>
                     </div>
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="has_links" class="form-check-input" value="on" type="checkbox" id="filterHasLinks">
+                            <input name="has_links" class="form-check-input" value="on" type="checkbox" id="filterHasLinks" {% if has_links == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts with Links</span>
                         </label>
                     </div>
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="has_attachments" class="form-check-input" value="on" type="checkbox" id="filterHasAttachments">
+                            <input name="has_attachments" class="form-check-input" value="on" type="checkbox" id="filterHasAttachments" {% if has_attachments == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts with Image Attachments</span>
                         </label>
                     </div>
                     <div class="filter mb-1">
                         <label class="form-check">
-                            <input name="has_tables" class="form-check-input" value="on" type="checkbox" id="filterHasTables">
+                            <input name="has_tables" class="form-check-input" value="on" type="checkbox" id="filterHasTables" {% if has_tables == 'on' %}checked{% endif %}>
                             <span class="form-check-label">Posts with Tables</span>
                         </label>
                     </div>
