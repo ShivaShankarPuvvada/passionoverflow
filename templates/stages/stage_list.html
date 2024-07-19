@@ -21,7 +21,7 @@
                 <td>{{ stage.title }}</td>
                 <td>{{ stage.get_status_display }}</td>
                 <td>
-                    <a href="{% url 'stages:update_stage' stage.id %}" class="btn btn-primary btn-sm">Edit</a> <!-- Add edit button -->
+                    <a href="{% url 'stages:update_stage' stage.id %}" ><i class="bi bi-pencil-square" data-toggle="tooltip" title="Edit"></i></a> <!-- Add edit button -->
                 </td>
                 <!-- Adjust based on your Stage model fields -->
             </tr>

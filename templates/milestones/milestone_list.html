@@ -53,7 +53,7 @@
                 <td>{{ milestone.segment }}</td>
                 <td>{{ milestone.get_status_display }}</td>
                 <td>
-                    <a href="{% url 'milestones:update_milestone' milestone.id %}" class="btn btn-primary btn-sm">Edit</a> <!-- Add edit button -->
+                    <a href="{% url 'milestones:update_milestone' milestone.id %}" ><i class="bi bi-pencil-square" data-toggle="tooltip" title="Edit"></i></a> <!-- Add edit button -->
                 </td>
                 <!-- Adjust based on your Milestone model fields -->
             </tr>

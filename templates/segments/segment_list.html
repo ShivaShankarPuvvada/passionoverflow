@@ -35,7 +35,7 @@
                 <td>{{ segment.get_status_display }}</td>
                 <td>{{ segment.description|safe }}</td>
                 <td>
-                    <a href="{% url 'segments:update_segment' segment.id %}" class="btn btn-primary btn-sm">Edit</a> <!-- Add edit button -->
+                    <a href="{% url 'segments:update_segment' segment.id %}" ><i class="bi bi-pencil-square" data-toggle="tooltip" title="Edit"></i></a> <!-- Add edit button -->
                 </td>
                 <!-- Adjust based on your Segment model fields -->
             </tr>

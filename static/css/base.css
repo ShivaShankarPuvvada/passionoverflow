@@ -180,3 +180,12 @@ body {
   background-color: #9166d5;
   border-radius: 50%;
 }
+
+.table {
+  font-size: 80%;
+}
+.table td {
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden;    /* Hide overflowed text */
+  text-overflow: ellipsis; /* Show ellipsis for overflowed text */
+}
