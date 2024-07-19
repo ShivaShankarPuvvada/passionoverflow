@@ -8,6 +8,7 @@
 /* Base Styles */
 body {
   font-family: Arial, sans-serif;
+  transition: .9s !important;
 }
 
 /* Top Navbar */

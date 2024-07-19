@@ -51,13 +51,13 @@
                     </a>
                     <!-- Dropdown menu -->
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li class="dropdown-item">
+                        <li>
                             <form action="{% url 'accounts:logout' %}" method="POST">
                                 {% csrf_token %}
-                                <button class="nav-link btn btn-link" type="submit">Logout</button>
+                                <button class="dropdown-item" type="submit"><i class="bi bi-box-arrow-right"></i> Logout</button>
                             </form>
                         </li>
                     </ul>
@@ -71,7 +71,7 @@
         <div class="sidebar bg-light p-3" style="min-width: 250px;">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#projectsSubMenu" role="button" aria-expanded="false" aria-controls="projectsSubMenu">Projects</a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#projectsSubMenu" role="button" aria-expanded="false" aria-controls="projectsSubMenu"><i class="bi bi-folder"></i> Projects</a>
                     <div class="collapse" id="projectsSubMenu">
                         <ul class="nav flex-column ml-3">
                             <li class="nav-item">
@@ -84,7 +84,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#phasesSubMenu" role="button" aria-expanded="false" aria-controls="phasesSubMenu">Phases</a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#phasesSubMenu" role="button" aria-expanded="false" aria-controls="phasesSubMenu"><i class="bi bi-layers"></i> Phases</a>
                     <div class="collapse" id="phasesSubMenu">
                         <ul class="nav flex-column ml-3">
                             <li class="nav-item">
@@ -97,7 +97,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#SegmentsSubMenu" role="button" aria-expanded="false" aria-controls="SegmentsSubMenu">Segments</a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#SegmentsSubMenu" role="button" aria-expanded="false" aria-controls="SegmentsSubMenu"><i class="bi bi-diagram-3"></i> Segments</a>
                     <div class="collapse" id="SegmentsSubMenu">
                         <ul class="nav flex-column ml-3">
                             <li class="nav-item">
@@ -110,7 +110,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#TagsSubMenu" role="button" aria-expanded="false" aria-controls="TagsSubMenu">Tags</a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#TagsSubMenu" role="button" aria-expanded="false" aria-controls="TagsSubMenu"><i class="bi bi-tag"></i> Tags</a>
                     <div class="collapse" id="TagsSubMenu">
                         <ul class="nav flex-column ml-3">
                             <li class="nav-item">
@@ -123,7 +123,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#StagesSubMenu" role="button" aria-expanded="false" aria-controls="StagesSubMenu">Stages</a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#StagesSubMenu" role="button" aria-expanded="false" aria-controls="StagesSubMenu"><i class="bi bi-list-check"></i> Stages</a>
                     <div class="collapse" id="StagesSubMenu">
                         <ul class="nav flex-column ml-3">
                             <li class="nav-item">
@@ -136,7 +136,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#TicketsSubMenu" role="button" aria-expanded="false" aria-controls="TicketsSubMenu">Tickets</a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#TicketsSubMenu" role="button" aria-expanded="false" aria-controls="TicketsSubMenu"><i class="bi bi-clipboard"></i> Tickets</a>
                     <div class="collapse" id="TicketsSubMenu">
                         <ul class="nav flex-column ml-3">
                             <li class="nav-item">
@@ -149,7 +149,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#SprintsSubMenu" role="button" aria-expanded="false" aria-controls="SprintsSubMenu">Sprints</a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#SprintsSubMenu" role="button" aria-expanded="false" aria-controls="SprintsSubMenu"><i class="bi bi-speedometer"></i> Sprints</a>
                     <div class="collapse" id="SprintsSubMenu">
                         <ul class="nav flex-column ml-3">
                             <li class="nav-item">
@@ -162,7 +162,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#MilestonesSubMenu" role="button" aria-expanded="false" aria-controls="MilestonesSubMenu">Milestones</a>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#MilestonesSubMenu" role="button" aria-expanded="false" aria-controls="MilestonesSubMenu"><i class="bi bi-flag"></i> Milestones</a>
                     <div class="collapse" id="MilestonesSubMenu">
                         <ul class="nav flex-column ml-3">
                             <li class="nav-item">
