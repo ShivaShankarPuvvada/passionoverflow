@@ -13,119 +13,125 @@
 {% endblock %}
 
 {% block content %}
-<p class="url_path">{{ ticket.segment.project.title }} > {{ ticket.segment.title }} > {{ ticket.title }}</p>
+<p class="url_path">{{ ticket.segment.project.title }} > {{ ticket.segment.title }} > Ticket: #{{ ticket.company_ticket_counter }} > All posts</p>
     <div class="row">
         <div class="col-md-3">
             <!-- Right Column: Static Content -->
             <div class="sticky-column">
                 <h4>Filters:</h4>
                 <!-- Add your filter options here -->
-                <div class="input-group mb-3">
-                    <input type="text" id="search" class="form-control" name="search" placeholder="Search posts...">
-                    <button class="btn btn-outline-secondary" type="button">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
-                <div class="filter  mb-3">
-                    <label for="filterByDate">Sort by Date:</label>
-                    <select id="filterByDate" class="form-select">
-                        <option value="latest">Latest</option>
-                        <option value="oldest">Oldest</option>
-                    </select>
-                </div>
-                <div class="filter mb-3">
-                    <label for="filterByUser">Posted by User:</label>
-                    <div class="col-md-12">
-                        <select name="assigned_to" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="filterByUser" data-width="100%">
-                            <option value="all">All Users</option>
+                <form method="POST" action="{% url 'posts:filter_posts' ticket.id %}">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="text" id="search" class="form-control" name="search" placeholder="Search posts...">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                    <div class="filter  mb-3">
+                        <label for="sortByDate">Sort by Date:</label>
+                        <select name="sort_by_date" id="sortByDate" class="form-select">
+                            <option value="latest">Latest</option>
+                            <option value="oldest">Oldest</option>
                         </select>
                     </div>
-                </div>
-                <div class="filter  mb-3">
-                    <label for="startDate">Start Date (Posts later than):</label>
-                    <input type="date" id="startDate" class="form-control">
-                </div>
-                <div class="filter  mb-3">
-                    <label for="endDate">End Date (Posts older than):</label>
-                    <input type="date" id="endDate" class="form-control">
-                </div>
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterAcceptedAnswerPosts">
-                        <span class="form-check-label">Accepted Answer</span>
-                    </label>
-                </div>
-                <div class="filter  mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterSavedPosts">
-                        <span class="form-check-label">Posts I saved</span>
-                    </label>
-                </div>
-                <!-- Checkbox for Posts by Current User -->
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterMyPosts">
-                        <span class="form-check-label">Posts I created</span>
-                    </label>
-                </div>
-                <!-- Checkbox for Posts from Admins -->
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterAdminPosts">
-                        <span class="form-check-label">Posts by contributors</span>
-                    </label>
-                </div>
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterPinnedPosts">
-                        <span class="form-check-label">Posts pinned by others</span>
-                    </label>
-                </div>
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterTopVotedPosts">
-                        <span class="form-check-label">Posts voted mostly</span>
-                    </label>
-                </div>
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterMostSavedPosts">
-                        <span class="form-check-label">Posts saved mostly</span>
-                    </label>
-                </div>
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterHasMentions">
-                        <span class="form-check-label">Posts with Mentions</span>
-                    </label>
-                </div>
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterHasPreviews">
-                        <span class="form-check-label">Posts with Previews</span>
-                    </label>
-                </div>
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterHasLinks">
-                        <span class="form-check-label">Posts with Links</span>
-                    </label>
-                </div>
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterHasAttachments">
-                        <span class="form-check-label">Posts with Image Attachments</span>
-                    </label>
-                </div>
-                <div class="filter mb-1">
-                    <label class="form-check">
-                        <input class="form-check-input" type="checkbox" id="filterHasTables">
-                        <span class="form-check-label">Posts with Tables</span>
-                    </label>
-                </div>
-                <div class="text">
-                    <button type="button" class="btn btn-primary">Apply filters</button>
-                </div>
+                    <div class="filter mb-3">
+                        <label for="filterByUser">Posted by User:</label>
+                        <div class="col-md-12">
+                            <select name="posted_by" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="filterByUser" data-width="100%">
+                                {% for each_user in posted_users %}
+                                    <option value="{{each_user.id}}">{{each_user.username}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter  mb-3">
+                        <label for="startDate">Start Date (Posts later than):</label>
+                        <input name="start_date" type="date" id="startDate" class="form-control">
+                    </div>
+                    <div class="filter  mb-3">
+                        <label for="endDate">End Date (Posts older than):</label>
+                        <input name="end_date" type="date" id="endDate" class="form-control">
+                    </div>
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="accepted_answer" class="form-check-input" value="on" type="checkbox" id="filterAcceptedAnswerPosts">
+                            <span class="form-check-label">Accepted Answer</span>
+                        </label>
+                    </div>
+                    <div class="filter  mb-1">
+                        <label class="form-check">
+                            <input name="saved_posts" class="form-check-input" value="on" type="checkbox" id="filterSavedPosts">
+                            <span class="form-check-label">Posts I saved</span>
+                        </label>
+                    </div>
+                    <!-- Checkbox for Posts by Current User -->
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="my_posts" class="form-check-input" value="on" type="checkbox" id="filterMyPosts">
+                            <span class="form-check-label">Posts I created</span>
+                        </label>
+                    </div>
+                    <!-- Checkbox for Posts from Admins -->
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="admin_posts" class="form-check-input" value="on" type="checkbox" id="filterAdminPosts">
+                            <span class="form-check-label">Posts by contributors</span>
+                        </label>
+                    </div>
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="pinned_posts" class="form-check-input" value="on" type="checkbox" id="filterPinnedPosts">
+                            <span class="form-check-label">Posts pinned by others</span>
+                        </label>
+                    </div>
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="top_voted_posts" class="form-check-input" value="on" type="checkbox" id="filterTopVotedPosts">
+                            <span class="form-check-label">Posts voted mostly</span>
+                        </label>
+                    </div>
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="top_saved_posts" class="form-check-input" value="on" type="checkbox" id="filterMostSavedPosts">
+                            <span class="form-check-label">Posts saved mostly</span>
+                        </label>
+                    </div>
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="has_mentions" class="form-check-input" value="on" type="checkbox" id="filterHasMentions">
+                            <span class="form-check-label">Posts with Mentions</span>
+                        </label>
+                    </div>
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="has_previews" class="form-check-input" value="on" type="checkbox" id="filterHasPreviews">
+                            <span class="form-check-label">Posts with Previews</span>
+                        </label>
+                    </div>
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="has_links" class="form-check-input" value="on" type="checkbox" id="filterHasLinks">
+                            <span class="form-check-label">Posts with Links</span>
+                        </label>
+                    </div>
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="has_attachments" class="form-check-input" value="on" type="checkbox" id="filterHasAttachments">
+                            <span class="form-check-label">Posts with Image Attachments</span>
+                        </label>
+                    </div>
+                    <div class="filter mb-1">
+                        <label class="form-check">
+                            <input name="has_tables" class="form-check-input" value="on" type="checkbox" id="filterHasTables">
+                            <span class="form-check-label">Posts with Tables</span>
+                        </label>
+                    </div>
+                    <div class="text">
+                        <button type="submit" class="btn btn-primary">Apply filters</button>
+                        <a href="{% url 'posts:ticket_posts' ticket.id %}" class="btn btn-secondary">Clear filters</a>
+                    </div>                    
+                </form>
             </div>
         </div>
 

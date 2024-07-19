@@ -8,16 +8,26 @@ from django.db import transaction, IntegrityError
 import json
 from accounts.models import CustomerCompanyDetails
 from django.urls import reverse
+from django.db.models import Count
+from django.utils.dateparse import parse_datetime
+from django.db.models import Q  # For complex queries
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Create your views here.
 @login_required
 def ticket_posts(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
     posts = Post.objects.filter(ticket=ticket, deleted=Post.Deleted.NO).order_by('-created_at')  # Fetch posts related to the ticket
-
+    posted_users = []
+    for post in posts:
+        posted_users.append(post.created_by)
+    posted_users = list(set(posted_users))
     return render(request, 'posts/ticket_posts.html', {
         'ticket': ticket,
         'posts': posts,
+        'posted_users': posted_users,
     })
 
 @login_required 
@@ -126,9 +136,6 @@ def vote_post(request):
         post.save(user=request.user)
         return JsonResponse({"success": True, "data": {'up_votes': post.up_votes, 'down_votes': post.down_votes}})
 
-
-
-
 @login_required
 def pin_post(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
@@ -162,7 +169,6 @@ def unpin_post(request, post_id):
     url = reverse('posts:ticket_posts', kwargs={'ticket_id': post.ticket.id})
     return redirect(url)
 
-
 @login_required
 def save_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -185,3 +191,129 @@ def un_save_post(request, post_id):
 
     url = reverse('posts:ticket_posts', kwargs={'ticket_id': post.ticket.id})
     return redirect(url)
+
+@login_required
+def filter_posts(request, ticket_id):
+    if request.method == "POST":
+        ticket = get_object_or_404(Ticket, pk=ticket_id)
+        posts = Post.objects.filter(ticket=ticket, deleted=Post.Deleted.NO) # Fetch posts related to the ticket
+
+        search = request.POST.get('search', '')
+        sort_by_date = request.POST.get('sort_by_date')
+        posted_by = request.POST.get('posted_by')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        accepted_answer = request.POST.get('accepted_answer')
+        saved_posts = request.POST.get('saved_posts')
+        my_posts = request.POST.get('my_posts')
+        admin_posts = request.POST.get('admin_posts')
+        pinned_posts = request.POST.get('pinned_posts')
+        top_voted_posts = request.POST.get('top_voted_posts')
+        top_saved_posts = request.POST.get('top_saved_posts')
+        has_mentions = request.POST.get('has_mentions')
+        has_previews = request.POST.get('has_previews')
+        has_links = request.POST.get('has_links')
+        has_attachments = request.POST.get('has_attachments')
+        has_tables = request.POST.get('has_tables')
+        
+        # Convert strings to datetime objects
+        start_date = parse_datetime(start_date) if start_date else None
+        end_date = parse_datetime(end_date) if end_date else None
+
+        if search:
+            search_query = Q(content__icontains=search)  # Adjust this if you want to search in different fields
+            posts = posts.filter(search_query)
+
+        # sort by date
+        if sort_by_date == 'oldest':
+            posts = posts.order_by('created_at')
+        else:
+            posts = posts.order_by('-created_at')
+
+        # Filter by posted_by
+        if posted_by:
+            posted_by_user = User.objects.get(id=posted_by)
+            posts = posts.filter(created_by__username=posted_by_user)
+        
+        # Filter posts based on the provided dates
+        if start_date and not end_date:
+            # Filter latest posts if only start_date exists
+            posts = posts.filter(created_at__gte=start_date).order_by('-created_at')
+        elif end_date and not start_date:
+            # Filter old posts if only end_date exists
+            posts = posts.filter(created_at__lte=end_date).order_by('created_at')
+        elif start_date and end_date:
+            # Filter posts within the date range if both dates exist
+            posts = posts.filter(created_at__range=(start_date, end_date)).order_by('-created_at')
+
+        # Filter by accepted answer
+        if accepted_answer == "on":
+            posts = posts.filter(accepted_solution=True)
+        
+        # Filter by saved posts
+        if saved_posts == "on":
+            posts = posts.filter(saved_posts__saved_by=request.user, saved_posts__saved=SavedPost.Saved.YES)
+        
+        # Filter by my posts
+        if my_posts == "on":
+            posts = posts.filter(created_by=request.user)
+
+        # Filter by admin/contributor posts
+        if admin_posts == "on":
+            collaborator = CustomerCompanyDetails.objects.filter(company_user=request.user)
+            contributor = CustomerCompanyDetails.objects.filter(company_root_user=request.user)
+            
+            if contributor.exists():
+                company = contributor.first().company
+            if collaborator.exists():
+                company = collaborator.first().company
+            
+            company_customer_details = CustomerCompanyDetails.objects.filter(
+                                                                    company=company,
+                                                                    company_root_user__isnull=False
+                                                                )
+            root_users = [company_customer_detail.company_root_user for company_customer_detail in company_customer_details]
+            posts = posts.filter(created_by__in=root_users)
+
+        # Filter by pinned posts
+        if pinned_posts == "on":
+            posts = posts.filter(pinned_posts__deleted=False)
+
+        # Filter by top voted posts
+        if top_voted_posts == "on":
+            posts = posts.annotate(vote_count=Count('vote')).order_by('-vote_count')
+
+        # Filter by top saved posts
+        if top_saved_posts == "on":
+            posts = posts.filter(saved_posts__saved=SavedPost.Saved.YES)
+            posts = posts.annotate(saved_count=Count('saved_posts')).order_by('-saved_count')
+
+        # Filter by mentions
+        if has_mentions == "on":
+            posts = posts.filter(content__regex=r'@\w+')
+
+        # Filter by previews
+        if has_previews == "on":
+            posts = posts.filter(content__regex=r'<iframe[^>]+src="([^">]+)"')
+
+        # Filter by links
+        if has_links == "on":
+            posts = posts.filter(content__regex=r'<a[^>]+href="([^">]+)"')
+
+        # Filter by attachments
+        if has_attachments == "on":
+            posts = posts.filter(content__regex=r'http[s]?://\S+')
+
+        # Filter by tables
+        if has_tables == "on":
+            posts = posts.filter(content__regex=r'<table[^>]*>')
+
+        posted_users = []
+        for post in posts:
+            posted_users.append(post.created_by)
+        posted_users = list(set(posted_users))
+        return render(request, 'posts/ticket_posts.html', {
+            'ticket': ticket,
+            'posts': posts,
+            'posted_users': posted_users,
+        })

@@ -24,6 +24,7 @@ For all list data table views, need to do bulk update option. Need to write get 
 
 urlpatterns = [
     path('tickets/<int:ticket_id>/posts/', views.ticket_posts, name='ticket_posts'),
+    path('<int:ticket_id>/filter/', views.filter_posts, name='filter_posts'),
     path('create_post/', views.create_post, name="create_post"),
     path('vote_post/', views.vote_post, name="vote_post"),
     path('delete_post/<int:post_id>/', views.delete_post, name='delete_post'),
