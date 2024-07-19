@@ -247,3 +247,11 @@
     transform: translateX(0);
 }
 
+.url_path {
+    position: fixed;
+    left: 264px;
+    top: 81px;
+    color: #825d9c;
+    z-index: 2;
+    font-size: .75rem;
+}
