@@ -204,7 +204,6 @@
                                 <span class="text-muted created_at_and_updated_at">&bull; Posted on {{ post.created_at|date:"F j, Y" }} at {{ post.created_at|time:"P" }}</span>
                             </div>
                             <div class="flex-grow-1 text-center">
-                                {% comment %} If you want to place in the top center of the post. {% endcomment %}
                             </div>
                             <div class="text-end flex-grow-1 save_and_pin">
                                 <div class="info-icon-wrapper">
@@ -233,6 +232,9 @@
                                         {% endif %}
                                     </div>
                                 </div>
+                                {% if post.accepted_solution %}
+                                    <span class="bi bi-check-lg text-success" data-toggle="tooltip" title="The user who created this ticket, accepted this post as a answer."></span>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="post-content">
@@ -280,7 +282,14 @@
                                         {% else %}
                                             <li><a class="dropdown-item" href="{% url 'posts:un_save_post' post.id %}">Un save Post</a></li>
                                         {% endif %}
-                                        <li><hr class="dropdown-divider"></li>
+                                        {% if ticket.created_by == request.user %}
+                                            {% if post.accepted_solution %}
+                                                <li><a class="dropdown-item" href="{% url 'posts:accept_as_answer' post.id %}">Reject as answer</a></li>
+                                            {% else %}
+                                                <li><a class="dropdown-item" href="{% url 'posts:accept_as_answer' post.id %}">Accept as answer</a></li>
+                                            {% endif %}
+                                        {% endif %}
+                                        <li><hr class="dropdown-divider"></li>                                        
                                         <li><a class="dropdown-item" href="{% url 'posts:delete_post' post.id %}">Delete Post</a></li>
                                     </ul>
                                 </div>

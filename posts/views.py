@@ -335,3 +335,28 @@ def filter_posts(request, ticket_id):
             'has_attachments': has_attachments,
             'has_tables': has_tables,
         })
+
+
+@login_required
+def accept_as_answer(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    ticket = post.ticket
+
+    # Ensure only the creator of the ticket can accept or unaccept an answer
+    if ticket.created_by != request.user:
+        return redirect('posts:ticket_posts', ticket_id=ticket.id)
+
+    # Check if the post is already marked as accepted
+    if post.accepted_solution:
+        # Unmark this post as accepted answer
+        post.accepted_solution = False
+        post.save()
+    else:
+        # Ensure there is no previously accepted answer
+        Post.objects.filter(ticket=ticket, accepted_solution=True).update(accepted_solution=False)
+        
+        # Mark the selected post as accepted answer
+        post.accepted_solution = True
+        post.save()
+
+    return redirect('posts:ticket_posts', ticket_id=ticket.id)

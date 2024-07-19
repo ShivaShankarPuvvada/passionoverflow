@@ -32,6 +32,7 @@ urlpatterns = [
     path('unpin/<int:post_id>/', views.unpin_post, name='unpin_post'),
     path('save_post/<int:post_id>/', views.save_post, name='save_post'),
     path('un_save_post/<int:post_id>/', views.un_save_post, name='un_save_post'),
+    path('accept-answer/<int:post_id>/', views.accept_as_answer, name='accept_as_answer'),
     # path('post/<int:post_id>/', views.PostView.as_view(), name="post"),
     # path('get_posts/<str:post_ids>/', views.GetPostsView.as_view(), name="get_posts"),
     # path('activate_posts/<str:post_ids>/', views.ActivatePosts.as_view(), name="activate_posts"),
