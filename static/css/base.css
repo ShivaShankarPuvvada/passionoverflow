@@ -206,5 +206,5 @@ body {
 /* Ensure the bottom links are pushed to the bottom */
 .sidebar .nav.flex-column.mt-auto {
   margin-top: auto;
-  margin-bottom: 30%; /* Adjust this value to move up or down */
+  margin-bottom: 40%; /* Adjust this value to move up or down */
 }
