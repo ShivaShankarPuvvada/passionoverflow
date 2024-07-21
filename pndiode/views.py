@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
 
 def home_page(request):
     return render(request, 'home_page.html')
@@ -12,3 +14,7 @@ def why_choose_us(request):
 
 def pricing(request):
     return render(request, 'pricing.html')
+
+@login_required
+def docs(request):
+    return render(request, 'docs.html')

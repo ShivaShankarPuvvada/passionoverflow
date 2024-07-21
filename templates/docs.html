@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Documentation | Passion Overflow{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        #sidebar {
+            position: fixed; /* Make the sidebar fixed */
+            top: 75px;
+            left: 255px;
+            height: 100vh; /* Full height */
+            width: 250px; /* Fixed width for the sidebar */
+            overflow-y: auto; /* Enable vertical scrolling if content overflows */
+            background-color: #f8f9fa; /* Background color */
+            padding: 15px; /* Padding inside the sidebar */
+            border-right: 1px solid #dee2e6; /* Optional: border to the right of the sidebar */
+        }
+        
+        #sidebar h4 {
+            margin-bottom: 15px; /* Space below the heading */
+        }
+        
+        #sidebar .nav-link {
+            color: #333; /* Text color */
+            padding: 10px; /* Padding inside each link */
+            display: block; /* Ensure links are block-level for easy clicking */
+            text-decoration: none; /* Remove underline from links */
+            font-size: .8rem;
+        }
+        
+        #sidebar .nav-link:hover {
+            background-color: #e9ecef; /* Background color on hover */
+            border-radius: 4px; /* Rounded corners on hover */
+        }    
+        /* Adjust padding and margin for content sections */
+section, h2, h3 {
+    position: relative;
+    padding-top: 75px; /* Space for fixed header */
+    margin-top: -75px; /* Pull content back up */
+}
+
+/* Style for the active link */
+#sidebar .nav-link.active {
+    background-color: #007bff; /* Highlight color for the active link */
+    color: #fff; /* Text color for the active link */
+    border-radius: 4px; /* Rounded corners for the active link */
+}
+
+/* Ensure smooth scrolling for better UX */
+html {
+    scroll-behavior: smooth;
+}    
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid mt-5">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <div class="position-sticky">
+                    <h4>Menu</h4>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#organization">
+                                Organization
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#user-types">
+                                User Types
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#registration">
+                                Registration and User Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#soft-deletion">
+                                Soft Deletion and Data Retention
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#projects">
+                                Projects
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#segments">
+                                Segments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#tickets">
+                                Tickets
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#posts">
+                                Posts
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#milestone">
+                                Milestones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sprint">
+                                Sprints
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main role="main" class="col-md-9 ms-sm-auto col-lg-10 px-4">
+                <h1 class="mb-4">Passion Overflow Documentation Version V1</h1>
+                
+                <h2 id="organization">Organization</h2>
+                <p>Each organization is represented as an entity and has:</p>
+                <ul>
+                    <li>n number of users.</li>
+                    <li>n number of projects.</li>
+                    <li>a single payment entity, can be managed by multiple persons inside the organization.</li>
+                </ul>
+
+                <h2 id="user-types">User Types</h2>
+                <p>There are two types of users: <strong>Contributors</strong> and <strong>Collaborators</strong>.</p>
+                
+                <h3>Contributors</h3>
+                <p>Contributors have the following permissions and responsibilities:</p>
+                <ul>
+                    <li>Access and manage projects and segments.</li>
+                    <li>Invite and manage users within the organization.</li>
+                    <li>Approve and oversee tasks and milestones.</li>
+                    <li>Access to all levels of the project, including ticket and post levels.</li>
+                    <li>Can perform bulk updates and manage user roles within the system.</li>
+                </ul>
+                
+                <h3>Collaborators</h3>
+                <p>Collaborators have the following permissions and responsibilities:</p>
+                <ul>
+                    <li>Access to tickets and posts within assigned segments.</li>
+                    <li>Manage and update tickets and posts.</li>
+                    <li>View project milestones and tasks but with limited edit permissions.</li>
+                    <li>Can contribute to discussions and provide updates on tickets and posts.</li>
+                </ul>
+
+                <h2 id="registration">Registration and User Management</h2>
+                <p>The first user to register for an organization will have to invite the remaining users by allowing them access to specific segments or the entire organization sub-domain. This user can also assign the contributor user role to invited users.</p>
+
+                <h3>Important Points</h3>
+                <ul>
+                    <li>If an organization already exists, new users need to contact their contributor for access.</li>
+                    <li>Payment is managed at the organization level, with a single payment account sufficient for all users within an organization.</li>
+                    <li>Any root user or contributor within the organization can handle payments.</li>
+                    <li>Deleted organizations can be reactivated within 3 months, after which new registrations may be required under a different organization name.</li>
+                </ul>
+
+                <h2 id="soft-deletion">Soft Deletion and Data Retention</h2>
+                <p>Organizations and user accounts that are marked for deletion will remain in the system for a period of 3 months. During this period, if a user wants to reactivate their account or organization, they can contact us for manual restoration.</p>
+
+                <h3 id="projects">Projects</h3>
+                <p>
+                    Projects are the main initiatives that need to be managed and tracked within the system. They serve as containers for various phases, tasks, and assignments, allowing for organized and efficient project management. Each project has a 
+                </p>
+                <ul>
+                    <li>unique title.</li>
+                    <li>description.</li>
+                    <li>start and end dates.</li>
+                    <li>status (open or closed).</li>
+                    <li>associated members and phases.</li>
+                </ul>
+                <h3 id="segments">Segments</h3>
+                <p>
+                    Segments are sub-parts or sub-divisions or sub-projects within projects that represent distinct phases or parts of the project's lifecycle. 
+                    They allow for better organization and management of tasks, ensuring that each segment is handled by the appropriate team members. 
+                </p>
+                <ul>
+                    <li>unique title.</li>
+                    <li>description.</li>
+                    <li>start and end dates.</li>
+                    <li>status (open or closed).</li>
+                    <li>associated members and assignments.</li>
+                    <li>and mostly one or more stages.</li>
+                </ul>
+                <h3 id="tickets">Tickets</h3>
+                <p>Tickets represent a task or an issue within a project management system. They are used to track progress, assign responsibilities, and manage the details related to individual tasks or issues.</p>
+                <ul>
+                    <li>A ticket can be in a single segment at a single time.</li>
+                    <li>A ticket is associated with stages.</li>
+                    <li>A ticket can be in a single stage at a single time.</li>
+                    <li>A ticket can be moved to other stages or segments as per the requirement.</li>
+                    <li>Each ticket will have a unique number followed by # key. For example ticket: #11</li>
+                    <li>Each ticket has root tickets and branch tickets.</li>
+                    <li>Root tickets are parent tickets.</li>
+                    <li>Branch tickets are child tickets.</li>
+                    <li>No need to complete all tickets in order to complete the task.</li>
+                    <li>Each ticket can have zero or more tags.</li>
+                </ul>
+                <h3 id="posts">Posts</h3>
+                <p>Posts are the solutions / resolutions / thoughts posted by the user for a single issue / ticket.</p>
+                <ul>
+                    <li>A ticket can have zero or more posts.</li>
+                    <li>Any user assigned to a segment or ticket can post on the ticket page.</li>
+                    <li>A post can have n number of upvotes and n number of downvotes given by all users.</li>
+                    <li>The user who created the ticket can accept any one of the posts as an answer or a solution.</li>
+                    <li>Users can reply to posts.</li>
+                    <li>Users can pin posts. Other users will see that it is a pinned post.</li>
+                    <li>Users can save posts. Later they can only see all the saved posts.</li>
+                </ul>
+                <h3 id="milestone">Milestones</h3>
+                <p>A Milestone is a significant checkpoint or achievement reached. It helps track progress and manage deadlines by defining key objectives or deliverables.</p>
+                <h3 id="sprint">Sprints</h3>
+                <p>A sprint is a set time period within which specific tasks or work items are completed and reviewed in agile project management methodologies, particularly in Scrum. It represents a fixed-duration iteration of work aimed at achieving predefined goals or delivering incremental value to the project.</p>
+                
+            <ul>
+                <li>
+                    <h3>Duration:</h3>
+                    <p><strong>Description:</strong> Typically, a sprint lasts for 2-4 weeks, but this can vary based on the project's needs. It's a recurring cycle where teams focus on completing a set of tasks or user stories.</p>
+                </li>
+                <li>
+                    <h3>Goals:</h3>
+                    <p><strong>Description:</strong> Each sprint has specific objectives or goals that are defined during sprint planning. These goals guide the team's work and are aligned with the overall project roadmap.</p>
+                </li>
+                <li>
+                    <h3>Meetings:</h3>
+                    <p><strong>Description:</strong> Sprint meetings typically include sprint planning, daily stand-ups, sprint reviews, and retrospectives. These meetings help ensure that the team stays on track and can address any issues that arise.</p>
+                </li>
+                <li>
+                    <h3>Deliverables:</h3>
+                    <p><strong>Description:</strong> At the end of each sprint, the team is expected to deliver a potentially shippable product increment or completed work items that meet the defined goals.</p>
+                </li>
+            </ul>
+            </main>
+        </div>
+    </div>
+{% endblock %}
+
