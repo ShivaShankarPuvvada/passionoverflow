@@ -80,10 +80,10 @@
                         <div class="f_widget about-widget pl_70 wow fadeInLeft" data-wow-delay="0.4s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInLeft;">
                             <h3 class="f-title f_600 t_color f_size_18">Links</h3>
                             <ul class="list-unstyled f_list">
-                                <li><a href="#home">Home</a></li>
-                                <li><a href="#about">About us</a></li>
-                                <li><a href="#why_choose_us">Why choose us?</a></li>
-                                <li><a href="#pricing">Pricing</a></li>
+                                <li><a href="{url 'home_page'}">Home</a></li>
+                                <li><a href="{% url 'about_us' %}">About us</a></li>
+                                <li><a href="{% url 'why_choose_us' %}">Why choose us?</a></li>
+                                <li><a href="{% url 'pricing' %}">Pricing</a></li>
                             </ul>
                         </div>
                     </div>
