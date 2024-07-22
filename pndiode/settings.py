@@ -99,10 +99,21 @@ WSGI_APPLICATION = 'pndiode.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pndiode_offanswer',         # Replace with your database name
+        'USER': 'pndiode_offanswer',         # Replace with your database user
+        'PASSWORD': '8a88d1839ca3d68dd9bde4c5769911d24889c1c2', # Replace with your database password
+        'HOST': 'at6.h.filess.io',         # Replace with your database host, usually 'localhost' or the IP address
+        'PORT': '5432',                 # Default PostgreSQL port, change if needed
     }
 }
 
