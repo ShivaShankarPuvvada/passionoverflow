@@ -1,0 +1,1 @@
+web: gunicorn pndiode.wsgi --log-file -
