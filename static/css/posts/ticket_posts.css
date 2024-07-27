@@ -256,6 +256,14 @@
     font-size: .75rem;
 }
 
+.sidebar {
+    position: fixed;
+}
+
+.content {
+    margin-left: 250px;
+}
+
 
 .tooltip {
     z-index: 1200 !important; /* Override Bootstrap's default z-index */

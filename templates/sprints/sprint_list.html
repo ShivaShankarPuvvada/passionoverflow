@@ -70,7 +70,9 @@
     <script src="{% static 'DataTables/datatables.min.js' %}"></script>
     <script>
         $(document).ready(function() {
-            $('.table').DataTable({
+                        $('.table').DataTable({
+                "scrollY": "500px", // Adjust the height as needed
+                "scrollX": true,    // Enable horizontal scrolling if needed
                 // Add any specific DataTables configurations here if needed
                 "columnDefs": [
                     { "orderable": false, "targets": 6 } // Disable sorting on the description column if needed. But it will generate the error if description has more tables.

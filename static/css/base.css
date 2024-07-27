@@ -35,7 +35,11 @@ body {
   left: 0; /* Position sidebar at the left */
   z-index: 999; /* Ensure it's above other content */
   overflow-y: auto; /* Allow sidebar to scroll if needed */
-  padding: 20px;
+  transition: width 0.3s ease; /* Smooth transition */
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  position: relative; /* Ensure it's positioned correctly */
 }
 
 .sidebar .nav-link {
@@ -60,7 +64,6 @@ body {
 
 /* Main Content */
 .content {
-  margin-left: 250px; /* Adjust based on sidebar width */
   padding-top: 110px !important;
   padding-bottom: 110px !important;
 }
@@ -132,20 +135,20 @@ body {
   transition: .5s !important;
 }
 
-/* Customize Summernote toolbar buttons */
+/* Customize Summer note toolbar buttons */
 .note-toolbar button {
   color: #fff;
   background-color: #9066d4;
   transition: 0.5s;
 }
 
-/* Customize Summernote toolbar buttons */
+/* Customize Summer note toolbar buttons */
 .note-toolbar button:hover {
   color: #fff;
   background-color: #7840d2;
 }
 
-/* Customize Summernote editor background */
+/* Customize Summer note editor background */
 .note-editor .note-editable {
   background-color: #f8f9fa;
 }
@@ -206,5 +209,51 @@ body {
 /* Ensure the bottom links are pushed to the bottom */
 .sidebar .nav.flex-column.mt-auto {
   margin-top: auto;
-  margin-bottom: 40%; /* Adjust this value to move up or down */
+  margin-bottom: 6rem; /* Adjust this value to move up or down */
+}
+
+.sidebar {
+  transition: all 0.3s ease;
+  /* Other styles */
+}
+
+.sidebar.collapsed {
+  width: 60px; /* Adjust as needed */
+  overflow: hidden;
+  align-items: center;
+  /* Optional: Hide text or adjust styles */
+}
+
+.sidebar.collapsed .link-text {
+  display: none; /* Hide text when collapsed */
+}
+
+.btn-toggle {
+  position: absolute; /* Position it absolutely within the sidebar */
+  top: 1rem; /* Distance from the top */
+  right: 1rem; /* Distance from the right */
+  width: 31px;
+  height: 31px; /* Optional: Set a height if needed */
+  border: none;
+  border-radius: 4px;
+  background-color: none; /* Optional: background color */
+  display: flex;
+  align-items: center; /* Center the icon vertically */
+  justify-content: center; /* Center the icon horizontally */
+  cursor: pointer; /* Change cursor to pointer */
+}
+
+.sidebar-content {
+  margin-top: 3rem; /* Adjust based on button height and desired spacing */
+}
+
+/* Hide submenus when sidebar is collapsed */
+.sidebar.collapsed .collapse {
+  display: none;
+}
+
+/* Button color when sidebar is collapsed */
+.sidebar.collapsed .btn-toggle {
+  top: .5rem;
+  right: .5rem;
 }

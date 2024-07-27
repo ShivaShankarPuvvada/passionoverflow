@@ -42,7 +42,10 @@
     <script src="{% static 'DataTables/datatables.min.js' %}"></script>
     <script>
         $(document).ready(function() {
-            $('.table').DataTable();
+            $('.table').DataTable({
+                "scrollY": "500px", // Adjust the height as needed
+                "scrollX": true,    // Enable horizontal scrolling if needed
+            });
         });
     </script>
 {% endblock %}
