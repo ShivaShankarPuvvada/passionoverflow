@@ -68,7 +68,7 @@ class Milestone(models.Model):
     title = models.CharField(max_length=100, unique=True)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default=OPEN)
     company = models.ForeignKey(account_models.Company, on_delete=models.PROTECT)
-    completion_date = models.DateField() # A date milestone is achieved.
+    completion_date = models.DateTimeField() # A date milestone is achieved.
     tickets = models.ManyToManyField(ticket_models.Ticket, through='MilestoneTicket')
     phases = models.ManyToManyField(phase_models.Phase, through='MilestonePhase')
     stages = models.ManyToManyField(stage_models.Stage, through='MilestoneStage')
