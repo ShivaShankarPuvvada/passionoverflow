@@ -5,23 +5,23 @@
 
 {% block stylesheets %}
     <style>
-        #sidebar {
-            position: fixed; /* Make the sidebar fixed */
+        #sidebarr {
+            position: fixed; /* Make the sidebarr fixed */
             top: 75px;
             left: 255px;
             height: 100vh; /* Full height */
-            width: 250px; /* Fixed width for the sidebar */
+            width: 250px; /* Fixed width for the sidebarr */
             overflow-y: auto; /* Enable vertical scrolling if content overflows */
             background-color: #f8f9fa; /* Background color */
-            padding: 15px; /* Padding inside the sidebar */
-            border-right: 1px solid #dee2e6; /* Optional: border to the right of the sidebar */
+            padding: 15px; /* Padding inside the sidebarr */
+            border-right: 1px solid #dee2e6; /* Optional: border to the right of the sidebarr */
         }
         
-        #sidebar h4 {
+        #sidebarr h4 {
             margin-bottom: 15px; /* Space below the heading */
         }
         
-        #sidebar .nav-link {
+        #sidebarr .nav-link {
             color: #333; /* Text color */
             padding: 10px; /* Padding inside each link */
             display: block; /* Ensure links are block-level for easy clicking */
@@ -29,7 +29,7 @@
             font-size: .8rem;
         }
         
-        #sidebar .nav-link:hover {
+        #sidebarr .nav-link:hover {
             background-color: #e9ecef; /* Background color on hover */
             border-radius: 4px; /* Rounded corners on hover */
         }    
@@ -40,7 +40,7 @@ section, h2, h3 {
     margin-top: -75px; /* Pull content back up */
 }
 
-.sidebar {
+.sidebarr {
     position: fixed;
     width: 215px;
 }
@@ -49,12 +49,12 @@ section, h2, h3 {
     margin-left: 11%;
 }
 
-#sidebar {
+#sidebarr {
     left: 219px;
 }
 
 /* Style for the active link */
-#sidebar .nav-link.active {
+#sidebarr .nav-link.active {
     background-color: #007bff; /* Highlight color for the active link */
     color: #fff; /* Text color for the active link */
     border-radius: 4px; /* Rounded corners for the active link */
@@ -70,8 +70,8 @@ html {
 {% block content %}
     <div class="container-fluid mt-5">
         <div class="row">
-            <!-- Sidebar -->
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <!-- sidebarr -->
+            <nav id="sidebarr" class="col-md-3 col-lg-2 d-md-block bg-light sidebarr">
                 <div class="position-sticky">
                     <h4>Menu</h4>
                     <ul class="nav flex-column">

@@ -1,0 +1,125 @@
+.control-panel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.control-button, .view-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.range-display {
+    font-size: 26px;
+    font-weight: 100;
+}
+
+.year_and_month_selectors {
+    margin-left: auto;
+}
+
+.prev,.next {
+    border-radius: 4rem;
+}
+
+.prev:hover,.next:hover {
+    background-color: white;
+    color: blueviolet;
+    transition: .3s;
+    border: 1px solid rgb(152, 152, 152);
+}
+
+.collapse-checkbox {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.checkbox-collapse {
+    margin-right: 5px;
+}
+
+/* milestone_calendar.css */
+.month-container {
+    display: inline-block;
+    width: 30%;
+    height: 300px;
+    margin: 1%;
+}
+
+
+/* milestone_calendar.css */
+.month-container {
+    display: inline-block;
+    width: 30%;
+    height: 300px;
+    margin: 1%;
+    position: relative;
+}
+
+.tui-full-calendar-weekday-grid-date {
+    cursor: pointer;
+}
+
+.view-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-3px);
+    transition: .6s;
+}
+
+.today:hover {
+    background-color: #0056b3;
+    transform: translateY(3px);
+    transition: .6s;
+}
+
+/* Custom styles to prevent text selection */
+.no-select {
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+/* Custom Popup Styles */
+.custom-popup h2 {
+    margin: 0 0 10px;
+}
+
+.custom-popup button {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+
+.custom-popup-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+.custom-popup {
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-popup .btn {
+    margin-top: 10px;
+}
+
+.custom-popup .btn-primary {
+    align-self: flex-start;
+}
+
+.custom-popup .btn-secondary {
+    align-self: flex-end;
+}

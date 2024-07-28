@@ -9,12 +9,12 @@
     overflow-y: auto; /* Enable vertical scrolling */
 }
 
-/* Sticky sidebar */
+/* Sticky sidebarr */
 .sticky-column {
     position: fixed;
-    z-index: 1; /* Ensure sidebar stays above content */
+    z-index: 1; /* Ensure sidebarr stays above content */
     background-color: #fff; /* Optional: Add background color */
-    padding: 15px; /* Optional: Add padding for sidebar content */
+    padding: 15px; /* Optional: Add padding for sidebarr content */
 }
 
 /* Post styling */
@@ -256,7 +256,7 @@
     font-size: .75rem;
 }
 
-.sidebar {
+.sidebarr {
     position: fixed;
 }
 

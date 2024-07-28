@@ -25,39 +25,39 @@ body {
   margin-right: 10px;
 }
 
-/* Sidebar */
-.sidebar {
-  width: 250px; /* Set a fixed width for the sidebar */
+/* sidebarr */
+.sidebarr {
+  width: 250px; /* Set a fixed width for the sidebarr */
   background-color: #e7e1fc; /* Set background color */
-  position: fixed; /* Make sidebar fixed */
-  top: 70px; /* Position sidebar below navbar */
-  bottom: 0; /* Position sidebar at the bottom */
-  left: 0; /* Position sidebar at the left */
+  position: fixed; /* Make sidebarr fixed */
+  top: 70px; /* Position sidebarr below navbar */
+  bottom: 0; /* Position sidebarr at the bottom */
+  left: 0; /* Position sidebarr at the left */
   z-index: 999; /* Ensure it's above other content */
-  overflow-y: auto; /* Allow sidebar to scroll if needed */
+  overflow-y: auto; /* Allow sidebarr to scroll if needed */
   transition: width 0.3s ease; /* Smooth transition */
   display: flex;
   flex-direction: column;
   padding: 1rem;
 }
 
-.sidebar .nav-link {
+.sidebarr .nav-link {
   font-size: 16px;
   color: #2b1270;
 }
 
-.sidebar .nav-link:hover {
+.sidebarr .nav-link:hover {
   color: #56098a;
   background-color: #dbd1fa;
   border-radius: 11px;
   transition: 0.5s;
 }
 
-.sidebar .nav-item .collapse {
+.sidebarr .nav-item .collapse {
   display: none;
 }
 
-.sidebar .nav-item.active .collapse {
+.sidebarr .nav-item.active .collapse {
   display: block;
 }
 
@@ -101,7 +101,7 @@ body {
   display: block;
 }
 
-.sidebar .nav .nav-item .collapse .nav {
+.sidebarr .nav .nav-item .collapse .nav {
   padding-left: 1rem; /* Adjust the left padding to increase or decrease indentation */
   transition: 0.5s;
 }
@@ -194,42 +194,42 @@ body {
 }
 
 
-/* Ensure the sidebar takes the full height of the viewport */
-.sidebar {
+/* Ensure the sidebarr takes the full height of the viewport */
+.sidebarr {
   display: flex;
   flex-direction: column;
   height: 100vh; /* Full viewport height */
 }
 
 /* Flex-grow to take available space for the main nav items */
-.sidebar .nav.flex-grow-1 {
+.sidebarr .nav.flex-grow-1 {
   flex: 1;
 }
 
 /* Ensure the bottom links are pushed to the bottom */
-.sidebar .nav.flex-column.mt-auto {
+.sidebarr .nav.flex-column.mt-auto {
   margin-top: auto;
   margin-bottom: 6rem; /* Adjust this value to move up or down */
 }
 
-.sidebar {
+.sidebarr {
   transition: all 0.3s ease;
   /* Other styles */
 }
 
-.sidebar.collapsed {
+.sidebarr.collapsed {
   width: 60px; /* Adjust as needed */
   overflow: hidden;
   align-items: center;
   /* Optional: Hide text or adjust styles */
 }
 
-.sidebar.collapsed .link-text {
+.sidebarr.collapsed .link-text {
   display: none; /* Hide text when collapsed */
 }
 
 .btn-toggle {
-  position: absolute; /* Position it absolutely within the sidebar */
+  position: absolute; /* Position it absolutely within the sidebarr */
   top: 1rem; /* Distance from the top */
   right: 1rem; /* Distance from the right */
   width: 31px;
@@ -243,17 +243,17 @@ body {
   cursor: pointer; /* Change cursor to pointer */
 }
 
-.sidebar-content {
+.sidebarr-content {
   margin-top: 3rem; /* Adjust based on button height and desired spacing */
 }
 
-/* Hide submenus when sidebar is collapsed */
-.sidebar.collapsed .collapse {
+/* Hide submenus when sidebarr is collapsed */
+.sidebarr.collapsed .collapse {
   display: none;
 }
 
-/* Button color when sidebar is collapsed */
-.sidebar.collapsed .btn-toggle {
+/* Button color when sidebarr is collapsed */
+.sidebarr.collapsed .btn-toggle {
   top: .5rem;
   right: .5rem;
 }

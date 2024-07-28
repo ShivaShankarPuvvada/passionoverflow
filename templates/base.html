@@ -65,13 +65,13 @@
         </div>    
     </nav>
 
-    <!-- Sidebar -->
+    <!-- sidebarr -->
     <div class="d-flex">
-        <div class="sidebar bg-light p-3">
+        <div class="sidebarr bg-light p-3">
             <button class="btn-toggle">
                 <i class="bi bi-chevron-left"></i>
             </button>              
-            <ul class="sidebar-content nav flex-column">
+            <ul class="sidebarr-content nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#projectsSubMenu" role="button" aria-expanded="false" aria-controls="projectsSubMenu">
                         <span class="link-icon"><i class="bi bi-folder fs-5"></i></span>
@@ -243,22 +243,22 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toggleButton = document.querySelector('.btn-toggle');
-            const sidebar = document.querySelector('.sidebar');
+            const sidebarr = document.querySelector('.sidebarr');
             const collapsibleMenus = document.querySelectorAll('.collapse');
         
-            // Toggle sidebar collapse on button click
+            // Toggle sidebarr collapse on button click
             toggleButton.addEventListener('click', function() {
-                sidebar.classList.toggle('collapsed');
+                sidebarr.classList.toggle('collapsed');
                 
-                // Change icon based on sidebar state
-                if (sidebar.classList.contains('collapsed')) {
+                // Change icon based on sidebarr state
+                if (sidebarr.classList.contains('collapsed')) {
                     toggleButton.innerHTML = '<i class="bi bi-chevron-right"></i>';
                 } else {
                     toggleButton.innerHTML = '<i class="bi bi-chevron-left"></i>';
                 }
                 
-                // Collapse all menus when sidebar is collapsed
-                if (sidebar.classList.contains('collapsed')) {
+                // Collapse all menus when sidebarr is collapsed
+                if (sidebarr.classList.contains('collapsed')) {
                     collapsibleMenus.forEach(menu => {
                         if (menu.classList.contains('show')) {
                             menu.classList.remove('show');
@@ -267,22 +267,22 @@
                 }
             });
         
-            // Manage sidebar expansion when menus are expanded
+            // Manage sidebarr expansion when menus are expanded
             collapsibleMenus.forEach(menu => {
                 menu.addEventListener('show.bs.collapse', function() {
-                    // Expand the sidebar if it's collapsed and a submenu is being opened
-                    if (sidebar.classList.contains('collapsed')) {
-                        sidebar.classList.remove('collapsed');
+                    // Expand the sidebarr if it's collapsed and a submenu is being opened
+                    if (sidebarr.classList.contains('collapsed')) {
+                        sidebarr.classList.remove('collapsed');
                         toggleButton.innerHTML = '<i class="bi bi-chevron-left"></i>';
                     }
-                    sidebar.classList.add('expanded');
+                    sidebarr.classList.add('expanded');
                 });
                 
                 menu.addEventListener('hide.bs.collapse', function() {
                     // Check if any other menu is expanded
                     const anyMenuExpanded = Array.from(collapsibleMenus).some(menu => menu.classList.contains('show'));
                     if (!anyMenuExpanded) {
-                        sidebar.classList.remove('expanded');
+                        sidebarr.classList.remove('expanded');
                     }
                 });
             });     

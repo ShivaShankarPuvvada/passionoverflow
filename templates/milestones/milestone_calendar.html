@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Milestone Calendar{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.css" />
+<link rel="stylesheet" href="{% static 'css/milestones/milestone_calendar.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" />
+{% endblock stylesheets %}
+
+{% block content %}
+<header class="header">
+    <h1>
+        <i class="bi bi-flag-fill"></i> Milestone Tracker
+    </h1>
+</header>
+<article class="">
+    <section class="app-column">
+        <div class="control-panel">
+            <!-- View Switch -->
+            <div class="view-switch">
+                <button class="button view-button" data-view-name="month">Monthly</button>
+                <button class="button view-button" data-view-name="week">Weekly</button>
+                <button class="button view-button" data-view-name="day">Daily</button>
+            </div>
+            <!-- Navigation buttons -->
+            <button class="button control-button today">Today</button>
+            <button class="button control-button prev">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="button control-button next">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+            <span class="range-display"></span>
+            <!-- Year and Selectors -->
+            <div class="year_and_month_selectors">Filters:</div>
+            <div class="year-selector-div">
+                <select class="form-control year-selector">
+                    <!-- Options will be dynamically generated -->
+                </select>
+            </div>
+            <div class="date-picker-container">
+                <input type="text" class="form-control date-picker" placeholder="Select Date" />
+            </div>
+        </div>
+        <main id="app">
+            <div id="calendar" style="height: 800px;"></div>
+        </main>
+    </section>
+</article>
+{% endblock %}
+
+{% block endscript %}
+    <script src="https://uicdn.toast.com/calendar/latest/toastui-calendar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/plugin/advancedFormat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editUrls = {
+                {% for milestone in milestones %}
+                    "{{ milestone.id }}": "{% url 'milestones:update_milestone' milestone.id %}",
+                {% endfor %}
+            };
+
+            const Calendar = tui.Calendar;
+
+            // Initialize the calendar
+            const calendar = new Calendar('#calendar', {
+                defaultView: 'month',
+                useCreationPopup: false,
+                useDetailPopup: false,
+                calendars: [
+                    {
+                        id: 'cal1',
+                        name: 'Milestones',
+                        backgroundColor: '#03bd9e',
+                        borderColor: '#03bd9e'
+                    }
+                ],
+                disableClick: true,
+                disableDblClick: true,
+                isReadOnly: true
+            });
+
+            // Custom popup function
+            function showCustomPopup(event) {
+                const eventId = event.event.id;
+                const editUrl = editUrls[eventId] || '#';
+                const milestone = milestonesData.find(m => m.id == eventId);
+                console.log(event)
+                if (milestone) {
+                    const popupContent = `
+                        <div class="custom-popup">
+                            <h2>${milestone.title}</h2>
+                            <p><strong>Status:</strong> ${milestone.status}</p>
+                            <p><strong>Completion Date:</strong> ${milestone.completion_date}</p>
+                            <p><strong>Type:</strong> ${milestone.milestone_type}</p>
+                            <p><strong>Project:</strong> ${milestone.project}</p>
+                            <p><strong>Segment:</strong> ${milestone.segment}</p>
+                            <p><strong>Tickets:</strong> ${milestone.tickets}</p>
+                            <p><strong>Phases:</strong> ${milestone.phases}</p>
+                            <p><strong>Stages:</strong> ${milestone.stages}</p>
+                            <p><strong>Sprints:</strong> ${milestone.sprints}</p>
+                            <a href="${editUrl}" id="edit-event" target="_blank" class="btn btn-primary">
+                                Edit
+                            </a>
+                            <button class="btn btn-secondary close-popup" data-popup-id="${eventId}">Close</button>
+                        </div>
+                    `;
+                    const popup = document.createElement('div');
+                    popup.innerHTML = popupContent;
+                    popup.className = 'custom-popup-container';
+                    document.body.appendChild(popup);
+
+                    document.getElementById('edit-event').addEventListener('click', function() {
+                        // Handle the edit button click event
+                        console.log('Edit button clicked for event:', event);
+                        // You can redirect to an edit page or open a form for editing the event
+                    });
+
+                    // Attach event listener to the close button
+                    popup.querySelector('.close-popup').addEventListener('click', function() {
+                        document.body.removeChild(popup);
+                    });
+                }
+            }
+
+            // Event listeners
+            calendar.on('clickEvent', function(event) {
+                showCustomPopup(event);
+            });
+
+            const milestonesData = [
+                {% for milestone in milestones %}
+                    {
+                        id: '{{ milestone.id }}',
+                        title: '{{ milestone.title }}',
+                        status: '{{ milestone.status }}',
+                        completion_date: '{{ milestone.completion_date }}',
+                        milestone_type: '{{ milestone.milestone_type }}',
+                        project: '{{ milestone.project }}',
+                        segment: '{{ milestone.segment }}',
+                        tickets: '{{ milestone.tickets }}',
+                        phases: '{{ milestone.phases }}',
+                        stages: '{{ milestone.stages }}',
+                        sprints: '{{ milestone.sprints }}',
+                    },
+                {% endfor %}
+            ];
+
+            const milestones = milestonesData.map(milestone => ({
+                id: milestone.id,
+                calendarId: 'cal1',
+                title: milestone.title,
+                category: 'time',
+                start: milestone.completion_date,
+                end: milestone.completion_date
+            }));
+
+            calendar.createEvents(milestones);
+
+            // Existing functions...
+            function getContrastYIQ(hexcolor) {
+                hexcolor = hexcolor.replace('#', '');
+                var r = parseInt(hexcolor.substr(0, 2), 16);
+                var g = parseInt(hexcolor.substr(2, 2), 16);
+                var b = parseInt(hexcolor.substr(4, 2), 16);
+                var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+                return (yiq >= 128) ? 'black' : 'white';
+            }
+
+            function getRandomColor() {
+                var letters = '0123456789abcdef';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            function applyRandomColors() {
+                const events = document.querySelectorAll('.toastui-calendar-weekday-event-block');
+                events.forEach(event => {
+                    const color = getRandomColor();
+                    event.style.backgroundColor = color;
+                    event.style.borderRadius = '4px';
+                    const contrastColor = getContrastYIQ(color);
+                    const title = event.querySelector('.toastui-calendar-weekday-event-dot+.toastui-calendar-weekday-event-title');
+                    if (title) {
+                        title.style.color = contrastColor;
+                    }
+                });
+            }
+
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length) {
+                        applyRandomColors();
+                    }
+                });
+            });
+
+            observer.observe(document.getElementById('calendar'), { childList: true, subtree: true });
+
+            applyRandomColors(); // Initial call to apply colors to already existing events
+
+            function updateRangeDisplay() {
+                const viewName = calendar.getViewName();
+                const rangeStart = dayjs(calendar.getDateRangeStart());
+                const rangeEnd = dayjs(calendar.getDateRangeEnd());
+                let displayText;
+
+                if (viewName === 'day') {
+                    const format_day = rangeStart.format('YYYY-MM-DD');
+                    displayText = `Day: ${format_day}`;
+                } else if (viewName === 'week') {
+                    const range_start = rangeStart.format('YYYY-MM-DD');
+                    const range_end = rangeEnd.format('YYYY-MM-DD');
+                    displayText = `Weekly: ${range_start} ~ ${range_end}`;
+                } else if (viewName === 'month') {
+                    const format_month = rangeStart.format('MMMM - YYYY');
+                    displayText = `Month: ${format_month}`;
+                }
+
+                document.querySelector('.range-display').textContent = displayText;
+            }
+
+            function generateYearOptions() {
+                const yearSelector = document.querySelector('.year-selector');
+                const currentYear = new Date().getFullYear();
+                for (let i = currentYear - 10; i <= currentYear + 10; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i;
+                    yearSelector.appendChild(option);
+                }
+                yearSelector.value = currentYear;
+            }
+
+            function syncDatePickerWithSelectors() {
+                const selectedYear = document.querySelector('.year-selector').value;
+                const selectedDate = $('.date-picker').datepicker('getDate');
+                if (selectedDate) {
+                    selectedDate.setFullYear(selectedYear);
+                    $('.date-picker').datepicker('update', selectedDate);
+                } else {
+                    $('.date-picker').datepicker('update', new Date(selectedYear, 0, 1));
+                }
+            }
+
+            function syncSelectorsWithDate(date) {
+                const year = date.getFullYear();
+                document.querySelector('.year-selector').value = year;
+            }
+
+            function updateCalendarDate() {
+                const selectedYear = document.querySelector('.year-selector').value;
+                const selectedDate = $('.date-picker').datepicker('getDate');
+                if (selectedDate) {
+                    selectedDate.setFullYear(selectedYear);
+                    calendar.setDate(selectedDate);
+                } else {
+                    calendar.setDate(new Date(selectedYear, 0, 1));
+                }
+                updateRangeDisplay();
+            }
+
+            document.querySelector('.view-button[data-view-name="day"]').addEventListener('click', function() {
+                calendar.changeView('day', true);
+                updateRangeDisplay();
+            });
+
+            document.querySelector('.view-button[data-view-name="week"]').addEventListener('click', function() {
+                calendar.changeView('week', true);
+                updateRangeDisplay();
+            });
+
+            document.querySelector('.view-button[data-view-name="month"]').addEventListener('click', function() {
+                calendar.changeView('month', true);
+                updateRangeDisplay();
+            });
+
+            document.querySelector('.today').addEventListener('click', function() {
+                calendar.today();
+                updateRangeDisplay();
+                syncSelectorsWithDate(calendar.getDate());
+            });
+
+            document.querySelector('.prev').addEventListener('click', function() {
+                calendar.prev();
+                updateRangeDisplay();
+                syncSelectorsWithDate(calendar.getDate());
+            });
+
+            document.querySelector('.next').addEventListener('click', function() {
+                calendar.next();
+                updateRangeDisplay();
+                syncSelectorsWithDate(calendar.getDate());
+            });
+
+            document.querySelector('.year-selector').addEventListener('change', function() {
+                updateCalendarDate();
+                syncDatePickerWithSelectors();
+            });
+
+            $('.date-picker').datepicker({
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                orientation: 'bottom'
+            }).on('changeDate', function(e) {
+                const selectedDate = e.date;
+                syncSelectorsWithDate(selectedDate); // Sync selectors when a date is selected from the date picker
+                calendar.changeView('day', true);
+                calendar.setDate(selectedDate);
+                updateRangeDisplay();
+            });
+
+            generateYearOptions();
+            updateRangeDisplay();
+            syncSelectorsWithDate(new Date());
+        });
+    </script>
+{% endblock %}
+
