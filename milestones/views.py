@@ -399,3 +399,15 @@ def get_project_by_segment(request):
     segment = Segment.objects.get(id=segment_id)
     project = segment.project
     return JsonResponse({'project': {'id': project.id, 'title': project.title}})
+
+
+@login_required
+def get_all_milestones_in_calendar(request):
+    user = request.user
+    company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
+    milestones = Milestone.objects.filter(company=company).order_by('-id')
+    
+    context = {
+        'milestones': milestones
+    }
+    return render(request, 'milestones/calendar_view.html', context)
