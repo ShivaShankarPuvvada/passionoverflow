@@ -198,7 +198,10 @@
                                 <a class="nav-link" href="{% url 'milestones:milestone_list' %}">All Milestones</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'milestones:milestone_calendar' %}">Milestone Tracker</a>
+                                <a class="nav-link" href="{% url 'milestones:milestone_calendar' %}">Milestone Calendar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'milestones:milestone_pipeline' %}">Milestone Pipeline</a>
                             </li>
                         </ul>
                     </div>
@@ -245,6 +248,83 @@
     {% endblock %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    // Select the icon inside the clicked nav-link
+                    const icon = link.querySelector('.link-icon i');
+        
+                    if (icon) {
+                        // Toggle the fill class for each icon
+                        if (icon.classList.contains('bi-folder')) {
+                            icon.classList.remove('bi-folder');
+                            icon.classList.add('bi-folder-fill');
+                        } else if (icon.classList.contains('bi-folder-fill')) {
+                            icon.classList.remove('bi-folder-fill');
+                            icon.classList.add('bi-folder');
+                        }
+        
+                        if (icon.classList.contains('bi-layers')) {
+                            icon.classList.remove('bi-layers');
+                            icon.classList.add('bi-layers-fill');
+                        } else if (icon.classList.contains('bi-layers-fill')) {
+                            icon.classList.remove('bi-layers-fill');
+                            icon.classList.add('bi-layers');
+                        }
+        
+                        if (icon.classList.contains('bi-diagram-3')) {
+                            icon.classList.remove('bi-diagram-3');
+                            icon.classList.add('bi-diagram-3-fill');
+                        } else if (icon.classList.contains('bi-diagram-3-fill')) {
+                            icon.classList.remove('bi-diagram-3-fill');
+                            icon.classList.add('bi-diagram-3');
+                        }
+        
+                        if (icon.classList.contains('bi-tag')) {
+                            icon.classList.remove('bi-tag');
+                            icon.classList.add('bi-tag-fill');
+                        } else if (icon.classList.contains('bi-tag-fill')) {
+                            icon.classList.remove('bi-tag-fill');
+                            icon.classList.add('bi-tag');
+                        }
+        
+                        if (icon.classList.contains('bi-list-check')) {
+                            icon.classList.remove('bi-list-check');
+                            icon.classList.add('bi-list');
+                        } else if (icon.classList.contains('bi-list')) {
+                            icon.classList.remove('bi-list');
+                            icon.classList.add('bi-list-check');
+                        }
+        
+                        if (icon.classList.contains('bi-clipboard')) {
+                            icon.classList.remove('bi-clipboard');
+                            icon.classList.add('bi-clipboard-data');
+                        } else if (icon.classList.contains('bi-clipboard-data')) {
+                            icon.classList.remove('bi-clipboard-data');
+                            icon.classList.add('bi-clipboard');
+                        }
+        
+                        if (icon.classList.contains('bi-speedometer')) {
+                            icon.classList.remove('bi-speedometer');
+                            icon.classList.add('bi-speedometer2');
+                        } else if (icon.classList.contains('bi-speedometer2')) {
+                            icon.classList.remove('bi-speedometer2');
+                            icon.classList.add('bi-speedometer');
+                        }
+        
+                        if (icon.classList.contains('bi-flag')) {
+                            icon.classList.remove('bi-flag');
+                            icon.classList.add('bi-flag-fill');
+                        } else if (icon.classList.contains('bi-flag-fill')) {
+                            icon.classList.remove('bi-flag-fill');
+                            icon.classList.add('bi-flag');
+                        }
+                    }
+                });
+            });
+
             const toggleButton = document.querySelector('.btn-toggle');
             const sidebarr = document.querySelector('.sidebarr');
             const collapsibleMenus = document.querySelectorAll('.collapse');
