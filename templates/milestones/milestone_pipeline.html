@@ -2,18 +2,22 @@
 {% load static %}
 
 {% block title %}Milestone Pipeline{% endblock %}
+
 {% block stylesheets %}
 <style>
   .pipeline-container {
-    margin: 20px 0;
+    margin: 20px auto; /* Center container horizontally */
     width: 100%;
-    height: auto;
-    overflow-x: auto;
+    height: 600px; /* Adjust height as needed */
+    overflow-x: auto; /* Allow horizontal scrolling */
+    position: relative; /* Needed for tooltip positioning */
+    box-sizing: border-box; /* Include padding and border in width and height */
   }
   .link {
     stroke-width: 18px;
     stroke-linecap: round;
     stroke-linejoin: round;
+    fill: none;
   }
   .link-end {
     fill: none;
@@ -46,38 +50,43 @@
 {% endblock %}
 
 {% block endscript %}
-<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const svg = d3.select('#pipeline')
-      .append('svg')
-      .attr('width', '100%')
-      .attr('height', 600);
+    const container = document.querySelector('.pipeline-container');
+    const containerWidth = container.clientWidth;
+    const svgHeight = 600; // SVG height
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute('width', containerWidth);
+    svg.setAttribute('height', svgHeight);
+    container.appendChild(svg);
 
     const data = Array.from({ length: 50 }, (_, i) => ({
       text: `Milestone ${i + 1}`,
-      completed: i % 2 === 0
+      completed: i % 2 === 0,
+      x: 0,
+      y: 0
     }));
 
-    const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-    const width = 1200 - margin.left - margin.right;
-    const height = 600 - margin.top - margin.bottom;
-
     const spacing = 80;
-    const uTurnThreshold = width - spacing;
+    const uTurnThreshold = containerWidth - spacing;
 
-    let x = 50;
-    let y = 50;
+    let x = spacing; // Start x at spacing to avoid edge
+    let y = spacing;
     let direction = 1; // 1 for right, -1 for left
     const colors = d3.schemeCategory10; // Use D3 color scheme
 
     data.forEach((d, i) => {
       if (x > uTurnThreshold && direction === 1) {
         direction = -1;
-        y += 100; // Move down to the next row
-      } else if (x < 50 && direction === -1) {
+        y += spacing; // Move down to the next row
+        x -= spacing; // Adjust x to start below the last point
+      } else if (x < spacing && direction === -1) {
         direction = 1;
-        y += 100; // Move down to the next row
+        y += spacing; // Move down to the next row
+        x += spacing; // Adjust x to start below the last point
       }
 
       d.x = x;
@@ -85,59 +94,67 @@
       x += spacing * direction;
     });
 
-    // Draw the lines and set their colors
-    const links = svg.selectAll('.link')
-      .data(data.slice(1))
-      .enter()
-      .append('line')
-      .attr('class', 'link')
-      .attr('x1', (d, i) => data[i].x)
-      .attr('y1', (d, i) => data[i].y)
-      .attr('x2', d => d.x)
-      .attr('y2', d => d.y)
-      .style('stroke', (_, i) => colors[i % colors.length]); // Assign different colors for each link
+    // Create the paths manually
+    data.slice(1).forEach((d, i) => {
+      const previousPoint = data[i];
+      let pathData;
+
+      // Check if moving to the next line
+      if (previousPoint.y !== d.y) {
+        // Create a quadratic Bezier curve for U-turns
+        const controlPointX = (previousPoint.x + d.x) / 2;
+        const controlPointY = previousPoint.y;
+        pathData = `M ${previousPoint.x},${previousPoint.y} Q ${controlPointX},${controlPointY - 40} ${d.x},${d.y}`;
+      } else {
+        // Create a straight line for other segments
+        pathData = `M ${previousPoint.x},${previousPoint.y} L ${d.x},${d.y}`;
+      }
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute('class', 'link');
+      path.setAttribute('d', pathData);
+      path.setAttribute('stroke', colors[i % colors.length]);
+      path.setAttribute('stroke-width', '3');
+      svg.appendChild(path);
+    });
 
     // Add circular endpoints with outer color and inner white dot
-    svg.selectAll('.link-end')
-      .data(data.slice(1))
-      .enter()
-      .append('circle')
-      .attr('class', 'link-end')
-      .attr('cx', d => d.x)
-      .attr('cy', d => d.y)
-      .attr('r', 14) // Increased radius for outer ring
-      .style('stroke', (_, i) => colors[i % colors.length]) // Outer ring color
-      .style('stroke-width', '9px') // Increased outer ring width
-      .style('fill', 'none'); // No fill for the outer circle
+    data.slice(1).forEach((d, i) => {
+      const circleOuter = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circleOuter.setAttribute('class', 'link-end');
+      circleOuter.setAttribute('cx', d.x);
+      circleOuter.setAttribute('cy', d.y);
+      circleOuter.setAttribute('r', 14);
+      circleOuter.setAttribute('stroke', colors[i % colors.length]);
+      svg.appendChild(circleOuter);
 
-    // Add inner white dot to the circular endpoint
-    svg.selectAll('.link-end-dot')
-      .data(data.slice(1))
-      .enter()
-      .append('circle')
-      .attr('class', 'link-end-dot')
-      .attr('cx', d => d.x)
-      .attr('cy', d => d.y)
-      .attr('r', 10) // Increased inner dot radius
-      .style('fill', '#fff'); // White dot color
+      const circleInner = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circleInner.setAttribute('class', 'link-end-dot');
+      circleInner.setAttribute('cx', d.x);
+      circleInner.setAttribute('cy', d.y);
+      circleInner.setAttribute('r', 10);
+      svg.appendChild(circleInner);
+    });
 
     // Tooltip
-    const tooltip = d3.select('body').append('div')
-      .attr('class', 'tooltip')
-      .style('opacity', 0);
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    tooltip.style.opacity = 0;
+    document.body.appendChild(tooltip);
 
-    links.on('mouseover', function (event, d) {
-      tooltip.transition()
-        .duration(200)
-        .style('opacity', .9);
-      tooltip.html(d.text)
-        .style('left', (event.pageX) + 'px')
-        .style('top', (event.pageY - 28) + 'px');
-    })
-    .on('mouseout', function (d) {
-      tooltip.transition()
-        .duration(500)
-        .style('opacity', 0);
+    svg.querySelectorAll('.link').forEach((link, index) => {
+      link.addEventListener('mouseover', function (event) {
+        tooltip.style.transition = 'opacity 0.2s';
+        tooltip.style.opacity = 0.9;
+        tooltip.innerHTML = data[index + 1].text;
+        tooltip.style.left = `${event.pageX}px`;
+        tooltip.style.top = `${event.pageY - 28}px`;
+      });
+
+      link.addEventListener('mouseout', function () {
+        tooltip.style.transition = 'opacity 0.5s';
+        tooltip.style.opacity = 0;
+      });
     });
   });
 </script>
