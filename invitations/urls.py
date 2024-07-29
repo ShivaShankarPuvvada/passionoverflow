@@ -38,7 +38,7 @@ inviations_list = [
         ],
     ],
 ]
-update invitation, for updation also same above list. we need to make the existing records status to 0 and create new records if there are any changes.
+update invitation, for updation also same above list. we need to make the existing records status to 0 and Create records if there are any changes.
 there is only one url for create invitation and update invitation. i.e, modify_invitations.
 get single user invitations (show all his invitations)
 get all or specific invitations ()

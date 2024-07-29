@@ -61,7 +61,7 @@ class ProjectPhase(models.Model):
     beta phase with active status
     beta phase with de-active status
     We will create a new record every time user make change to the phase for project.
-    If user tries to use Same phase with same status, it will not create new record.
+    If user tries to use Same phase with same status, it will not Create record.
     Single project will be associated with only one single phase at a time.
     We need to get the latest record from ProjectPhase table to know which phase is currently associated with this project.
     There will always be one active phase associated with the project.
