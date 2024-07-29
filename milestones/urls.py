@@ -30,6 +30,7 @@ urlpatterns = [
     path('ajax/get-segments/', views.get_segments_by_project, name='get_segments_by_project'),
     path('get-project-by-segment/', views.get_project_by_segment, name='get_project_by_segment'),
     path('milestones-calendar/', views.get_all_milestones_in_calendar, name="milestone_calendar"),
+    path('milestones-pipeline/', views.get_all_milestones_in_pipeline, name="milestone_pipeline"),
 
     # path('create_milestone/', views.CreateMilestoneView.as_view(), name="create_milestone"),
     # path('milestone/<int:milestone_id>/', views.MilestoneView.as_view(), name="milestone"),

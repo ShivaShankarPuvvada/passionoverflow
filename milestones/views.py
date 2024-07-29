@@ -438,3 +438,42 @@ def get_all_milestones_in_calendar(request):
         'milestones': milestones_data
     }
     return render(request, 'milestones/milestone_calendar.html', context)
+
+
+@login_required
+def get_all_milestones_in_pipeline(request):
+    user = request.user
+    company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
+    milestones = Milestone.objects.filter(company=company).order_by('-id')
+
+    # Initialize an empty list to store milestone data
+    milestones_data = []
+
+    # Fetch and process milestones
+    for milestone in milestones:
+        # Fetch related data
+        tickets = milestone.tickets.all()
+        phases = milestone.phases.all()
+        stages = milestone.stages.all()
+        sprints = milestone.sprints.all()
+        
+        # Prepare milestone data
+        data = {
+            'id': str(milestone.id),
+            'title': milestone.title,
+            'status': milestone.get_status_display(),
+            'completion_date': milestone.completion_date.strftime('%Y-%m-%dT%H:%M:%S'),
+            'milestone_type': milestone.get_milestone_type_display(),
+            'project': milestone.project.title if milestone.project else 'None',
+            'segment': milestone.segment.title if milestone.segment else 'None',
+            'tickets': ', '.join(ticket.title for ticket in tickets),
+            'phases': ', '.join(phase.title for phase in phases),
+            'stages': ', '.join(stage.title for stage in stages),
+            'sprints': ', '.join(sprint.title for sprint in sprints),
+        }
+        milestones_data.append(data)
+
+    context = {
+        'milestones': milestones_data
+    }
+    return render(request, 'milestones/milestone_pipeline.html', context)
