@@ -405,7 +405,7 @@ def get_project_by_segment(request):
 def get_all_milestones_in_calendar(request):
     user = request.user
     company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
-    milestones = Milestone.objects.filter(company=company).order_by('-id')
+    milestones = Milestone.objects.filter(company=company).order_by('-completion_date')
 
     # Initialize an empty list to store milestone data
     milestones_data = []
@@ -444,7 +444,7 @@ def get_all_milestones_in_calendar(request):
 def get_all_milestones_in_pipeline(request):
     user = request.user
     company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
-    milestones = Milestone.objects.filter(company=company).order_by('-id')
+    milestones = Milestone.objects.filter(company=company).order_by('-completion_date')
 
     # Initialize an empty list to store milestone data
     milestones_data = []
@@ -473,7 +473,14 @@ def get_all_milestones_in_pipeline(request):
         }
         milestones_data.append(data)
 
+    # Generate URLs for editing each milestone
+    edit_urls = {
+        milestone['id']: reverse('milestones:update_milestone', args=[milestone['id']])
+        for milestone in milestones_data
+    }
+
     context = {
-        'milestones': milestones_data
+        'milestones': milestones_data,
+        'edit_urls': edit_urls
     }
     return render(request, 'milestones/milestone_pipeline.html', context)
