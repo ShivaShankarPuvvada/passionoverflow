@@ -5,10 +5,12 @@
 
 {% block stylesheets %}
 <style>
+  header {
+    position: fixed;
+  }
   .pipeline-container {
-    margin: 20px auto; /* Center container horizontally */
+    margin-top: -14%;
     width: 100%;
-    height: 600px; /* Adjust height as needed */
     overflow-x: auto; /* Allow horizontal scrolling */
     position: relative; /* Needed for tooltip positioning */
     box-sizing: border-box; /* Include padding and border in width and height */
@@ -56,84 +58,82 @@
   document.addEventListener('DOMContentLoaded', function () {
     const container = document.querySelector('.pipeline-container');
     const containerWidth = container.clientWidth;
-    const svgHeight = 600; // SVG height
+    const originalSpacing = 80;
+    const spacing = originalSpacing * 2; // Double the spacing
+    const milestonesPerRow = 4; // Number of milestones per row
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute('width', containerWidth);
-    svg.setAttribute('height', svgHeight);
     container.appendChild(svg);
 
     const data = Array.from({ length: 50 }, (_, i) => ({
-      text: `Milestone ${i + 1}`,
-      completed: i % 2 === 0,
-      x: 0,
-      y: 0
+        text: `Milestone ${i + 1}`,
+        completed: i % 2 === 0,
+        x: 0,
+        y: 0
     }));
 
-    const spacing = 80;
-    const uTurnThreshold = containerWidth - spacing;
-
-    let x = spacing; // Start x at spacing to avoid edge
     let y = spacing;
-    let direction = 1; // 1 for right, -1 for left
-    const colors = d3.schemeCategory10; // Use D3 color scheme
+    const colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]; // Custom colors
 
     data.forEach((d, i) => {
-      if (x > uTurnThreshold && direction === 1) {
-        direction = -1;
-        y += spacing; // Move down to the next row
-        x -= spacing; // Adjust x to start below the last point
-      } else if (x < spacing && direction === -1) {
-        direction = 1;
-        y += spacing; // Move down to the next row
-        x += spacing; // Adjust x to start below the last point
-      }
+        const rowNumber = Math.floor(i / milestonesPerRow) + 1; // Determine row number (1-based)
+        const rowWidth = (milestonesPerRow - 1) * spacing; // Width of the row
+        const rowStartX = (containerWidth - rowWidth) / 2; // Center row
 
-      d.x = x;
-      d.y = y;
-      x += spacing * direction;
+        if (i % milestonesPerRow === 0) {
+            // Move to the next row
+            y += spacing;
+        }
+
+        // Calculate the x position based on the row number and whether it's odd or even
+        const rowOffset = (i % milestonesPerRow) * spacing;
+        d.x = rowNumber % 2 === 1 ? rowStartX + rowOffset : rowStartX + rowWidth - rowOffset;
+        d.y = y;
     });
 
-    // Create the paths manually
+    // Calculate SVG height based on the number of rows and add padding
+    const rows = Math.ceil(data.length / milestonesPerRow);
+    const svgHeight = rows * spacing + spacing * 2; // Adjust height with padding
+    svg.setAttribute('width', containerWidth);
+    svg.setAttribute('height', svgHeight); // Adjust height
+
+    // Create the stepped paths
     data.slice(1).forEach((d, i) => {
-      const previousPoint = data[i];
-      let pathData;
+        const previousPoint = data[i];
+        let pathData;
 
-      // Check if moving to the next line
-      if (previousPoint.y !== d.y) {
-        // Create a quadratic Bezier curve for U-turns
-        const controlPointX = (previousPoint.x + d.x) / 2;
-        const controlPointY = previousPoint.y;
-        pathData = `M ${previousPoint.x},${previousPoint.y} Q ${controlPointX},${controlPointY - 40} ${d.x},${d.y}`;
-      } else {
-        // Create a straight line for other segments
-        pathData = `M ${previousPoint.x},${previousPoint.y} L ${d.x},${d.y}`;
-      }
+        if (previousPoint.y !== d.y) {
+            // Create a stepped path to connect rows
+            pathData = `M ${previousPoint.x},${previousPoint.y} L ${previousPoint.x},${d.y} L ${d.x},${d.y}`;
+        } else {
+            // Create a straight line for segments in the same row
+            pathData = `M ${previousPoint.x},${previousPoint.y} L ${d.x},${d.y}`;
+        }
 
-      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute('class', 'link');
-      path.setAttribute('d', pathData);
-      path.setAttribute('stroke', colors[i % colors.length]);
-      path.setAttribute('stroke-width', '3');
-      svg.appendChild(path);
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute('class', 'link');
+        path.setAttribute('d', pathData);
+        path.setAttribute('stroke', colors[i % colors.length]);
+        path.setAttribute('stroke-width', '3');
+        svg.appendChild(path);
     });
 
     // Add circular endpoints with outer color and inner white dot
     data.slice(1).forEach((d, i) => {
-      const circleOuter = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      circleOuter.setAttribute('class', 'link-end');
-      circleOuter.setAttribute('cx', d.x);
-      circleOuter.setAttribute('cy', d.y);
-      circleOuter.setAttribute('r', 14);
-      circleOuter.setAttribute('stroke', colors[i % colors.length]);
-      svg.appendChild(circleOuter);
+        const circleOuter = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circleOuter.setAttribute('class', 'link-end');
+        circleOuter.setAttribute('cx', d.x);
+        circleOuter.setAttribute('cy', d.y);
+        circleOuter.setAttribute('r', 14);
+        circleOuter.setAttribute('stroke', colors[i % colors.length]);
+        svg.appendChild(circleOuter);
 
-      const circleInner = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      circleInner.setAttribute('class', 'link-end-dot');
-      circleInner.setAttribute('cx', d.x);
-      circleInner.setAttribute('cy', d.y);
-      circleInner.setAttribute('r', 10);
-      svg.appendChild(circleInner);
+        const circleInner = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circleInner.setAttribute('class', 'link-end-dot');
+        circleInner.setAttribute('cx', d.x);
+        circleInner.setAttribute('cy', d.y);
+        circleInner.setAttribute('r', 10);
+        svg.appendChild(circleInner);
     });
 
     // Tooltip
@@ -143,19 +143,21 @@
     document.body.appendChild(tooltip);
 
     svg.querySelectorAll('.link').forEach((link, index) => {
-      link.addEventListener('mouseover', function (event) {
-        tooltip.style.transition = 'opacity 0.2s';
-        tooltip.style.opacity = 0.9;
-        tooltip.innerHTML = data[index + 1].text;
-        tooltip.style.left = `${event.pageX}px`;
-        tooltip.style.top = `${event.pageY - 28}px`;
-      });
+        link.addEventListener('mouseover', function (event) {
+            tooltip.style.transition = 'opacity 0.2s';
+            tooltip.style.opacity = 0.9;
+            tooltip.innerHTML = data[index + 1].text;
+            tooltip.style.left = `${event.pageX}px`;
+            tooltip.style.top = `${event.pageY - 28}px`;
+        });
 
-      link.addEventListener('mouseout', function () {
-        tooltip.style.transition = 'opacity 0.5s';
-        tooltip.style.opacity = 0;
-      });
+        link.addEventListener('mouseout', function () {
+            tooltip.style.transition = 'opacity 0.5s';
+            tooltip.style.opacity = 0;
+        });
     });
-  });
+});
+
+
 </script>
 {% endblock %}
