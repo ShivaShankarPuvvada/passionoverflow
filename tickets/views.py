@@ -459,3 +459,20 @@ def get_all_tickets(request):
         'tickets': tickets
     }
     return render(request, 'tickets/ticket_list.html', context)
+
+
+@login_required
+def kanban_board(request):
+
+    user = request.user
+    company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
+
+    # Filter tickets based on projects where user is a member
+    projects = Project.objects.filter(company=company, members=user)
+    tickets = Ticket.objects.filter(segment__project__in=projects).order_by('-id')
+
+    context = {
+        'tickets': tickets
+    }
+    return render(request, 'tickets/kanban_board.html', context)
+

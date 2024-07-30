@@ -1,0 +1,269 @@
+<!-- tickets/templates/tickets/ticket_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Tickets | Kanban board{% endblock %}
+{% block stylesheets %}
+    <style>
+        * {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+            }
+            
+            *::-webkit-scrollbar {
+            display: none;
+            }
+            
+            .board {
+            width: 100%;
+            height: 70vh;
+            overflow: scroll;
+            background-color: wheat;
+            background-position: center;
+            background-size: cover;
+            border-radius: 5px;
+            }
+
+            /* ---- BOARD ---- */
+            .lanes {
+            display: flex;
+            align-items: flex-start;
+            justify-content: start;
+            gap: 16px;
+            
+            padding: 24px 32px;
+            
+            overflow: scroll;
+            height: 100%;
+            }
+            
+            .heading {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            }
+            
+            .swim-lane {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            
+            background: #f4f4f4;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+            
+            padding: 12px;
+            border-radius: 4px;
+            width: 225px;
+            min-height: 120px;
+            
+            flex-shrink: 0;
+            }
+            
+            .task {
+            background: white;
+            color: black;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+            
+            padding: 12px;
+            border-radius: 4px;
+            
+            font-size: 16px;
+            cursor: move;
+            }
+            
+            .is-dragging {
+            scale: 1.05;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+            background: rgb(50, 50, 50);
+            color: white;
+            }
+    </style>
+{% endblock stylesheets %}
+{% block content %}
+<div class="container mt-4">
+    <a href="{% url 'tickets:create_ticket' %}" class="btn btn-custom">Create Ticket</a>
+    <h2>Kanban board</h2>
+    <div class="board">
+        <div class="lanes">
+            <div class="swim-lane" id="todo-lane">
+                <h3 class="heading">TODO</h3>
+    
+                <p class="task" draggable="true">Get groceries</p>
+                <p class="task" draggable="true">Feed the dogs</p>
+                <p class="task" draggable="true">Mow the lawn</p>
+            </div>
+    
+            <div class="swim-lane">
+                <h3 class="heading">Doing</h3>
+    
+                <p class="task" draggable="true">Binge 80 hours of Game of Thrones</p>
+            </div>
+    
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+            <div class="swim-lane">
+                <h3 class="heading">Done</h3>
+    
+                <p class="task" draggable="true">
+                Watch video of a man raising a grocery store lobster as a pet
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block endscript %}
+    <script>
+
+        const draggables = document.querySelectorAll(".task");
+        const droppables = document.querySelectorAll(".swim-lane");
+
+        draggables.forEach((task) => {
+            task.addEventListener("dragstart", () => {
+                task.classList.add("is-dragging");
+            });
+            task.addEventListener("dragend", () => {
+                task.classList.remove("is-dragging");
+            });
+        });
+
+        droppables.forEach((zone) => {
+            zone.addEventListener("dragover", (e) => {
+                e.preventDefault();
+
+                const bottomTask = insertAboveTask(zone, e.clientY);
+                const curTask = document.querySelector(".is-dragging");
+
+                if (!bottomTask) {
+                zone.appendChild(curTask);
+                } else {
+                zone.insertBefore(curTask, bottomTask);
+                }
+            });
+        });
+
+        const insertAboveTask = (zone, mouseY) => {
+            const els = zone.querySelectorAll(".task:not(.is-dragging)");
+
+            let closestTask = null;
+            let closestOffset = Number.NEGATIVE_INFINITY;
+
+            els.forEach((task) => {
+                const { top } = task.getBoundingClientRect();
+
+                const offset = mouseY - top;
+
+                if (offset < 0 && offset > closestOffset) {
+                closestOffset = offset;
+                closestTask = task;
+                }
+            });
+
+            return closestTask;
+        };
+
+    </script>
+{% endblock %}
