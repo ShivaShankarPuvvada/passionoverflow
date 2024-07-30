@@ -1,4 +1,3 @@
-<!-- tickets/templates/tickets/ticket_list.html -->
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}Tickets | Kanban board{% endblock %}
@@ -59,15 +58,24 @@
             }
             
             .task {
-            background: white;
-            color: black;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+                background: white;
+                color: black;
+                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+                padding: 8px; /* Adjust padding if needed */
+                border-radius: 4px;
+                font-size: 14px; /* Adjust to the minimum readable size */
+                cursor: move;
+                max-width: 100%;
+                overflow-wrap: break-word; /* Break long words */
+                word-wrap: break-word; /* For older browsers */
+                white-space: normal; /* Ensure text wraps properly */
+                line-height: 1.4; /* Ensure enough spacing for readability */
+            }
             
-            padding: 12px;
-            border-radius: 4px;
-            
-            font-size: 16px;
-            cursor: move;
+            @media (max-width: 600px) {
+                .task {
+                    font-size: 10px; /* Smaller size for smaller screens if needed */
+                }
             }
             
             .is-dragging {
@@ -82,134 +90,32 @@
 <div class="container mt-4">
     <a href="{% url 'tickets:create_ticket' %}" class="btn btn-custom">Create Ticket</a>
     <h2>Kanban board</h2>
+
+    <!-- Add Project and Segment Select Boxes -->
+    <div class="row g-3 mb-3 align-items-center">
+        <div class="col-auto">
+            <label for="project-select" class="col-form-label">Project:</label>
+        </div>
+        <div class="col-auto">
+            <select id="project-select" class="form-control">
+                <option value="">Select Project</option>
+                {% for project in projects %}
+                    <option value="{{ project.id }}">{{ project.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto">
+            <label for="segment-select" class="col-form-label">Segment:</label>
+        </div>
+        <div class="col-auto">
+            <select id="segment-select" class="form-control">
+                <option value="">Select Segment</option>
+            </select>
+        </div>
+    </div>
+
     <div class="board">
         <div class="lanes">
-            <div class="swim-lane" id="todo-lane">
-                <h3 class="heading">TODO</h3>
-    
-                <p class="task" draggable="true">Get groceries</p>
-                <p class="task" draggable="true">Feed the dogs</p>
-                <p class="task" draggable="true">Mow the lawn</p>
-            </div>
-    
-            <div class="swim-lane">
-                <h3 class="heading">Doing</h3>
-    
-                <p class="task" draggable="true">Binge 80 hours of Game of Thrones</p>
-            </div>
-    
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
-            <div class="swim-lane">
-                <h3 class="heading">Done</h3>
-    
-                <p class="task" draggable="true">
-                Watch video of a man raising a grocery store lobster as a pet
-                </p>
-            </div>
         </div>
     </div>
 </div>
@@ -217,53 +123,110 @@
 
 {% block endscript %}
     <script>
-
-        const draggables = document.querySelectorAll(".task");
-        const droppables = document.querySelectorAll(".swim-lane");
-
-        draggables.forEach((task) => {
-            task.addEventListener("dragstart", () => {
-                task.classList.add("is-dragging");
-            });
-            task.addEventListener("dragend", () => {
-                task.classList.remove("is-dragging");
-            });
-        });
-
-        droppables.forEach((zone) => {
-            zone.addEventListener("dragover", (e) => {
-                e.preventDefault();
-
-                const bottomTask = insertAboveTask(zone, e.clientY);
-                const curTask = document.querySelector(".is-dragging");
-
-                if (!bottomTask) {
-                zone.appendChild(curTask);
+        $(document).ready(function() {
+            const baseTicketPostsUrl = "{% url 'posts:ticket_posts' 0 %}"; // URL pattern with a placeholder
+            const $projectSelect = $('#project-select');
+            const $segmentSelect = $('#segment-select');
+            const $lanes = $('.lanes');
+        
+            // Fetch segments when project is selected
+            $projectSelect.on('change', function() {
+                const projectId = $(this).val();
+                if (projectId) {
+                    $.ajax({
+                        url: "{% url 'tickets:fetch_segments' %}",
+                        data: { project_id: projectId },
+                        success: function(response) {
+                            $segmentSelect.empty();
+                            $segmentSelect.append('<option value="">Select Segment</option>');
+                            response.segments.forEach(segment => {
+                                $segmentSelect.append(`<option value="${segment.id}">${segment.title}</option>`);
+                            });
+                            $segmentSelect.trigger('change'); // Trigger change to load tickets and stages
+                        }
+                    });
                 } else {
-                zone.insertBefore(curTask, bottomTask);
+                    $segmentSelect.empty().append('<option value="">Select Segment</option>');
+                    $lanes.empty(); // Clear lanes if no project is selected
                 }
             });
+        
+            // Fetch tickets and stages when segment is selected
+            $segmentSelect.on('change', function() {
+                const segmentId = $(this).val();
+                const projectId = $projectSelect.val();
+                if (segmentId || projectId) {
+                    $.ajax({
+                        url: "{% url 'tickets:fetch_tickets_and_stages' %}",
+                        data: { segment_id: segmentId, project_id: projectId },
+                        success: function(response) {
+                            $lanes.empty();
+                            response.stages.forEach(stage => {
+                                const $lane = $('<div>', { class: 'swim-lane', 'data-stage-id': stage.id }).append(`<h3 class="heading">${stage.title}</h3>`);
+                                response.tickets[stage.id].forEach(ticket => {
+                                    const ticketUrl = baseTicketPostsUrl.replace('0', `${ticket.id}`);
+                                    const $task = $(`
+                                        <p class="task" draggable="true" id="${ticket.id}">
+                                            Ticket: <a href="${ticketUrl}" class="ticket-link">#${ticket.company_ticket_counter}</a><br>${ticket.title}
+                                            <br>Ticket type: ${ticket.ticket_type_display}
+                                        </p>
+                                    `);
+                                    $lane.append($task);
+                                });
+                                $lanes.append($lane);
+                            });
+                            initializeDragAndDrop(); // Reinitialize drag-and-drop after content update
+                        }
+                    });
+                }
+            });
+        
+            // Function to initialize drag-and-drop functionality
+            function initializeDragAndDrop() {
+                const draggables = document.querySelectorAll(".task");
+                const droppables = document.querySelectorAll(".swim-lane");
+        
+                draggables.forEach((task) => {
+                    task.addEventListener("dragstart", () => {
+                        task.classList.add("is-dragging");
+                    });
+                    task.addEventListener("dragend", () => {
+                        task.classList.remove("is-dragging");
+                    });
+                });
+        
+                droppables.forEach((zone) => {
+                    zone.addEventListener("dragover", (e) => {
+                        e.preventDefault();
+                        const bottomTask = insertAboveTask(zone, e.clientY);
+                        const curTask = document.querySelector(".is-dragging");
+                        if (!bottomTask) {
+                            zone.appendChild(curTask);
+                        } else {
+                            zone.insertBefore(curTask, bottomTask);
+                        }
+                    });
+                });
+        
+                const insertAboveTask = (zone, mouseY) => {
+                    const els = zone.querySelectorAll(".task:not(.is-dragging)");
+                    let closestTask = null;
+                    let closestOffset = Number.NEGATIVE_INFINITY;
+                    els.forEach((task) => {
+                        const { top } = task.getBoundingClientRect();
+                        const offset = mouseY - top;
+                        if (offset < 0 && offset > closestOffset) {
+                            closestOffset = offset;
+                            closestTask = task;
+                        }
+                    });
+                    return closestTask;
+                };
+            }
+        
+            // Initialize drag-and-drop on page load
+            initializeDragAndDrop();
         });
-
-        const insertAboveTask = (zone, mouseY) => {
-            const els = zone.querySelectorAll(".task:not(.is-dragging)");
-
-            let closestTask = null;
-            let closestOffset = Number.NEGATIVE_INFINITY;
-
-            els.forEach((task) => {
-                const { top } = task.getBoundingClientRect();
-
-                const offset = mouseY - top;
-
-                if (offset < 0 && offset > closestOffset) {
-                closestOffset = offset;
-                closestTask = task;
-                }
-            });
-
-            return closestTask;
-        };
-
+        
     </script>
 {% endblock %}

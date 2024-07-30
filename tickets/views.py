@@ -461,18 +461,55 @@ def get_all_tickets(request):
     return render(request, 'tickets/ticket_list.html', context)
 
 
+def fetch_segments(request):
+    project_id = request.GET.get('project_id')
+    segments = Segment.objects.filter(project__id=project_id).values('id', 'title')
+    return JsonResponse({'segments': list(segments)})
+
+
+def fetch_tickets_and_stages(request):
+    segment_id = request.GET.get('segment_id')
+    project_id = request.GET.get('project_id')
+    if segment_id:
+        tickets = Ticket.objects.filter(segment__id=segment_id).order_by('-id')
+    else:
+        tickets = Ticket.objects.filter(segment__project__id=project_id).order_by('-id')
+    stages = Stage.objects.filter(ticketstage__ticket__in=tickets).distinct().order_by('id')
+    tickets_data = {}
+    for stage in stages:
+        tickets_in_stage = tickets.filter(stages=stage)
+        tickets_data[stage.id] = [
+            {
+                'id': ticket.id,
+                'title': ticket.title,
+                'company_ticket_counter': ticket.company_ticket_counter,
+                'ticket_type': ticket.ticket_type,  # Numeric code
+                'ticket_type_display': ticket.get_ticket_type_display()  # Human-readable name
+            }
+            for ticket in tickets_in_stage
+        ]
+
+    response_data = {
+        'stages': list(stages.values('id', 'title')),  # Basic stage info
+        'tickets': tickets_data
+    }
+
+    return JsonResponse(response_data)
+
 @login_required
 def kanban_board(request):
 
     user = request.user
     company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
 
-    # Filter tickets based on projects where user is a member
-    projects = Project.objects.filter(company=company, members=user)
-    tickets = Ticket.objects.filter(segment__project__in=projects).order_by('-id')
+    # Filter tickets based on projects where user is a member.
+    # projects = Project.objects.filter(company=company, members=user) 
+    # Currently fetching all projects where he can see all segments and tickets since everyone is contributor. 
+    # this will not be a problem later.
+    projects = Project.objects.filter(company=company)
 
     context = {
-        'tickets': tickets
+        'projects': projects
     }
     return render(request, 'tickets/kanban_board.html', context)
 
