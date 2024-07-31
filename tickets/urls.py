@@ -43,6 +43,7 @@ urlpatterns = [
     path('fetch_tickets_and_stages/', views.fetch_tickets_and_stages, name='fetch_tickets_and_stages'),
     path('fetch_segments/', views.fetch_segments, name='fetch_segments'),
     path('kanban_board/', views.kanban_board, name="kanban_board"),
+    path('update-ticket-stage/', views.update_ticket_stage, name='update_ticket_stage'),
 
     # path('create_ticket/', views.create_ticket, name="create_ticket"),
     # path('ticket/<int:ticket_id>/', views.ticket_view, name="ticket"),

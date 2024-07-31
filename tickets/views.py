@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
@@ -469,6 +470,44 @@ def get_all_tickets(request):
         'tickets_with_active_stages': tickets_with_active_stages
     }
     return render(request, 'tickets/ticket_list.html', context)
+
+@csrf_exempt
+def update_ticket_stage(request):
+    if request.method == 'POST':
+        ticket_id = request.POST.get('ticket_id')
+        old_stage_id = request.POST.get('old_stage_id')
+        new_stage_id = request.POST.get('new_stage_id')
+        
+        try:
+            ticket = Ticket.objects.get(id=ticket_id)
+            old_stage = Stage.objects.get(id=old_stage_id)
+            new_stage = Stage.objects.get(id=new_stage_id)
+            # Deactivate all old stages for the ticket
+            TicketStage.objects.filter(ticket=ticket, active=True).update(active=False)
+            # Activate the new stage
+            TicketStage.objects.update_or_create(
+                ticket=ticket,
+                stage=new_stage,
+                defaults={'active': True}
+            )
+            # Retrieve the title of the newly activated stage
+            new_stage_title = new_stage.title
+            old_stage_title = old_stage.title
+            return JsonResponse({
+                'success': True,
+                'ticket': {
+                    'company_ticket_counter': ticket.company_ticket_counter,
+                },
+                'new_stage_title': new_stage_title,
+                'old_stage_title': old_stage_title
+            })
+        except Ticket.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Ticket not found.'})
+        except Stage.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Stage not found.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method.'})
 
 
 def fetch_segments(request):

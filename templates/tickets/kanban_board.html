@@ -314,7 +314,7 @@
                                 response.tickets[stage.id].forEach(ticket => {
                                     const ticketUrl = baseTicketPostsUrl.replace('0', `${ticket.id}`);
                                     const $task = $(`
-                                        <p class="task" draggable="true" id="${ticket.id}">
+                                        <p class="task" draggable="true" id="${ticket.id}" data-stage-id="${stage.id}">
                                             <a href="${ticketUrl}" class="ticket-link">#${ticket.company_ticket_counter}</a><br>${ticket.title}
                                             <br>Ticket type: ${ticket.ticket_type_display}
                                         </p>
@@ -434,7 +434,7 @@
             function initializeDragAndDrop() {
                 const draggables = document.querySelectorAll(".task");
                 const droppables = document.querySelectorAll(".swim-lane");
-        
+            
                 draggables.forEach((task) => {
                     task.addEventListener("dragstart", () => {
                         task.classList.add("is-dragging");
@@ -443,7 +443,7 @@
                         task.classList.remove("is-dragging");
                     });
                 });
-        
+            
                 droppables.forEach((zone) => {
                     zone.addEventListener("dragover", (e) => {
                         e.preventDefault();
@@ -455,9 +455,56 @@
                             zone.insertBefore(curTask, bottomTask);
                         }
                     });
+            
+                    zone.addEventListener("drop", (e) => {
+                        e.preventDefault();
+                        const curTask = document.querySelector(".is-dragging");
+                        const oldStageId = curTask.getAttribute('data-stage-id'); // Get old stage ID from task
+                        const newStageId = $(zone).data('stage-id'); // New stage ID from the droppable zone
+                        const ticketId = curTask.id;
+                        $.ajax({
+                            url: "{% url 'tickets:update_ticket_stage' %}",
+                            type: 'POST',
+                            data: {
+                                csrfmiddlewaretoken: '{{ csrf_token }}',
+                                ticket_id: ticketId,
+                                old_stage_id: oldStageId,
+                                new_stage_id: newStageId
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    // Update the data-stage-id attribute of the moved task
+                                    curTask.setAttribute('data-stage-id', newStageId);
+            
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Ticket Moved',
+                                        text: `Ticket #${response.ticket.company_ticket_counter} moved from "${response.old_stage_title}" to "${response.new_stage_title}".`,
+                                        confirmButtonText: 'OK'
+                                    });
+                                } else {
+                                    console.log(response);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Move Failed',
+                                        text: 'Cannot move ticket. Please refresh and try again.',
+                                        confirmButtonText: 'OK'
+                                    });
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'An unexpected error occurred. Please refresh and try again.',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        });
+                    });
                 });
-        
-                const insertAboveTask = (zone, mouseY) => {
+            
+                function insertAboveTask(zone, mouseY) {
                     const els = zone.querySelectorAll(".task:not(.is-dragging)");
                     let closestTask = null;
                     let closestOffset = Number.NEGATIVE_INFINITY;
@@ -470,11 +517,11 @@
                         }
                     });
                     return closestTask;
-                };
+                }
             }
-        
+            
             initializeDragAndDrop();
-        
+            
             function initializeSortable() {
                 new Sortable($lanes[0], {
                     animation: 150,
