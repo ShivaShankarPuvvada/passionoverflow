@@ -170,6 +170,12 @@
                 {% endfor %}
             </select>
         </div>
+        <div class="col-auto">
+            <button type="button" id="add-stages-to-kanban" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Add Selected Stages to Kanban
+            </button>
+        </div>
     </div>
 
     <div class="board">
@@ -232,7 +238,6 @@
     </div>
 {% endblock %}
 
-
 {% block endscript %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script>
@@ -243,7 +248,7 @@
             const $lanes = $('.lanes');
             const $createStageButton = $('#create-stage-button');
             const $stageSelect = $('#stage-select');
-
+            const $addStagesButton = $('#add-stages-to-kanban');
             function updateCreateStageButtonVisibility() {
                 const projectId = $projectSelect.val();
                 const segmentId = $segmentSelect.val();
@@ -253,7 +258,7 @@
                     $createStageButton.addClass('d-none');
                 }
             }
-
+        
             $projectSelect.on('change', function() {
                 const projectId = $(this).val();
                 if (projectId) {
@@ -276,7 +281,7 @@
                     updateCreateStageButtonVisibility();
                 }
             });
-
+        
             $segmentSelect.on('change', function() {
                 const segmentId = $(this).val();
                 const projectId = $projectSelect.val();
@@ -311,7 +316,7 @@
                     });
                 }
             });
-
+        
             $('#create-stage-from-kanban').on('submit', function(event) {
                 event.preventDefault(); // Prevent the default form submission
                 $.ajax({
@@ -322,15 +327,15 @@
                         if (response.success) {
                             // Add new stage to the stage-select dropdown
                             $stageSelect.append(`<option value="${response.stage.id}">${response.stage.title}</option>`);
-
+        
                             // Show SweetAlert notification
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Stage Added',
-                                text: `Stage "${response.stage.title}" has been added to the stage select box. Please add the stage by selecting the stages to kanban board.`,
+                                text: `Stage "${response.stage.title}" created and added to stage select box. Add it to the kanban board by selecting and adding it.`,
                                 confirmButtonText: 'OK'
                             });
-
+        
                             // Hide the modal
                             $('#stageCreationModal').modal('hide');
                         } else {
@@ -354,10 +359,55 @@
                 });
             });
 
+
+            $addStagesButton.on('click', function() {
+                const selectedStageIds = $stageSelect.val();
+                const projectId = $projectSelect.val();
+                const segmentId = $segmentSelect.val();
+            
+                if (selectedStageIds.length > 0) {
+                    $.ajax({
+                        url: "{% url 'tickets:fetch_tickets_and_stages' %}",
+                        data: { project_id: projectId, segment_id: segmentId },
+                        success: function(response) {
+                            // Map response stages to their IDs
+                            const responseStageIds = response.stages.map(stage => stage.id);
+            
+                            selectedStageIds.forEach(stageId => {
+                                // Check if the selected stage ID is in the response stages
+                                const stage = response.stages.find(s => parseInt(s.id) === parseInt(stageId));
+            
+                                // Only add the stage if it does not exist in the response
+                                if (!responseStageIds.includes(parseInt(stageId)) || !stage) {
+                                    const newStage = {
+                                        id: stageId,
+                                        title: `New Stage ${stageId}` // Placeholder title, you might want to customize this
+                                    };
+            
+                                    // Create a new swim-lane element
+                                    const $lane = $('<div>', {
+                                        class: 'swim-lane',
+                                        'data-stage-id': newStage.id
+                                    }).append(`
+                                        <h3 class="heading" data-bs-toggle="tooltip" data-bs-placement="top" title="${newStage.title}">
+                                            ${newStage.title.length > 15 ? newStage.title.substring(0, 15) + '...' : newStage.title}
+                                        </h3>
+                                    `);
+                                    $lanes.append($lane);
+                                }
+                            });
+                            initializeDragAndDrop();
+                        }
+                    });
+                }
+            });
+            
+            
+        
             function initializeDragAndDrop() {
                 const draggables = document.querySelectorAll(".task");
                 const droppables = document.querySelectorAll(".swim-lane");
-
+        
                 draggables.forEach((task) => {
                     task.addEventListener("dragstart", () => {
                         task.classList.add("is-dragging");
@@ -366,7 +416,7 @@
                         task.classList.remove("is-dragging");
                     });
                 });
-
+        
                 droppables.forEach((zone) => {
                     zone.addEventListener("dragover", (e) => {
                         e.preventDefault();
@@ -379,7 +429,7 @@
                         }
                     });
                 });
-
+        
                 const insertAboveTask = (zone, mouseY) => {
                     const els = zone.querySelectorAll(".task:not(.is-dragging)");
                     let closestTask = null;
@@ -395,9 +445,9 @@
                     return closestTask;
                 };
             }
-
+        
             initializeDragAndDrop();
-
+        
             function initializeSortable() {
                 new Sortable($lanes[0], {
                     animation: 150,
@@ -406,7 +456,7 @@
                         console.log('Stage moved from', evt.oldIndex, 'to', evt.newIndex);
                     }
                 });
-
+        
                 document.querySelectorAll('.swim-lane').forEach((lane) => {
                     new Sortable(lane, {
                         group: 'tasks',
@@ -417,10 +467,10 @@
                     });
                 });
             }
-
+        
             initializeSortable();
         });
+        
     </script>
 {% endblock %}
-
 
