@@ -11,6 +11,12 @@
             *::-webkit-scrollbar {
             display: none;
             }
+
+            #project-select,
+            #segment-select {
+                width: 200px;
+            }
+
             
             .board {
             width: 100%;
@@ -57,6 +63,16 @@
             flex-shrink: 0;
             }
             
+
+            .create-stage-button {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                border-radius: 4px;
+                width: 225px;
+                flex-shrink: 0;
+            }
+
             .task {
                 background: white;
                 color: black;
@@ -122,12 +138,33 @@
 {% endblock %}
 
 {% block endscript %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script>
         $(document).ready(function() {
             const baseTicketPostsUrl = "{% url 'posts:ticket_posts' 0 %}"; // URL pattern with a placeholder
             const $projectSelect = $('#project-select');
             const $segmentSelect = $('#segment-select');
             const $lanes = $('.lanes');
+        
+            function showCreateStageButton() {
+                // Check if the button already exists
+                if ($('#create-stage-button').length === 0) {
+                    $lanes.append(`
+                        <div id="create-stage-button" class="create-stage-button">
+                            <button class="btn btn-custom">
+                                <i class="bi bi-plus"></i> Create Stage
+                            </button>
+                        </div>
+                    `);
+                } else {
+                    // Move it to the end if it already exists
+                    $lanes.append($('#create-stage-button'));
+                }
+            }
+        
+            function hideCreateStageButton() {
+                $('#create-stage-button').remove();
+            }
         
             // Fetch segments when project is selected
             $projectSelect.on('change', function() {
@@ -143,11 +180,13 @@
                                 $segmentSelect.append(`<option value="${segment.id}">${segment.title}</option>`);
                             });
                             $segmentSelect.trigger('change'); // Trigger change to load tickets and stages
+                            showCreateStageButton();
                         }
                     });
                 } else {
                     $segmentSelect.empty().append('<option value="">Select Segment</option>');
                     $lanes.empty(); // Clear lanes if no project is selected
+                    hideCreateStageButton();
                 }
             });
         
@@ -160,7 +199,8 @@
                         url: "{% url 'tickets:fetch_tickets_and_stages' %}",
                         data: { segment_id: segmentId, project_id: projectId },
                         success: function(response) {
-                            $lanes.empty();
+                            // Only update lanes and preserve the Create Stage button
+                            $lanes.children('.swim-lane').not('#create-stage-button').remove();
                             response.stages.forEach(stage => {
                                 const $lane = $('<div>', { class: 'swim-lane', 'data-stage-id': stage.id }).append(`<h3 class="heading">${stage.title}</h3>`);
                                 response.tickets[stage.id].forEach(ticket => {
@@ -175,9 +215,12 @@
                                 });
                                 $lanes.append($lane);
                             });
+                            showCreateStageButton(); // Ensure button is at the end
                             initializeDragAndDrop(); // Reinitialize drag-and-drop after content update
                         }
                     });
+                } else {
+                    hideCreateStageButton();
                 }
             });
         
@@ -226,7 +269,36 @@
         
             // Initialize drag-and-drop on page load
             initializeDragAndDrop();
+        
+            // Function to initialize Sortable.js for both stages and tasks
+            function initializeSortable() {
+                // Make stages (columns) sortable
+                new Sortable($lanes[0], {
+                    animation: 150,
+                    handle: '.heading', // Only allow dragging by the heading
+                    onEnd: function (evt) {
+                        // Update stage order in backend if necessary
+                        console.log('Stage moved from', evt.oldIndex, 'to', evt.newIndex);
+                    }
+                });
+        
+                // Make tasks sortable within and between stages
+                document.querySelectorAll('.swim-lane').forEach((lane) => {
+                    new Sortable(lane, {
+                        group: 'tasks',
+                        animation: 150,
+                        onEnd: function (evt) {
+                            // Update task order and stage in backend if necessary
+                            console.log('Task moved from', evt.oldIndex, 'to', evt.newIndex, 'within list', evt.from, 'to list', evt.to);
+                        }
+                    });
+                });
+            }
+        
+            // Initialize Sortable.js on page load
+            initializeSortable();
         });
+        
         
     </script>
 {% endblock %}
