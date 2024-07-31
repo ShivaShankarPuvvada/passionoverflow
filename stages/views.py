@@ -73,6 +73,69 @@ def create_stage(request):
         return render(request=request, template_name='stages/create_stage.html', context=context)
 
 
+
+@login_required
+def create_stage_from_kanban(request):
+    if request.method == 'POST':
+        try:
+            data = request.POST
+            # required_fields = ['title', 'status']
+            required_fields = ['title']
+            # Check for missing required fields
+            missing_fields = [field for field in required_fields if field not in data]
+            if missing_fields:
+                return JsonResponse({'success': False, 'errors': f'Missing fields: {", ".join(missing_fields)}'}, status=HTTPStatus.BAD_REQUEST)
+
+            if 'title' in data:
+                title = data.get('title', '').strip()
+            if 'status' in data:
+                status = data.get('status', OPEN)  # Default to OPEN if not provided
+
+            # Basic validation
+            errors = []
+            if not title:
+                errors.append("Title is required.")
+            # if not status:
+            #     errors.append("Status is required.")
+            if errors:
+                return JsonResponse({'success': False, 'errors': errors}, status=HTTPStatus.BAD_REQUEST)
+
+            with transaction.atomic():
+                # Getting company
+                contributor = CustomerCompanyDetails.objects.filter(company_root_user=request.user)
+                collaborator = CustomerCompanyDetails.objects.filter(company_user=request.user)
+                if contributor.exists():
+                    company = contributor.first().company
+                elif collaborator.exists():
+                    company = collaborator.first().company
+                stage = Stage.objects.create(
+                    title=title,
+                    status=status,
+                    company=company,
+                )
+
+            return redirect('stages:stage_list')
+
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'errors': ["Invalid JSON data."]}, status=HTTPStatus.BAD_REQUEST)
+
+        except IntegrityError as integrity_error:
+            return JsonResponse({'success': False, 'errors': ["Integrity Error: " + str(integrity_error)]}, status=HTTPStatus.BAD_REQUEST)
+
+        except Exception as error:
+            print(error)
+            return JsonResponse({'success': False, 'errors': ["An unexpected error occurred. Please try again."]}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    elif request.method == 'GET':
+        status_choices = STATUS_CHOICES
+        context = {
+                    'status_choices': status_choices, 
+                }
+        return render(request=request, template_name='stages/create_stage.html', context=context)
+
+
+
+
 @login_required
 def update_stage(request, stage_id):
     stage = get_object_or_404(Stage, id=stage_id)

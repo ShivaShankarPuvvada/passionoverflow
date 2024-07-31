@@ -159,14 +159,79 @@
                 <option value="">Select Segment</option>
             </select>
         </div>
+        <div class="col-auto">
+            <label for="stage-select" class="col-form-label">Stage:</label>
+        </div>
+        <div class="col-auto">
+            <select id="stage-select" class="form-control">
+                <option value="">Select Stage</option>
+                {% for stage in stages %}
+                    <option value="{{ stage.id }}">{{ stage.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
 
     <div class="board">
         <div class="lanes">
+            <!-- Create Stage Button at the start -->
+            <div class="create-stage-button d-none" id="create-stage-button">
+                <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#stageCreationModal">
+                    <i class="bi bi-plus"></i> Create Stage
+                </button>
+            </div>
         </div>
     </div>
 </div>
+
+    <!-- stageCreationModal -->
+    <div class="modal fade" id="stageCreationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-header">Create Stage</div>
+                        <div class="card-body">
+                            <form method="post" id="create-stage-from-kanban" action="{% url 'stages:create_stage_from_kanban' %}">
+                                {% csrf_token %}
+                                <div class="mb-3 row">
+                                    <label class="col-md-3 col-form-label" for="id_title">Title</label>
+                                    <div class="col-md-9">
+                                        <input type="text" name="title" class="form-control" placeholder="Enter title" maxlength="200" required id="id_title">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label class="col-md-3 col-form-label" for="id_status">Status</label>
+                                    <div class="col-md-9">
+                                        <select name="status" class="form-select" id="id_status">
+                                            {% for value, display in stage_status_choices %}
+                                                <option value="{{ value }}">{{ display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <div class="col-md-6 offset-md-4">
+                                        <button type="submit" class="btn btn-primary">Create Stage</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <i class="bi bi-info-circle"></i> Keep the stage status open. You can close it later.
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+
 
 {% block endscript %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
@@ -176,25 +241,17 @@
             const $projectSelect = $('#project-select');
             const $segmentSelect = $('#segment-select');
             const $lanes = $('.lanes');
+            const $createStageButton = $('#create-stage-button');
         
-            function showCreateStageButton() {
-                // Check if the button already exists
-                if ($('#create-stage-button').length === 0) {
-                    $lanes.append(`
-                        <div id="create-stage-button" class="create-stage-button">
-                            <button class="btn btn-custom">
-                                <i class="bi bi-plus"></i> Create Stage
-                            </button>
-                        </div>
-                    `);
+            // Function to update the visibility of the Create Stage button
+            function updateCreateStageButtonVisibility() {
+                const projectId = $projectSelect.val();
+                const segmentId = $segmentSelect.val();
+                if (projectId || segmentId) {
+                    $createStageButton.removeClass('d-none');
                 } else {
-                    // Move it to the end if it already exists
-                    $lanes.append($('#create-stage-button'));
+                    $createStageButton.addClass('d-none');
                 }
-            }
-        
-            function hideCreateStageButton() {
-                $('#create-stage-button').remove();
             }
         
             // Fetch segments when project is selected
@@ -211,13 +268,13 @@
                                 $segmentSelect.append(`<option value="${segment.id}">${segment.title}</option>`);
                             });
                             $segmentSelect.trigger('change'); // Trigger change to load tickets and stages
-                            showCreateStageButton();
+                            updateCreateStageButtonVisibility(); // Update button visibility
                         }
                     });
                 } else {
                     $segmentSelect.empty().append('<option value="">Select Segment</option>');
                     $lanes.empty(); // Clear lanes if no project is selected
-                    hideCreateStageButton();
+                    updateCreateStageButtonVisibility(); // Update button visibility
                 }
             });
         
@@ -230,7 +287,7 @@
                         url: "{% url 'tickets:fetch_tickets_and_stages' %}",
                         data: { segment_id: segmentId, project_id: projectId },
                         success: function(response) {
-                            // Only update lanes and preserve the Create Stage button
+                            // Clear existing lanes but keep the Create Stage button
                             $lanes.children('.swim-lane').not('#create-stage-button').remove();
                             response.stages.forEach(stage => {
                                 const $lane = $('<div>', { class: 'swim-lane', 'data-stage-id': stage.id }).append(`
@@ -243,7 +300,7 @@
                                     const ticketUrl = baseTicketPostsUrl.replace('0', `${ticket.id}`);
                                     const $task = $(`
                                         <p class="task" draggable="true" id="${ticket.id}">
-                                            Ticket: <a href="${ticketUrl}" class="ticket-link">#${ticket.company_ticket_counter}</a><br>${ticket.title}
+                                            <a href="${ticketUrl}" class="ticket-link">#${ticket.company_ticket_counter}</a><br>${ticket.title}
                                             <br>Ticket type: ${ticket.ticket_type_display}
                                         </p>
                                     `);
@@ -251,12 +308,10 @@
                                 });
                                 $lanes.append($lane);
                             });
-                            showCreateStageButton(); // Ensure button is at the end
                             initializeDragAndDrop(); // Reinitialize drag-and-drop after content update
+                            updateCreateStageButtonVisibility(); // Update button visibility
                         }
                     });
-                } else {
-                    hideCreateStageButton();
                 }
             });
         
@@ -335,6 +390,6 @@
             initializeSortable();
         });
         
-        
     </script>
 {% endblock %}
+

@@ -23,6 +23,7 @@ For all list data table views, need to do bulk update option. Need to write get 
 
 urlpatterns = [
     path('create_stage/', views.create_stage, name="create_stage"),
+    path('create_stage_from_kanban/', views.create_stage_from_kanban, name="create_stage_from_kanban"),
     path('update_stage/<int:stage_id>/', views.update_stage, name="update_stage"),
     path('stages/', views.get_all_stages, name="stage_list"),
 

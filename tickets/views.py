@@ -14,6 +14,9 @@ from accounts.views import User
 from http import HTTPStatus
 import json
 
+from stages.models import Stage, STATUS_CHOICES as STAGE_STATUS_CHOICES, OPEN as STAGE_OPEN
+
+
 
 """
 Ticket will be visible to only to people who are in the segment.
@@ -507,9 +510,14 @@ def kanban_board(request):
     # Currently fetching all projects where he can see all segments and tickets since everyone is contributor. 
     # this will not be a problem later.
     projects = Project.objects.filter(company=company)
+    stages = Stage.objects.filter(company=company)
+    stage_status_choices = STAGE_STATUS_CHOICES
+    
 
     context = {
-        'projects': projects
+        'projects': projects,
+        'stage_status_choices': stage_status_choices,
+        'stages': stages
     }
     return render(request, 'tickets/kanban_board.html', context)
 
