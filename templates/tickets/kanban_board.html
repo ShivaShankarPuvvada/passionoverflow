@@ -40,12 +40,43 @@
             overflow: scroll;
             height: 100%;
             }
-            
+
             .heading {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 8px;
+                font-size: 22px;
+                font-weight: bold;
+                margin-bottom: 8px;
+                white-space: nowrap; /* Prevent text from wrapping */
+                overflow: hidden; /* Hide text that overflows */
+                text-overflow: ellipsis; /* Show an ellipsis (...) for overflowed text */
+                position: relative; /* Required for positioning the tooltip */
+                cursor: pointer; /* Indicate that it’s clickable */
+                max-width: calc(225px - 24px); /* Adjust to ensure it fits within the lane's width */
+                /* Adjust max-width as needed to fit within the container */
             }
+            
+            .heading::after {
+                position: absolute;
+                bottom: 100%; /* Position above the element */
+                left: 0;
+                background: #333;
+                color: #fff;
+                padding: 5px;
+                border-radius: 3px;
+                white-space: normal; /* Allow wrapping in the tooltip */
+                z-index: 10;
+                font-size: 14px; /* Adjust font size if needed */
+                max-width: 200px; /* Set a maximum width for the tooltip */
+                text-align: center; /* Center text inside the tooltip */
+                visibility: hidden; /* Hide the tooltip by default */
+                opacity: 0;
+                transition: opacity 0.3s; /* Smooth transition for tooltip visibility */
+            }
+            
+            .heading:hover::after {
+                visibility: visible; /* Show the tooltip on hover */
+                opacity: 1;
+            }
+            
             
             .swim-lane {
             display: flex;
@@ -202,7 +233,12 @@
                             // Only update lanes and preserve the Create Stage button
                             $lanes.children('.swim-lane').not('#create-stage-button').remove();
                             response.stages.forEach(stage => {
-                                const $lane = $('<div>', { class: 'swim-lane', 'data-stage-id': stage.id }).append(`<h3 class="heading">${stage.title}</h3>`);
+                                const $lane = $('<div>', { class: 'swim-lane', 'data-stage-id': stage.id }).append(`
+                                    <h3 class="heading" data-bs-toggle="tooltip" data-bs-placement="top" title="${stage.title}">
+                                        ${stage.title.length > 15 ? stage.title.substring(0, 15) + '...' : stage.title}
+                                    </h3>
+                                `);
+                                
                                 response.tickets[stage.id].forEach(ticket => {
                                     const ticketUrl = baseTicketPostsUrl.replace('0', `${ticket.id}`);
                                     const $task = $(`
