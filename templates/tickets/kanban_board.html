@@ -183,7 +183,7 @@
             <!-- Create Stage Button at the start -->
             <div class="create-stage-button d-none" id="create-stage-button">
                 <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#stageCreationModal">
-                    <i class="bi bi-plus"></i> Create Stage
+                    <i class="bi bi-plus-circle"></i> Create Stage
                 </button>
             </div>
         </div>
@@ -360,10 +360,18 @@
             });
 
 
+            function getExistingStageIds() {
+                return $lanes.children('.swim-lane').map(function() {
+                    return $(this).data('stage-id');
+                }).get();
+            }
+
+
             $addStagesButton.on('click', function() {
                 const selectedStageIds = $stageSelect.val();
                 const projectId = $projectSelect.val();
                 const segmentId = $segmentSelect.val();
+                const existingStageIds = getExistingStageIds();
             
                 if (selectedStageIds.length > 0) {
                     $.ajax({
@@ -378,7 +386,7 @@
                                 const stage = response.stages.find(s => parseInt(s.id) === parseInt(stageId));
             
                                 // Only add the stage if it does not exist in the response
-                                if (!responseStageIds.includes(parseInt(stageId)) || !stage) {
+                                if (!responseStageIds.includes(parseInt(stageId)) && !stage && !existingStageIds.includes(parseInt(stageId))) {
                                     const newStage = {
                                         id: stageId,
                                         title: `New Stage ${stageId}` // Placeholder title, you might want to customize this
