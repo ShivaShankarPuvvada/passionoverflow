@@ -524,6 +524,10 @@ def fetch_tickets_and_stages(request):
     else:
         tickets = Ticket.objects.filter(segment__project__id=project_id).order_by('-id')
     stages = Stage.objects.filter(ticketstage__ticket__in=tickets, ticketstage__active=True).distinct().order_by('id')
+
+    project = Project.objects.filter(id=project_id).first()
+    all_stages = Stage.objects.filter(company=project.company)
+
     tickets_data = {}
     for stage in stages:
         tickets_in_stage = tickets.filter(stages=stage)
@@ -540,6 +544,7 @@ def fetch_tickets_and_stages(request):
 
     response_data = {
         'stages': list(stages.values('id', 'title')),  # Basic stage info
+        'all_stages': list(all_stages.values('id', 'title')),
         'tickets': tickets_data
     }
 

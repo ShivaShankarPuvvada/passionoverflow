@@ -404,9 +404,10 @@
             
                                 // Only add the stage if it does not exist in the response
                                 if (!responseStageIds.includes(parseInt(stageId)) && !stage && !existingStageIds.includes(parseInt(stageId))) {
+                                    const stageTitledata = response.all_stages.find(s => parseInt(s.id) === parseInt(stageId));
                                     const newStage = {
                                         id: stageId,
-                                        title: `New Stage ${stageId}` // Placeholder title, you might want to customize this
+                                        title: `${stageTitledata.title}` // Placeholder title, you might want to customize this
                                     };
             
                                     // Create a new swim-lane element
