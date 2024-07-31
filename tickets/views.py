@@ -488,7 +488,7 @@ def update_ticket_stage(request):
             TicketStage.objects.update_or_create(
                 ticket=ticket,
                 stage=new_stage,
-                defaults={'active': True}
+                active=True
             )
             # Retrieve the title of the newly activated stage
             new_stage_title = new_stage.title
@@ -519,31 +519,43 @@ def fetch_segments(request):
 def fetch_tickets_and_stages(request):
     segment_id = request.GET.get('segment_id')
     project_id = request.GET.get('project_id')
+    project = Project.objects.filter(id=project_id).first()
+    all_stages = Stage.objects.filter(company=project.company)
+    
     if segment_id:
         tickets = Ticket.objects.filter(segment__id=segment_id).order_by('-id')
     else:
         tickets = Ticket.objects.filter(segment__project__id=project_id).order_by('-id')
-    stages = Stage.objects.filter(ticketstage__ticket__in=tickets, ticketstage__active=True).distinct().order_by('id')
 
-    project = Project.objects.filter(id=project_id).first()
-    all_stages = Stage.objects.filter(company=project.company)
-
+    # Initialize dictionaries and lists
     tickets_data = {}
-    for stage in stages:
-        tickets_in_stage = tickets.filter(stages=stage)
-        tickets_data[stage.id] = [
-            {
-                'id': ticket.id,
-                'title': ticket.title,
-                'company_ticket_counter': ticket.company_ticket_counter,
-                'ticket_type': ticket.ticket_type,  # Numeric code
-                'ticket_type_display': ticket.get_ticket_type_display()  # Human-readable name
-            }
-            for ticket in tickets_in_stage
-        ]
+    stages_set = set()  # Use a set to avoid duplicate stages
 
+    for ticket in tickets:
+        ticket_stage_object = TicketStage.objects.filter(ticket=ticket, active=True).first()  # There will be at least one active object
+        stage_id = ticket_stage_object.stage.id
+        stage_title = ticket_stage_object.stage.title
+
+        # Collect stages
+        stages_set.add((stage_id, stage_title))
+
+        if stage_id not in tickets_data:
+            tickets_data[stage_id] = []  # Initialize an empty list if the stage_id is not in tickets_data
+
+        each_ticket_dict = {
+            'id': ticket.id,
+            'title': ticket.title,
+            'company_ticket_counter': ticket.company_ticket_counter,
+            'ticket_type': ticket.ticket_type,  # Numeric code
+            'ticket_type_display': ticket.get_ticket_type_display()  # Human-readable name
+        }
+        tickets_data[stage_id].append(each_ticket_dict)
+    
+    # Convert the set of stages to a list of dictionaries
+    stages_list = [{'id': stage_id, 'title': stage_title} for stage_id, stage_title in stages_set]
+    
     response_data = {
-        'stages': list(stages.values('id', 'title')),  # Basic stage info
+        'stages': stages_list,  # Basic stage info
         'all_stages': list(all_stages.values('id', 'title')),
         'tickets': tickets_data
     }
