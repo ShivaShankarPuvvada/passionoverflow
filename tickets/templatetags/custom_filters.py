@@ -1,5 +1,7 @@
 from django import template
 
+from tickets.models import TicketStage
+
 register = template.Library()
 
 @register.filter(name='check_super_id')
@@ -25,8 +27,10 @@ def check_sub_id(ticket_object, sub_ticket_id):
 
 @register.filter(name='check_stage')
 def check_stage(ticket_object, stage_id):
-    # Check if there is an active TicketStage with the given stage_id
-    return ticket_object.stages.filter(id=stage_id, active=True).exists()
+    related_stages = TicketStage.objects.filter(ticket=ticket_object)
+    active_stage_check = related_stages.filter(stage_id=stage_id, active=True)
+    exists = active_stage_check.exists()
+    return exists
 
 
 @register.filter(name='check_tag')

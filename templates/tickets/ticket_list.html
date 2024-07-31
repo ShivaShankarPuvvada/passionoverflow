@@ -67,9 +67,9 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <a href="{% url 'tickets:update_ticket' ticket.id %}" ><i class="bi bi-pencil-square" data-toggle="tooltip" title="Edit"></i></a>
+                        <a href="{% url 'tickets:update_ticket' item.ticket.id %}" ><i class="bi bi-pencil-square" data-toggle="tooltip" title="Edit"></i></a>
                         
-                        <a href="{% url 'posts:ticket_posts' ticket.id %}"><i class="bi bi-eye" data-toggle="tooltip" title="Views posts for this ticket"></i></a>
+                        <a href="{% url 'posts:ticket_posts' item.ticket.id %}"><i class="bi bi-eye" data-toggle="tooltip" title="Views posts for this ticket"></i></a>
                     </td>
                 </tr>
             {% empty %}
