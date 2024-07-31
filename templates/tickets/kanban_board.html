@@ -22,7 +22,7 @@
             width: 100%;
             height: 70vh;
             overflow: scroll;
-            background-color: wheat;
+            background-color: #f4f7f9;
             background-position: center;
             background-size: cover;
             border-radius: 5px;
@@ -34,7 +34,6 @@
             align-items: flex-start;
             justify-content: start;
             gap: 16px;
-            
             padding: 24px 32px;
             
             overflow: scroll;
@@ -82,17 +81,16 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            
-            background: #f4f4f4;
+            background-color: #ffffff;
             box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
-            
             padding: 12px;
             border-radius: 4px;
             width: 225px;
             min-height: 120px;
-            
             flex-shrink: 0;
+            transition: height 0.9s ease !important; /* Adjust the duration and easing function as needed */
             }
+            
             
 
             .create-stage-button {
@@ -104,10 +102,15 @@
                 flex-shrink: 0;
             }
 
+            .btn-primary {
+                background-color: #007bff;
+                color: #ffffff;
+            }
+
             .task {
-                background: white;
-                color: black;
-                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+                background: #ffffff;
+                color: #333333;
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
                 padding: 8px; /* Adjust padding if needed */
                 border-radius: 4px;
                 font-size: 14px; /* Adjust to the minimum readable size */
@@ -182,7 +185,7 @@
         <div class="lanes">
             <!-- Create Stage Button at the start -->
             <div class="create-stage-button d-none" id="create-stage-button">
-                <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#stageCreationModal">
+                <button type="button" class="btn btn-primary create-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageCreationModal">
                     <i class="bi bi-plus-circle"></i> Create Stage
                 </button>
             </div>
@@ -326,16 +329,19 @@
                     success: function(response) {
                         if (response.success) {
                             // Add new stage to the stage-select dropdown
-                            $stageSelect.append(`<option value="${response.stage.id}">${response.stage.title}</option>`);
-        
+                            const newStage = response.stage;
+                            $stageSelect.append(`<option value="${newStage.id}">${newStage.title}</option>`);
+                            
+                            $stageSelect.selectpicker('refresh'); // This assumes you're using Bootstrap-Select
+
                             // Show SweetAlert notification
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Stage Added',
-                                text: `Stage "${response.stage.title}" created and added to stage select box. Add it to the kanban board by selecting and adding it.`,
+                                text: `Stage "${newStage.title}" created and added to stage select box. Add it to the kanban board by selecting and adding it.`,
                                 confirmButtonText: 'OK'
                             });
-        
+            
                             // Hide the modal
                             $('#stageCreationModal').modal('hide');
                         } else {
@@ -358,6 +364,7 @@
                     }
                 });
             });
+            
 
 
             function getExistingStageIds() {
@@ -405,6 +412,8 @@
                                 }
                             });
                             initializeDragAndDrop();
+                            $stageSelect.selectpicker('deselectAll'); // This assumes you're using Bootstrap-Select
+
                         }
                     });
                 }
