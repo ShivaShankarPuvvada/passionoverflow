@@ -163,7 +163,7 @@
             <label for="stage-select" class="col-form-label">Stage:</label>
         </div>
         <div class="col-auto">
-            <select id="stage-select" class="form-control">
+            <select name="stage-select" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="stage-select">
                 <option value="">Select Stage</option>
                 {% for stage in stages %}
                     <option value="{{ stage.id }}">{{ stage.title }}</option>
@@ -237,13 +237,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script>
         $(document).ready(function() {
-            const baseTicketPostsUrl = "{% url 'posts:ticket_posts' 0 %}"; // URL pattern with a placeholder
+            const baseTicketPostsUrl = "{% url 'posts:ticket_posts' 0 %}";
             const $projectSelect = $('#project-select');
             const $segmentSelect = $('#segment-select');
             const $lanes = $('.lanes');
             const $createStageButton = $('#create-stage-button');
-        
-            // Function to update the visibility of the Create Stage button
+            const $stageSelect = $('#stage-select');
+
             function updateCreateStageButtonVisibility() {
                 const projectId = $projectSelect.val();
                 const segmentId = $segmentSelect.val();
@@ -253,8 +253,7 @@
                     $createStageButton.addClass('d-none');
                 }
             }
-        
-            // Fetch segments when project is selected
+
             $projectSelect.on('change', function() {
                 const projectId = $(this).val();
                 if (projectId) {
@@ -267,18 +266,17 @@
                             response.segments.forEach(segment => {
                                 $segmentSelect.append(`<option value="${segment.id}">${segment.title}</option>`);
                             });
-                            $segmentSelect.trigger('change'); // Trigger change to load tickets and stages
-                            updateCreateStageButtonVisibility(); // Update button visibility
+                            $segmentSelect.trigger('change');
+                            updateCreateStageButtonVisibility();
                         }
                     });
                 } else {
                     $segmentSelect.empty().append('<option value="">Select Segment</option>');
-                    $lanes.empty(); // Clear lanes if no project is selected
-                    updateCreateStageButtonVisibility(); // Update button visibility
+                    $lanes.empty();
+                    updateCreateStageButtonVisibility();
                 }
             });
-        
-            // Fetch tickets and stages when segment is selected
+
             $segmentSelect.on('change', function() {
                 const segmentId = $(this).val();
                 const projectId = $projectSelect.val();
@@ -287,7 +285,6 @@
                         url: "{% url 'tickets:fetch_tickets_and_stages' %}",
                         data: { segment_id: segmentId, project_id: projectId },
                         success: function(response) {
-                            // Clear existing lanes but keep the Create Stage button
                             $lanes.children('.swim-lane').not('#create-stage-button').remove();
                             response.stages.forEach(stage => {
                                 const $lane = $('<div>', { class: 'swim-lane', 'data-stage-id': stage.id }).append(`
@@ -308,18 +305,59 @@
                                 });
                                 $lanes.append($lane);
                             });
-                            initializeDragAndDrop(); // Reinitialize drag-and-drop after content update
-                            updateCreateStageButtonVisibility(); // Update button visibility
+                            initializeDragAndDrop();
+                            updateCreateStageButtonVisibility();
                         }
                     });
                 }
             });
-        
-            // Function to initialize drag-and-drop functionality
+
+            $('#create-stage-from-kanban').on('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            // Add new stage to the stage-select dropdown
+                            $stageSelect.append(`<option value="${response.stage.id}">${response.stage.title}</option>`);
+
+                            // Show SweetAlert notification
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Stage Added',
+                                text: `Stage "${response.stage.title}" has been added to the stage select box. Please add the stage by selecting the stages to kanban board.`,
+                                confirmButtonText: 'OK'
+                            });
+
+                            // Hide the modal
+                            $('#stageCreationModal').modal('hide');
+                        } else {
+                            // Show SweetAlert error notification
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.errors.join(', '),
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An unexpected error occurred. Please try again.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+
             function initializeDragAndDrop() {
                 const draggables = document.querySelectorAll(".task");
                 const droppables = document.querySelectorAll(".swim-lane");
-        
+
                 draggables.forEach((task) => {
                     task.addEventListener("dragstart", () => {
                         task.classList.add("is-dragging");
@@ -328,7 +366,7 @@
                         task.classList.remove("is-dragging");
                     });
                 });
-        
+
                 droppables.forEach((zone) => {
                     zone.addEventListener("dragover", (e) => {
                         e.preventDefault();
@@ -341,7 +379,7 @@
                         }
                     });
                 });
-        
+
                 const insertAboveTask = (zone, mouseY) => {
                     const els = zone.querySelectorAll(".task:not(.is-dragging)");
                     let closestTask = null;
@@ -357,39 +395,32 @@
                     return closestTask;
                 };
             }
-        
-            // Initialize drag-and-drop on page load
+
             initializeDragAndDrop();
-        
-            // Function to initialize Sortable.js for both stages and tasks
+
             function initializeSortable() {
-                // Make stages (columns) sortable
                 new Sortable($lanes[0], {
                     animation: 150,
-                    handle: '.heading', // Only allow dragging by the heading
+                    handle: '.heading',
                     onEnd: function (evt) {
-                        // Update stage order in backend if necessary
                         console.log('Stage moved from', evt.oldIndex, 'to', evt.newIndex);
                     }
                 });
-        
-                // Make tasks sortable within and between stages
+
                 document.querySelectorAll('.swim-lane').forEach((lane) => {
                     new Sortable(lane, {
                         group: 'tasks',
                         animation: 150,
                         onEnd: function (evt) {
-                            // Update task order and stage in backend if necessary
                             console.log('Task moved from', evt.oldIndex, 'to', evt.newIndex, 'within list', evt.from, 'to list', evt.to);
                         }
                     });
                 });
             }
-        
-            // Initialize Sortable.js on page load
+
             initializeSortable();
         });
-        
     </script>
 {% endblock %}
+
 
