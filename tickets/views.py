@@ -142,10 +142,10 @@ def create_ticket(request):
                         ticket.segment.members.add(user)
 
 
-                # Create related TicketStage records
+                # Create related TicketStage records, A ticket can be at a single stage at one time.
                 stage = Stage.objects.filter(id=stages).first()
                 if stage:
-                    TicketStage.objects.create(ticket=ticket, stage=stage)
+                    TicketStage.objects.create(ticket=ticket, stage=stage, active=True)
 
                 # Add the current user to assigned_to list if not already included
                 if str(request.user.id) not in assigned_to:
@@ -393,10 +393,10 @@ def update_ticket(request, ticket_id):
                     ticket.tags.add(tag)
 
                 # Update TicketStage records
-                TicketStage.objects.filter(ticket=ticket).delete()
+                TicketStage.objects.filter(ticket=ticket, active=True).update(active=False)
                 stage = Stage.objects.filter(id=stages).first()
                 if stage:
-                    TicketStage.objects.create(ticket=ticket, stage=stage)
+                    TicketStage.objects.create(ticket=ticket, stage=stage, active=True)
 
             return redirect('tickets:ticket_list')
 
@@ -449,17 +449,24 @@ def update_ticket(request, ticket_id):
         return render(request, 'tickets/update_ticket.html', context=context)
 
 
-# This view is for contributor only, it will show all the tickets in all projects where he is a member.
 @login_required
 def get_all_tickets(request):
     user = request.user
     company = CustomerCompanyDetails.objects.filter(company_root_user=user).first().company
-    # Filter tickets based on projects where user is a member
+    # Filter projects based on company and user membership
     projects = Project.objects.filter(company=company, members=user)
+    # Get all tickets associated with the filtered projects
     tickets = Ticket.objects.filter(segment__project__in=projects).order_by('-id')
-
+    # Prepare a dictionary to hold active stages for each ticket
+    tickets_with_active_stages = []
+    for ticket in tickets:
+        active_stages = ticket.stages.filter(ticketstage__active=True).distinct()
+        tickets_with_active_stages.append({
+            'ticket': ticket,
+            'active_stages': active_stages
+        })
     context = {
-        'tickets': tickets
+        'tickets_with_active_stages': tickets_with_active_stages
     }
     return render(request, 'tickets/ticket_list.html', context)
 
@@ -477,7 +484,7 @@ def fetch_tickets_and_stages(request):
         tickets = Ticket.objects.filter(segment__id=segment_id).order_by('-id')
     else:
         tickets = Ticket.objects.filter(segment__project__id=project_id).order_by('-id')
-    stages = Stage.objects.filter(ticketstage__ticket__in=tickets).distinct().order_by('id')
+    stages = Stage.objects.filter(ticketstage__ticket__in=tickets, ticketstage__active=True).distinct().order_by('id')
     tickets_data = {}
     for stage in stages:
         tickets_in_stage = tickets.filter(stages=stage)

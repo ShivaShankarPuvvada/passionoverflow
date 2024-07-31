@@ -29,40 +29,40 @@
             </tr>
         </thead>
         <tbody>
-            {% for ticket in tickets %}
+            {% for item in tickets_with_active_stages %}
                 <tr>
-                    <td>{{ ticket.title }}</td>
+                    <td>{{ item.ticket.title }}</td>
                     <td>
-                        {% for member in ticket.members.all %}
+                        {% for member in item.ticket.members.all %}
                             {{ member.username }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>
                     <td>
-                        {% for super_ticket in ticket.super_tickets.all %}
+                        {% for super_ticket in item.ticket.super_tickets.all %}
                             {{ super_ticket.title }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>
                     <td>
-                        {% for sub_ticket in ticket.sub_tickets.all %}
+                        {% for sub_ticket in item.ticket.sub_tickets.all %}
                             {{ sub_ticket.title }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>
-                    <td>{{ ticket.start_date }}</td>
-                    <td>{{ ticket.end_date }}</td>
-                    <td>{{ ticket.estimated_end_date }}</td>
-                    <td>{{ ticket.due_date }}</td>
-                    <td>{{ ticket.get_status_display }}</td>
-                    <td>{{ ticket.priority_scale }}</td>
-                    <td>{{ ticket.get_ticket_type_display }}</td>
+                    <td>{{ item.ticket.start_date }}</td>
+                    <td>{{ item.ticket.end_date }}</td>
+                    <td>{{ item.ticket.estimated_end_date }}</td>
+                    <td>{{ item.ticket.due_date }}</td>
+                    <td>{{ item.ticket.get_status_display }}</td>
+                    <td>{{ item.ticket.priority_scale }}</td>
+                    <td>{{ item.ticket.get_ticket_type_display }}</td>
                     <td>
-                        {% for stage in ticket.stages.all %}
+                        {% for stage in item.active_stages.all %}
                             {{ stage.title }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>
-                    <td>{{ ticket.segment.title }}</td>
-                    <td>{{ ticket.description|safe }}</td>
+                    <td>{{ item.ticket.segment.title }}</td>
+                    <td>{{ item.ticket.description|safe }}</td>
                     <td>
-                        {% for tag in ticket.tags.all %}
+                        {% for tag in item.ticket.tags.all %}
                             {{ tag.title }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>

@@ -279,6 +279,7 @@ class TicketStage(models.Model):
     """
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
     stage = models.ForeignKey(stage_models.Stage, on_delete=models.CASCADE)
+    active = models.BooleanField(default=False)  # Default to True
     history = HistoricalRecords()
     deleted = models.BooleanField(default=False)  # New field to mark soft-deleted records
     created_by = models.ForeignKey(User, related_name='ticket_stage_created_by', on_delete=models.SET_NULL, null=True, blank=True)
@@ -293,6 +294,12 @@ class TicketStage(models.Model):
     def save(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         is_new = not self.pk  # Check if it's a new object creation
+
+        if is_new:
+            self.active = True
+        else:
+            if self.active:  # If making this stage active, deactivate other stages for the same ticket
+                TicketStage.objects.filter(ticket=self.ticket, active=True).update(active=False)
 
         super(TicketStage, self).save(*args, **kwargs)
 

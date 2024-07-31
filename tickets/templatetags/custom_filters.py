@@ -25,13 +25,8 @@ def check_sub_id(ticket_object, sub_ticket_id):
 
 @register.filter(name='check_stage')
 def check_stage(ticket_object, stage_id):
-    stages = ticket_object.stages.all()
-    
-    for stage in stages:
-        if stage.id == stage_id:
-            return True
-    
-    return False
+    # Check if there is an active TicketStage with the given stage_id
+    return ticket_object.stages.filter(id=stage_id, active=True).exists()
 
 
 @register.filter(name='check_tag')
