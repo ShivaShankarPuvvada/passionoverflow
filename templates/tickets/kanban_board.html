@@ -41,6 +41,9 @@
             }
 
             .heading {
+                padding: 11px;
+                border-radius: 4px;
+                background: #e2e2e2;
                 font-size: 22px;
                 font-weight: bold;
                 margin-bottom: 8px;
@@ -134,6 +137,18 @@
             background: rgb(50, 50, 50);
             color: white;
             }
+            .update-stage-in-kanban {
+                background: none;
+                border: none;
+                color: #007bff;
+            }
+
+            .update-stage-in-kanban:hover {
+                background: none;
+                border: none;
+                color: #9266d6;
+            }
+
     </style>
 {% endblock stylesheets %}
 {% block content %}
@@ -249,6 +264,64 @@
             </div>
         </div>
     </div>
+
+    <!-- stageUpdationModal -->
+    <div class="modal fade" id="stageUpdationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-header">Update Stage</div>
+                        <div class="card-body">
+                            <form method="post" id="update-stage-from-kanban" action="#">
+                                {% csrf_token %}
+                                <div class="mb-3 row">
+                                    <label class="col-md-3 col-form-label" for="id_title">Title</label>
+                                    <div class="col-md-9">
+                                        <input type="text" name="title" class="form-control" placeholder="Enter title" maxlength="200" required id="id_title">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label class="col-md-3 col-form-label" for="id_status">Status</label>
+                                    <div class="col-md-9">
+                                        <select name="status" class="form-select" id="id_status">
+                                            {% for value, display in stage_status_choices %}
+                                                <option value="{{ value }}">{{ display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 row" style="font-size: .7rem; color: #8c8c8c;">
+                                    <label class="col-md-3 col-form-label" for="id_status"><i class="bi bi-info-circle"></i> Note: </label>
+                                    <div class="col-md-9">
+                                        <p>
+                                            At which stage the ticket is in. For ex: Newly Updated, Assigned, Blocked or On Hold, In progress, Testing, Review, Approval, Completed, Closed, Reopened and Canceled are different kind of stages.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 row">
+                                    <div class="col-md-6 offset-md-4">
+                                        <button type="submit" class="btn btn-primary">Update Stage</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <i class="bi bi-info-circle"></i> Keep the stage status open. You can close it later.
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block endscript %}
@@ -308,6 +381,9 @@
                                 const $lane = $('<div>', { class: 'swim-lane', 'data-stage-id': stage.id }).append(`
                                     <h3 class="heading" data-bs-toggle="tooltip" data-bs-placement="top" title="${stage.title}">
                                         ${stage.title.length > 15 ? stage.title.substring(0, 15) + '...' : stage.title}
+                                        <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
                                     </h3>
                                 `);
                                 
@@ -417,6 +493,9 @@
                                     }).append(`
                                         <h3 class="heading" data-bs-toggle="tooltip" data-bs-placement="top" title="${newStage.title}">
                                             ${newStage.title.length > 15 ? newStage.title.substring(0, 15) + '...' : newStage.title}
+                                            <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
                                         </h3>
                                     `);
                                     $lanes.append($lane);
