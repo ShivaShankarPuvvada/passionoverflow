@@ -26,7 +26,7 @@ urlpatterns = [
     path('create_stage_from_kanban/', views.create_stage_from_kanban, name="create_stage_from_kanban"),
     path('update_stage/<int:stage_id>/', views.update_stage, name="update_stage"),
     path('stages/', views.get_all_stages, name="stage_list"),
-
+    path('update-stage/', views.update_stage_from_kanban, name='update_stage_from_kanban'),
     # path('create_stage/', views.CreateStageView.as_view(), name="create_stage"),
     # path('stage/<int:stage_id>/', views.StageView.as_view(), name="stage"),
     # path('get_stages/<str:stage_ids>/', views.GetStagesView.as_view(), name="get_stages"),

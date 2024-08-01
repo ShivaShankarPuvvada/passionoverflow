@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.urls import reverse
 
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+
 from django.contrib.auth.decorators import login_required
 from django.db import transaction, IntegrityError
 from .models import Stage, STATUS_CHOICES, OPEN
@@ -114,8 +117,6 @@ def create_stage_from_kanban(request):
             return JsonResponse({'success': False, 'errors': ["Integrity Error: " + str(integrity_error)]}, status=HTTPStatus.BAD_REQUEST)
 
 
-
-
 @login_required
 def update_stage(request, stage_id):
     stage = get_object_or_404(Stage, id=stage_id)
@@ -186,3 +187,33 @@ def get_all_stages(request):
         'stages': stages
     }
     return render(request, 'stages/stage_list.html', context)
+
+
+@csrf_exempt  # Use only if you're not using CSRF tokens for AJAX requests
+@require_POST
+def update_stage_from_kanban(request):
+    # Extract the stage ID and title from the request
+    stage_id = request.GET.get('id')
+    new_title = request.POST.get('title')
+    
+    # Ensure that we have the stage ID and title
+    if not stage_id:
+        return JsonResponse({'success': False, 'error': 'Stage ID not provided'})
+    if not new_title:
+        return JsonResponse({'success': False, 'error': 'Title not provided'})
+    
+    # Retrieve the stage object from the database
+    try:
+        stage = Stage.objects.get(pk=stage_id)
+    except Stage.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Stage not found'})
+    
+    # Check if the title has changed
+    if stage.title == new_title:
+        return JsonResponse({'success': True, 'message': 'No changes made to the title'})
+    
+    # Update the stage title and save
+    stage.title = new_title
+    stage.save()
+    
+    return JsonResponse({'success': True, 'id': stage.id, 'newTitle': stage.title})

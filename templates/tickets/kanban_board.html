@@ -159,68 +159,67 @@
     </style>
 {% endblock stylesheets %}
 {% block content %}
-<div class="container mt-4">
-    <a href="{% url 'tickets:create_ticket' %}" class="btn btn-custom">Create Ticket</a>
-    <h2>Kanban board</h2>
+    <div class="container mt-4">
+        <a href="{% url 'tickets:create_ticket' %}" class="btn btn-custom">Create Ticket</a>
+        <h2>Kanban board</h2>
 
-    <!-- Add Project and Segment Select Boxes -->
-    <div class="row g-3 mb-3 align-items-center">
-        <div class="col-auto">
-            <label for="project-select" class="col-form-label">Project:</label>
-        </div>
-        <div class="col-auto">
-            <select id="project-select" class="form-control">
-                <option value="">Select Project</option>
-                {% for project in projects %}
-                    <option value="{{ project.id }}">{{ project.title }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-auto">
-            <label for="segment-select" class="col-form-label">Segment:</label>
-        </div>
-        <div class="col-auto">
-            <select id="segment-select" class="form-control">
-                <option value="">Select Segment</option>
-            </select>
-        </div>
-        <div class="col-auto">
-            <label for="stage-select" class="col-form-label">Stage:</label>
-        </div>
-        <div class="col-auto">
-            <select name="stage-select" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="stage-select">
-                <option value="">Select Stage</option>
-                {% for stage in stages %}
-                    <option value="{{ stage.id }}">{{ stage.title }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-auto">
-            <button type="button" id="add-stages-to-kanban" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i>
-                Add Selected Stages to Kanban
-            </button>
-        </div>
-    </div>
-
-    <div class="board">
-        <div class="lanes">
-            <!-- Create Stage Button at the start -->
-            <div class="create-stage-button d-none" id="create-stage-button">
-                <button type="button" class="btn btn-primary create-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageCreationModal">
-                    <i class="bi bi-plus-circle"></i> Create Stage
+        <!-- Add Project and Segment Select Boxes -->
+        <div class="row g-3 mb-3 align-items-center">
+            <div class="col-auto">
+                <label for="project-select" class="col-form-label">Project:</label>
+            </div>
+            <div class="col-auto">
+                <select id="project-select" class="form-control">
+                    <option value="">Select Project</option>
+                    {% for project in projects %}
+                        <option value="{{ project.id }}">{{ project.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="segment-select" class="col-form-label">Segment:</label>
+            </div>
+            <div class="col-auto">
+                <select id="segment-select" class="form-control">
+                    <option value="">Select Segment</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="stage-select" class="col-form-label">Stage:</label>
+            </div>
+            <div class="col-auto">
+                <select name="stage-select" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="stage-select">
+                    <option value="">Select Stage</option>
+                    {% for stage in stages %}
+                        <option value="{{ stage.id }}">{{ stage.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="button" id="add-stages-to-kanban" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Add Selected Stages to Kanban
                 </button>
             </div>
         </div>
+
+        <div class="board">
+            <div class="lanes">
+                <!-- Create Stage Button at the start -->
+                <div class="create-stage-button d-none" id="create-stage-button">
+                    <button type="button" class="btn btn-primary create-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageCreationModal">
+                        <i class="bi bi-plus-circle"></i> Create Stage
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
     <!-- stageCreationModal -->
     <div class="modal fade" id="stageCreationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -277,7 +276,6 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -342,7 +340,102 @@
             const $createStageButton = $('#create-stage-button');
             const $stageSelect = $('#stage-select');
             const $addStagesButton = $('#add-stages-to-kanban');
-
+        
+            // Handle "Edit Stage" button click
+            $(document).on('click', '.update-stage-ajax-fill', function() {
+                console.log('Edit button clicked');
+        
+                // Get the parent swim-lane to extract id and title
+                const $swimLane = $(this).closest('.swim-lane');
+                const stageId = $swimLane.data('stage-id');
+                const stageTitle = $swimLane.find('.heading').attr('title'); // Retrieve title from the tooltip
+        
+                console.log('Stage ID:', stageId);
+                console.log('Stage Title:', stageTitle);
+        
+                // Set the values in the modal
+                $('#update-stage-from-kanban #id_title').val(stageTitle); // Set the title in the input field
+                $('#update-stage-from-kanban').attr('action', "{% url 'stages:update_stage_from_kanban' %}" + "?id=" + stageId);
+            });
+        
+            // Handle AJAX form submission
+            $('#update-stage-from-kanban').on('submit', function(event) {
+                event.preventDefault();
+        
+                const formData = new FormData(this);
+                const actionUrl = $(this).attr('action');
+        
+                fetch(actionUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': $('[name="csrfmiddlewaretoken"]').val()
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Handle successful response with SweetAlert
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Stage updated successfully!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+        
+                        // Update the UI dynamically
+                        const updatedStageId = data.id;
+                        const newTitle = data.newTitle;
+        
+                        // Find the swim-lane with the updated stage ID
+                        const $swimLane = $(`.swim-lane[data-stage-id="${updatedStageId}"]`);
+                        if ($swimLane.length) {
+                            const $heading = $swimLane.find('.heading');
+                            if ($heading.length) {
+                                // Update the title with ellipsis if needed
+                                const updatedTitle = newTitle.length > 17 ? newTitle.substring(0, 17) + '...' : newTitle;
+                                $heading.html(`
+                                    ${updatedTitle}
+                                    <div class="dropdown">
+                                        <button class="btn btn-primary update-stage-in-kanban" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li class="dropdown-item">
+                                                <button type="button" class="btn btn-primary update-stage-in-kanban update-stage-ajax-fill" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
+                                                    <i class="bi bi-pencil-square"></i> Edit Stage
+                                                </button>
+                                            </li>
+                                            <li class="dropdown-item">
+                                                <button type="button" class="btn btn-danger update-stage-in-kanban delete-stage-in-kanban">
+                                                    <i class="bi bi-trash"></i> Remove stage
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                `);
+                            }
+                        }
+                    } else {
+                        // Handle errors with SweetAlert
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error updating stage',
+                            text: data.error || 'An unknown error occurred',
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'An error occurred',
+                        text: 'Unable to update stage. Please try again later.',
+                    });
+                });
+            });
+        
             $(document).on('click', '.delete-stage-in-kanban', function() {
                 // Find the closest swim lane (stage)
                 const $lane = $(this).closest('.swim-lane');
@@ -361,7 +454,7 @@
                     $lane.remove();
                 }
             });
-
+        
             function updateCreateStageButtonVisibility() {
                 const projectId = $projectSelect.val();
                 const segmentId = $segmentSelect.val();
@@ -414,7 +507,7 @@
                                             </button>
                                             <ul class="dropdown-menu">
                                                 <li class="dropdown-item">
-                                                    <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
+                                                    <button type="button" class="btn btn-primary update-stage-in-kanban update-stage-ajax-fill" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
                                                         <i class="bi bi-pencil-square"></i> Edit Stage
                                                     </button>
                                                 </li>
@@ -460,7 +553,7 @@
                             $stageSelect.append(`<option value="${newStage.id}">${newStage.title}</option>`);
                             
                             $stageSelect.selectpicker('refresh'); // This assumes you're using Bootstrap-Select
-
+        
                             // Show SweetAlert notification
                             Swal.fire({
                                 icon: 'success',
@@ -468,7 +561,7 @@
                                 text: `Stage "${newStage.title}" created and added to stage select box. Add it to the kanban board by selecting and adding it.`,
                                 confirmButtonText: 'OK'
                             });
-            
+                
                             // Hide the modal
                             $('#stageCreationModal').modal('hide');
                         } else {
@@ -491,16 +584,13 @@
                     }
                 });
             });
-            
-
-
+        
             function getExistingStageIds() {
                 return $lanes.children('.swim-lane').map(function() {
                     return $(this).data('stage-id');
                 }).get();
             }
-
-
+        
             $addStagesButton.on('click', function() {
                 const selectedStageIds = $stageSelect.val();
                 const projectId = $projectSelect.val();
@@ -540,7 +630,7 @@
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li class="dropdown-item">
-                                                        <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
+                                                        <button type="button" class="btn btn-primary update-stage-in-kanban update-stage-ajax-fill" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
                                                             <i class="bi bi-pencil-square"></i> Edit Stage
                                                         </button>
                                                     </li>
@@ -558,13 +648,11 @@
                             });
                             initializeDragAndDrop();
                             $stageSelect.selectpicker('deselectAll'); // This assumes you're using Bootstrap-Select
-
+        
                         }
                     });
                 }
             });
-            
-            
         
             function initializeDragAndDrop() {
                 const draggables = document.querySelectorAll(".task");
@@ -665,7 +753,7 @@
                         console.log('Stage moved from', evt.oldIndex, 'to', evt.newIndex);
                     }
                 });
-        
+            
                 document.querySelectorAll('.swim-lane').forEach((lane) => {
                     new Sortable(lane, {
                         group: 'tasks',
@@ -676,9 +764,10 @@
                     });
                 });
             }
-        
+            
             initializeSortable();
         });
+        
         
     </script>
 {% endblock %}
