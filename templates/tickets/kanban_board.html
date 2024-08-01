@@ -73,7 +73,10 @@
                 color: #8f8f8f;
             }
             
-            
+            .ticket-link {
+                text-decoration: none;
+            }
+
             .heading::after {
                 position: absolute;
                 bottom: 100%; /* Position above the element */
@@ -555,7 +558,7 @@
                                             <br>Ticket type: ${ticket.ticket_type_display}
                                             <br>
                                             <span class="edit-ticket-icon" id="edit-ticket-icon">
-                                                <i class="bi bi-pencil-square"></i>
+                                                Edit or view ticket: <i class="bi bi-pencil-square"></i>
                                             </span>
                                         </p>
                                     `);
