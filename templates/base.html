@@ -248,6 +248,9 @@
     {% endblock %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            $('[data-toggle="tooltip"]').tooltip({
+                html: true
+            });
 
             const navLinks = document.querySelectorAll('.nav-link');
 

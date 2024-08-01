@@ -478,6 +478,9 @@ def update_ticket_stage(request):
         old_stage_id = request.POST.get('old_stage_id')
         new_stage_id = request.POST.get('new_stage_id')
         
+        if old_stage_id == new_stage_id:
+            return JsonResponse({'success': False, 'error': 'Stage is already the same.'})
+
         try:
             ticket = Ticket.objects.get(id=ticket_id)
             old_stage = Stage.objects.get(id=old_stage_id)
@@ -549,7 +552,11 @@ def fetch_tickets_and_stages(request):
             'ticket_type': ticket.ticket_type,  # Numeric code
             'priority': ticket.priority_scale,
             'user_name': ticket.created_by.username,
-            'ticket_type_display': ticket.get_ticket_type_display()  # Human-readable name
+            'ticket_type_display': ticket.get_ticket_type_display(),  # Human-readable name
+            'updated_by': ', '.join(user.username for user in ticket.updated_by.all()), # Comma-separated usernames
+            'assigned_by': ', '.join(user.username for user in ticket.assigned_by.all()),  # Comma-separated usernames
+            'assigned_to': ', '.join(user.username for user in ticket.assigned_to.all()), # Comma-separated usernames
+            'members': ', '.join(user.username for user in ticket.members.all()) # Comma-separated usernames
         }
         tickets_data[stage_id].append(each_ticket_dict)
     

@@ -353,6 +353,34 @@
             const $stageSelectWrapper = $('#stage-select-wrapper');
             const $stageSelectLabelWrapper = $('#stage-select-label-wrapper');
 
+            function populateMembersModal() {
+                document.querySelectorAll('.badge-people').forEach(span => {
+                    span.addEventListener('click', function () {
+                        // Retrieve data attributes
+                        const ticketCounterId = this.getAttribute('data-ticket-counter-id');
+                        const createdBy = this.getAttribute('data-created-by');
+                        const updatedBy = this.getAttribute('data-updated-by');
+                        const assignedBy = this.getAttribute('data-assigned-by');
+                        const assignedTo = this.getAttribute('data-assigned-to');
+                        const members = this.getAttribute('data-members');
+            
+                        // Use SweetAlert to display the information
+                        Swal.fire({
+                            title: `Ticket Details: ${ticketCounterId}`,
+                            html: `
+                                <p><strong>Created By:</strong> ${createdBy}</p>
+                                <p><strong>Updated By:</strong> ${updatedBy}</p>
+                                <p><strong>Assigned By:</strong> ${assignedBy}</p>
+                                <p><strong>Assigned To:</strong> ${assignedTo}</p>
+                                <p><strong>Members:</strong> ${members}</p>
+                            `,
+                            icon: 'info',
+                            confirmButtonText: 'Close'
+                        });
+                    });
+                });
+            }
+
             const ticketTypeMapping = {
                 "Bug": { icon: "bi bi-bug", tooltip: "Ticket type: Bug - A Bug is a flaw or error in a computer program that causes it to behave in an unintended or unexpected way.", badge: "bg-danger" },
                 "Feature": { icon: "bi bi-star", tooltip: "Ticket type: Feature - A Feature is a new block that has to be implemented based on an idea.", badge: "bg-primary" },
@@ -607,12 +635,23 @@
                                             <span class="badge bg-primary badge-cursor" title="Created by: ${ticket.user_name}" data-bs-toggle="tooltip">
                                                 <i class="bi bi-person-circle"></i>
                                             </span>
+                                            <span class="badge bg-primary badge-cursor badge-people" 
+                                                title="Click on it to show all users involved in this ticket." 
+                                                data-ticket-counter-id="${ticket.company_ticket_counter}" 
+                                                data-created-by="${ticket.user_name}" 
+                                                data-updated-by="${ticket.updated_by}" 
+                                                data-assigned-by="${ticket.assigned_by}" 
+                                                data-assigned-to="${ticket.assigned_to}" 
+                                                data-members="${ticket.members}">
+                                                <i class="bi bi-people"></i>
+                                            </span>
                                         </p>
                                     `);
                                     $lane.append($task);
                                 });
                                 $lanes.append($lane);
                             });
+                            populateMembersModal();
                             initializeDragAndDrop();
                             updateCreateStageButtonVisibility();
                         }
@@ -788,7 +827,7 @@
                                     console.log(response);
                                     Swal.fire({
                                         icon: 'error',
-                                        title: 'Move Failed',
+                                        title: `${response.error}`,
                                         text: 'Cannot move ticket. Please refresh and try again.',
                                         confirmButtonText: 'OK'
                                     });
