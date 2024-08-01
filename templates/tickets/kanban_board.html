@@ -351,6 +351,16 @@
                     $stageSelectWrapper.removeClass('d-none'); // Show stage-select dropdown
                     $stageSelectLabelWrapper.removeClass('d-none'); // Show stage-select label
                     $addStagesButton.removeClass('d-none'); // Show add stages button
+                    if ($('#create-stage-button').length === 0) {
+                        $lanes.append(`
+                                        <div class="create-stage-button" id="create-stage-button">
+                                            <button type="button" class="btn btn-primary create-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageCreationModal">
+                                                <i class="bi bi-plus-circle"></i> Create Stage
+                                            </button>
+                                        </div>
+                                    `);
+                    }
+
                 } else {
                     $createStageButton.addClass('d-none');
                     $stageSelectWrapper.addClass('d-none'); // Hide stage-select dropdown
