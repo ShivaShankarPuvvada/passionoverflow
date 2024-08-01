@@ -48,7 +48,6 @@
                 font-weight: bold;
                 margin-bottom: 8px;
                 white-space: nowrap; /* Prevent text from wrapping */
-                overflow: hidden; /* Hide text that overflows */
                 text-overflow: ellipsis; /* Show an ellipsis (...) for overflowed text */
                 position: relative; /* Required for positioning the tooltip */
                 cursor: pointer; /* Indicate that it’s clickable */
@@ -65,14 +64,13 @@
             .heading .update-stage-in-kanban {
                 background: none;
                 border: none;
-                color: #007bff;
-                margin-left: 8px; /* Add space between title and icon */
+                color: #747474;
             }
             
             .heading .update-stage-in-kanban:hover {
                 background: none;
                 border: none;
-                color: #9266d6;
+                color: #8f8f8f;
             }
             
             
@@ -410,12 +408,22 @@
                                 const $lane = $('<div>', { class: 'swim-lane', 'data-stage-id': stage.id }).append(`
                                     <h3 class="heading" data-bs-toggle="tooltip" data-bs-placement="top" title="${stage.title}">
                                         ${stage.title.length > 17 ? stage.title.substring(0, 17) + '...' : stage.title}
-                                        <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-danger update-stage-in-kanban delete-stage-in-kanban">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <div class="dropdown">
+                                            <button class="btn btn-primary update-stage-in-kanban dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li class="dropdown-item">
+                                                    <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
+                                                        <i class="bi bi-pencil-square"></i> Edit Stage
+                                                    </button>
+                                                </li>
+                                                <li class="dropdown-item">
+                                                    <button type="button" class="btn btn-danger update-stage-in-kanban delete-stage-in-kanban">
+                                                        <i class="bi bi-trash"></i> Remove stage
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </h3>
                                 `);
                                 
@@ -524,13 +532,23 @@
                                         'data-stage-id': newStage.id
                                     }).append(`
                                         <h3 class="heading" data-bs-toggle="tooltip" data-bs-placement="top" title="${newStage.title}">
-                                            ${newStage.title.length > 15 ? newStage.title.substring(0, 15) + '...' : newStage.title}
-                                            <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-danger update-stage-in-kanban delete-stage-in-kanban">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            ${newStage.title.length > 17 ? newStage.title.substring(0, 17) + '...' : newStage.title}
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary update-stage-in-kanban dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li class="dropdown-item">
+                                                        <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
+                                                            <i class="bi bi-pencil-square"></i> Edit Stage
+                                                        </button>
+                                                    </li>
+                                                    <li class="dropdown-item">
+                                                        <button type="button" class="btn btn-danger update-stage-in-kanban delete-stage-in-kanban">
+                                                            <i class="bi bi-trash"></i> Remove stage
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </h3>
                                     `);
                                     $lanes.append($lane);
