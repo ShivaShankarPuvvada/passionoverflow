@@ -111,8 +111,6 @@
             flex-shrink: 0;
             transition: height 0.9s ease !important; /* Adjust the duration and easing function as needed */
             }
-            
-            
 
             .create-stage-button {
                 display: flex;
@@ -155,6 +153,15 @@
             background: rgb(50, 50, 50);
             color: white;
             }
+            
+            .edit-ticket-icon {
+                cursor: pointer;
+            }
+            
+            .edit-ticket-icon:hover {
+                color: #0056b3;
+            }
+            
 
     </style>
 {% endblock stylesheets %}
@@ -546,6 +553,10 @@
                                         <p class="task" draggable="true" id="${ticket.id}" data-stage-id="${stage.id}">
                                             <a href="${ticketUrl}" class="ticket-link">#${ticket.company_ticket_counter}</a><br>${ticket.title}
                                             <br>Ticket type: ${ticket.ticket_type_display}
+                                            <br>
+                                            <span class="edit-ticket-icon" id="edit-ticket-icon">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </span>
                                         </p>
                                     `);
                                     $lane.append($task);
