@@ -51,7 +51,6 @@
                 text-overflow: ellipsis; /* Show an ellipsis (...) for overflowed text */
                 position: relative; /* Required for positioning the tooltip */
                 cursor: pointer; /* Indicate that it’s clickable */
-                max-width: calc(225px - 24px); /* Adjust to ensure it fits within the lane's width */
                 display: flex; /* Flex display to align items */
                 justify-content: space-between; /* Space between title and icon */
                 align-items: center; /* Align items vertically */
@@ -109,7 +108,7 @@
             box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
             padding: 12px;
             border-radius: 4px;
-            width: 225px;
+            width: 250px;
             min-height: 120px;
             flex-shrink: 0;
             transition: height 0.9s ease !important; /* Adjust the duration and easing function as needed */
@@ -157,12 +156,8 @@
             color: white;
             }
             
-            .edit-ticket-icon {
+            .badge-cursor {
                 cursor: pointer;
-            }
-            
-            .edit-ticket-icon:hover {
-                color: #0056b3;
             }
             
 
@@ -353,6 +348,29 @@
             const $addStagesButton = $('#add-stages-to-kanban');
             const $stageSelectWrapper = $('#stage-select-wrapper');
             const $stageSelectLabelWrapper = $('#stage-select-label-wrapper');
+
+            const ticketTypeMapping = {
+                "Bug": { icon: "bi bi-bug", tooltip: "Ticket type: Bug - A Bug is a flaw or error in a computer program that causes it to behave in an unintended or unexpected way.", badge: "bg-danger" },
+                "Feature": { icon: "bi bi-star", tooltip: "Ticket type: Feature - A Feature is a new block that has to be implemented based on an idea.", badge: "bg-primary" },
+                "Enhancement": { icon: "bi bi-arrow-up", tooltip: "Ticket type: Enhancement - If you want to add more or update something, Enhancement is the one to choose.", badge: "bg-warning" },
+                "User Story": { icon: "bi bi-person-lines-fill", tooltip: "Ticket type: User Story - Describes user requirements focusing on delivering value to the end-user.", badge: "bg-info" },
+                "Technical Debt": { icon: "bi bi-tools", tooltip: "Ticket type: Technical Debt - Tasks related to code refactoring, quality improvements, and addressing technical issues.", badge: "bg-secondary" },
+                "Documentation": { icon: "bi bi-file-text", tooltip: "Ticket type: Documentation - Tasks related to creating or updating documentation, including user manuals and API docs.", badge: "bg-light" },
+                "Research": { icon: "bi bi-search", tooltip: "Ticket type: Research - Tasks involving investigating new technologies, evaluating solutions, or conducting research.", badge: "bg-dark" },
+                "Deployment": { icon: "bi bi-cloud-upload", tooltip: "Ticket type: Deployment - Tasks related to deploying code to production or managing deployment pipelines.", badge: "bg-success" },
+                "Testing": { icon: "bi bi-check-circle", tooltip: "Ticket type: Testing - Tasks related to quality assurance, including test case creation and bug verification.", badge: "bg-primary" },
+                "Support": { icon: "bi bi-headset", tooltip: "Ticket type: Support - Tasks involving ongoing support for end-users and tracking support requests.", badge: "bg-secondary" },
+                "Security": { icon: "bi bi-shield", tooltip: "Ticket type: Security - Tasks related to addressing security vulnerabilities and implementing security features.", badge: "bg-danger" },
+                "Infrastructure": { icon: "bi bi-hdd", tooltip: "Ticket type: Infrastructure - Tasks related to server maintenance, cloud infrastructure management, and network configuration.", badge: "bg-info" },
+                "Compliance": { icon: "bi bi-file-lock", tooltip: "Ticket type: Compliance - Tasks related to adhering to specific regulations or compliance standards.", badge: "bg-warning" },
+                "Data": { icon: "bi bi-database", tooltip: "Ticket type: Data - Tasks related to data management, migration, or database schema changes.", badge: "bg-success" },
+                "Performance": { icon: "bi bi-speedometer2", tooltip: "Ticket type: Performance - Tasks focused on optimizing system performance, including profiling and benchmarking.", badge: "bg-primary" },
+                "Usability": { icon: "bi bi-brightness-alt-high", tooltip: "Ticket type: Usability - Tasks related to improving user experience, including UI design and usability testing.", badge: "bg-secondary" },
+                "Localization": { icon: "bi bi-globe", tooltip: "Ticket type: Localization - Tasks related to translation and localization for projects available in multiple languages.", badge: "bg-info" },
+                "Training": { icon: "bi bi-people", tooltip: "Ticket type: Training - Tasks related to training team members or end-users on using the software or tools.", badge: "bg-warning" }
+            };
+            
+            
 
             function updateCreateStageButtonVisibility() {
                 const projectId = $projectSelect.val();
@@ -554,13 +572,17 @@
                                 response.tickets[stage.id].forEach(ticket => {
                                     const ticketUrl = baseTicketPostsUrl.replace('0', `${ticket.id}`);
                                     const ticketUpdateUrl = baseTicketUpdateUrl.replace('0', `${ticket.id}`);
+                                    const ticketType = ticket.ticket_type_display;
+                                    const typeDetails = ticketTypeMapping[ticketType] || { icon: "bi bi-question-circle", tooltip: "Unknown ticket type." };
+
                                     const $task = $(`
                                         <p class="task" draggable="true" id="${ticket.id}" data-stage-id="${stage.id}">
-                                            <a href="${ticketUrl}" target="_blank" class="ticket-link">${ticket.company_ticket_counter}</a> ${ticket.title}
-                                            <br>Ticket type: ${ticket.ticket_type_display}
+                                            <a href="${ticketUrl}" target="_blank" class="ticket-link" title="View Ticket Posts" data-toggle="tooltip">${ticket.company_ticket_counter}</a> ${ticket.title}
                                             <br>
-                                            Edit or view ticket:
-                                            <a href="${ticketUpdateUrl}" target="_blank" class="edit-ticket-icon edit-ticket-link" title="Edit this ticket" data-toggle="tooltip">
+                                            <span class="badge ${typeDetails.badge} badge-cursor" data-bs-toggle="tooltip" data-bs-placement="top" title="${typeDetails.tooltip}">
+                                                <i class="${typeDetails.icon}"></i>
+                                            </span>
+                                            <a href="${ticketUpdateUrl}" target="_blank" class="badge bg-primary badge-cursor" title="Edit or View ticket" data-toggle="tooltip">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                         </p>

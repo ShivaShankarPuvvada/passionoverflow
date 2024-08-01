@@ -18,7 +18,6 @@ def check_super_id(ticket_object, super_ticket_id):
 @register.filter(name='check_sub_id')
 def check_sub_id(ticket_object, sub_ticket_id):
     sub_tickets = ticket_object.sub_tickets.all()
-    print('for each ticket')
     for sub_ticket in sub_tickets:
         if sub_ticket.id == sub_ticket_id:
             return True
