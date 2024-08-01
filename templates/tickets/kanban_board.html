@@ -160,6 +160,10 @@
                 cursor: pointer;
             }
             
+            .badge-cursor:hover {
+                background-color: #007bff; /* Match this with your theme color */
+                color: #fff;
+            }
 
     </style>
 {% endblock stylesheets %}
@@ -355,7 +359,7 @@
                 "Enhancement": { icon: "bi bi-arrow-up", tooltip: "Ticket type: Enhancement - If you want to add more or update something, Enhancement is the one to choose.", badge: "bg-warning" },
                 "User Story": { icon: "bi bi-person-lines-fill", tooltip: "Ticket type: User Story - Describes user requirements focusing on delivering value to the end-user.", badge: "bg-info" },
                 "Technical Debt": { icon: "bi bi-tools", tooltip: "Ticket type: Technical Debt - Tasks related to code refactoring, quality improvements, and addressing technical issues.", badge: "bg-secondary" },
-                "Documentation": { icon: "bi bi-file-text", tooltip: "Ticket type: Documentation - Tasks related to creating or updating documentation, including user manuals and API docs.", badge: "bg-light" },
+                "Documentation": { icon: "bi bi-file-text", tooltip: "Ticket type: Documentation - Tasks related to creating or updating documentation, including user manuals and API docs.", badge: "bg-primary" },
                 "Research": { icon: "bi bi-search", tooltip: "Ticket type: Research - Tasks involving investigating new technologies, evaluating solutions, or conducting research.", badge: "bg-dark" },
                 "Deployment": { icon: "bi bi-cloud-upload", tooltip: "Ticket type: Deployment - Tasks related to deploying code to production or managing deployment pipelines.", badge: "bg-success" },
                 "Testing": { icon: "bi bi-check-circle", tooltip: "Ticket type: Testing - Tasks related to quality assurance, including test case creation and bug verification.", badge: "bg-primary" },
@@ -370,7 +374,18 @@
                 "Training": { icon: "bi bi-people", tooltip: "Ticket type: Training - Tasks related to training team members or end-users on using the software or tools.", badge: "bg-warning" }
             };
             
-            
+            const priorityMapping = {
+                1: "bg-secondary", // Lowest priority
+                2: "bg-secondary",
+                3: "bg-info",
+                4: "bg-info",
+                5: "bg-warning",  // Medium priority
+                6: "bg-warning",
+                7: "bg-primary",
+                8: "bg-primary",
+                9: "bg-danger",   // High priority
+                10: "bg-danger"   // Highest priority
+            };
 
             function updateCreateStageButtonVisibility() {
                 const projectId = $projectSelect.val();
@@ -574,6 +589,7 @@
                                     const ticketUpdateUrl = baseTicketUpdateUrl.replace('0', `${ticket.id}`);
                                     const ticketType = ticket.ticket_type_display;
                                     const typeDetails = ticketTypeMapping[ticketType] || { icon: "bi bi-question-circle", tooltip: "Unknown ticket type." };
+                                    const priorityClass = priorityMapping[ticket.priority] || "bg-secondary";
 
                                     const $task = $(`
                                         <p class="task" draggable="true" id="${ticket.id}" data-stage-id="${stage.id}">
@@ -582,9 +598,15 @@
                                             <span class="badge ${typeDetails.badge} badge-cursor" data-bs-toggle="tooltip" data-bs-placement="top" title="${typeDetails.tooltip}">
                                                 <i class="${typeDetails.icon}"></i>
                                             </span>
+                                            <span class="badge ${priorityClass} badge-cursor" data-bs-toggle="tooltip" title="Priority: ${ticket.priority}">
+                                                ${ticket.priority}
+                                            </span>
                                             <a href="${ticketUpdateUrl}" target="_blank" class="badge bg-primary badge-cursor" title="Edit or View ticket" data-toggle="tooltip">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
+                                            <span class="badge bg-primary badge-cursor" title="Created by: ${ticket.user_name}" data-bs-toggle="tooltip">
+                                                <i class="bi bi-person-circle"></i>
+                                            </span>
                                         </p>
                                     `);
                                     $lane.append($task);

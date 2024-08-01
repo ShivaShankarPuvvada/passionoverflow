@@ -547,6 +547,8 @@ def fetch_tickets_and_stages(request):
             'title': ticket.title,
             'company_ticket_counter': ticket.company_ticket_counter,
             'ticket_type': ticket.ticket_type,  # Numeric code
+            'priority': ticket.priority_scale,
+            'user_name': ticket.created_by.username,
             'ticket_type_display': ticket.get_ticket_type_display()  # Human-readable name
         }
         tickets_data[stage_id].append(each_ticket_dict)
