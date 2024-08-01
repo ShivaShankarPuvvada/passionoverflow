@@ -184,10 +184,10 @@
                     <option value="">Select Segment</option>
                 </select>
             </div>
-            <div class="col-auto">
+            <div id="stage-select-label-wrapper" class="col-auto d-none">
                 <label for="stage-select" class="col-form-label">Stage:</label>
             </div>
-            <div class="col-auto">
+            <div id="stage-select-wrapper" class="col-auto d-none">
                 <select name="stage-select" class="selectpicker" multiple aria-label="Default select example" data-live-search="true" id="stage-select">
                     <option value="">Select Stage</option>
                     {% for stage in stages %}
@@ -196,7 +196,7 @@
                 </select>
             </div>
             <div class="col-auto">
-                <button type="button" id="add-stages-to-kanban" class="btn btn-primary">
+                <button type="button" id="add-stages-to-kanban" class="btn btn-primary d-none">
                     <i class="bi bi-plus-circle"></i>
                     Add Selected Stages to Kanban
                 </button>
@@ -340,7 +340,25 @@
             const $createStageButton = $('#create-stage-button');
             const $stageSelect = $('#stage-select');
             const $addStagesButton = $('#add-stages-to-kanban');
-        
+            const $stageSelectWrapper = $('#stage-select-wrapper');
+            const $stageSelectLabelWrapper = $('#stage-select-label-wrapper');
+
+            function updateCreateStageButtonVisibility() {
+                const projectId = $projectSelect.val();
+                const segmentId = $segmentSelect.val();
+                if (projectId || segmentId) {
+                    $createStageButton.removeClass('d-none');
+                    $stageSelectWrapper.removeClass('d-none'); // Show stage-select dropdown
+                    $stageSelectLabelWrapper.removeClass('d-none'); // Show stage-select label
+                    $addStagesButton.removeClass('d-none'); // Show add stages button
+                } else {
+                    $createStageButton.addClass('d-none');
+                    $stageSelectWrapper.addClass('d-none'); // Hide stage-select dropdown
+                    $stageSelectLabelWrapper.addClass('d-none'); // Hide stage-select label
+                    $addStagesButton.addClass('d-none'); // Hide add stages button
+                }
+            }
+
             // Handle "Edit Stage" button click
             $(document).on('click', '.update-stage-ajax-fill', function() {
                 console.log('Edit button clicked');
@@ -455,16 +473,7 @@
                 }
             });
         
-            function updateCreateStageButtonVisibility() {
-                const projectId = $projectSelect.val();
-                const segmentId = $segmentSelect.val();
-                if (projectId || segmentId) {
-                    $createStageButton.removeClass('d-none');
-                } else {
-                    $createStageButton.addClass('d-none');
-                }
-            }
-        
+            // Project and Segment selection change handling
             $projectSelect.on('change', function() {
                 const projectId = $(this).val();
                 if (projectId) {
@@ -561,7 +570,7 @@
                                 text: `Stage "${newStage.title}" created and added to stage select box. Add it to the kanban board by selecting and adding it.`,
                                 confirmButtonText: 'OK'
                             });
-                
+                    
                             // Hide the modal
                             $('#stageCreationModal').modal('hide');
                         } else {
@@ -648,7 +657,6 @@
                             });
                             initializeDragAndDrop();
                             $stageSelect.selectpicker('deselectAll'); // This assumes you're using Bootstrap-Select
-        
                         }
                     });
                 }
@@ -698,7 +706,7 @@
                                 if (response.success) {
                                     // Update the data-stage-id attribute of the moved task
                                     curTask.setAttribute('data-stage-id', newStageId);
-            
+        
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Ticket Moved',
@@ -744,7 +752,7 @@
             }
             
             initializeDragAndDrop();
-            
+        
             function initializeSortable() {
                 new Sortable($lanes[0], {
                     animation: 150,
@@ -753,7 +761,7 @@
                         console.log('Stage moved from', evt.oldIndex, 'to', evt.newIndex);
                     }
                 });
-            
+        
                 document.querySelectorAll('.swim-lane').forEach((lane) => {
                     new Sortable(lane, {
                         group: 'tasks',
@@ -764,11 +772,10 @@
                     });
                 });
             }
-            
+        
             initializeSortable();
         });
-        
-        
+                        
     </script>
 {% endblock %}
 
