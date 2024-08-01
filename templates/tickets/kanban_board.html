@@ -44,7 +44,7 @@
                 padding: 11px;
                 border-radius: 4px;
                 background: #e2e2e2;
-                font-size: 22px;
+                font-size: 14px;
                 font-weight: bold;
                 margin-bottom: 8px;
                 white-space: nowrap; /* Prevent text from wrapping */
@@ -53,8 +53,28 @@
                 position: relative; /* Required for positioning the tooltip */
                 cursor: pointer; /* Indicate that it’s clickable */
                 max-width: calc(225px - 24px); /* Adjust to ensure it fits within the lane's width */
-                /* Adjust max-width as needed to fit within the container */
+                display: flex; /* Flex display to align items */
+                justify-content: space-between; /* Space between title and icon */
+                align-items: center; /* Align items vertically */
             }
+            
+            .heading .title {
+                flex-grow: 1; /* Allow the title to take up available space */
+            }
+            
+            .heading .update-stage-in-kanban {
+                background: none;
+                border: none;
+                color: #007bff;
+                margin-left: 8px; /* Add space between title and icon */
+            }
+            
+            .heading .update-stage-in-kanban:hover {
+                background: none;
+                border: none;
+                color: #9266d6;
+            }
+            
             
             .heading::after {
                 position: absolute;
@@ -136,17 +156,6 @@
             box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
             background: rgb(50, 50, 50);
             color: white;
-            }
-            .update-stage-in-kanban {
-                background: none;
-                border: none;
-                color: #007bff;
-            }
-
-            .update-stage-in-kanban:hover {
-                background: none;
-                border: none;
-                color: #9266d6;
             }
 
     </style>
@@ -335,6 +344,26 @@
             const $createStageButton = $('#create-stage-button');
             const $stageSelect = $('#stage-select');
             const $addStagesButton = $('#add-stages-to-kanban');
+
+            $(document).on('click', '.delete-stage-in-kanban', function() {
+                // Find the closest swim lane (stage)
+                const $lane = $(this).closest('.swim-lane');
+                
+                // Check if the lane has any tasks inside it
+                if ($lane.find('.task').length > 0) {
+                    // Show SweetAlert message
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cannot Remove Stage',
+                        text: "You can't remove the stage which has tickets on it. If a stage has no tickets, it will be automatically removed on page refresh.",
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    // Remove the stage from the DOM
+                    $lane.remove();
+                }
+            });
+
             function updateCreateStageButtonVisibility() {
                 const projectId = $projectSelect.val();
                 const segmentId = $segmentSelect.val();
@@ -380,9 +409,12 @@
                             response.stages.forEach(stage => {
                                 const $lane = $('<div>', { class: 'swim-lane', 'data-stage-id': stage.id }).append(`
                                     <h3 class="heading" data-bs-toggle="tooltip" data-bs-placement="top" title="${stage.title}">
-                                        ${stage.title.length > 15 ? stage.title.substring(0, 15) + '...' : stage.title}
+                                        ${stage.title.length > 17 ? stage.title.substring(0, 17) + '...' : stage.title}
                                         <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
                                             <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger update-stage-in-kanban delete-stage-in-kanban">
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                     </h3>
                                 `);
@@ -495,6 +527,9 @@
                                             ${newStage.title.length > 15 ? newStage.title.substring(0, 15) + '...' : newStage.title}
                                             <button type="button" class="btn btn-primary update-stage-in-kanban" data-bs-toggle="modal" data-bs-target="#stageUpdationModal">
                                                 <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-danger update-stage-in-kanban delete-stage-in-kanban">
+                                                <i class="bi bi-trash"></i>
                                             </button>
                                         </h3>
                                     `);
