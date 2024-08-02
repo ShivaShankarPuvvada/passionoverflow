@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -101,23 +102,26 @@ WSGI_APPLICATION = 'pndiode.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'pndiode_offanswer',         # Replace with your database name
-#         'USER': 'pndiode_offanswer',         # Replace with your database user
-#         'PASSWORD': '8a88d1839ca3d68dd9bde4c5769911d24889c1c2', # Replace with your database password
-#         'HOST': 'at6.h.filess.io',         # Replace with your database host, usually 'localhost' or the IP address
-#         'PORT': '5432',                 # Default PostgreSQL port, change if needed
-#     }
-# }
+
 
 
 # Password validation
