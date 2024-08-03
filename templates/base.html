@@ -251,6 +251,9 @@
     {% endblock %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // datatabe is displaying error message on empty data. currently disabling it.
+            $.fn.dataTable.ext.errMode = 'none';
+
             $('[data-toggle="tooltip"]').tooltip({
                 html: true
             });
