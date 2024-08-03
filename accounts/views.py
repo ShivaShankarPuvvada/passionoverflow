@@ -106,13 +106,13 @@ def registration_view(request):
                 company, company_created = Company.objects.get_or_create(name=company_name, sub_domain_name=company_sub_domain_name)
                 if company_created:
                     company.created_by = user
-                    company.save(user=request.user)
+                    company.save(user=user)
 
                 # Create customer company details
                 company_customer, company_customer_created = CustomerCompanyDetails.objects.get_or_create(company=company, company_root_user=user)
                 if company_customer_created:
                     company_customer.created_by = user
-                    company_customer.save(user=request.user)
+                    company_customer.save(user=user)
 
             return JsonResponse({'success': True, 'redirect_url': reverse('accounts:login')})
 
