@@ -18,3 +18,7 @@ def pricing(request):
 @login_required
 def docs(request):
     return render(request, 'docs.html')
+
+@login_required
+def contact_us(request):
+    return render(request, 'contact_us.html')
